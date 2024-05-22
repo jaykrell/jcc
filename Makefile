@@ -107,7 +107,7 @@ debug: $(win)
 !endif
 
 clean:
-	$(RM_F) $(win) w3rt.o w3rt.obj w3.obj *.ilk win32 win32.exe win64 win64.exe win win.exe winarm.exe winx86.exe winamd64.exe *.pdb lin *.i
+	$(RM_F) $(win) config.cpp config.mk w3rt.o w3rt.obj w3.obj *.ilk win32 win32.exe win64 win64.exe win win.exe winarm.exe winx86.exe winamd64.exe *.pdb lin *.i
 
 # TODO clang cross
 #
