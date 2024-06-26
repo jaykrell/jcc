@@ -35,8 +35,10 @@ clean:
 
 exe:
 
+# jarray.$O \
+
 OBJS=\
- jarray.$O \
+ jarrayt.$O \
  camd64.$O \
  carm64.$O \
  ccheck.$O \
@@ -107,7 +109,7 @@ debug: $(win)
 !endif
 
 clean:
-	$(RM_F) $(win) config.cpp config.mk w3rt.o w3rt.obj w3.obj *.ilk win32 win32.exe win64 win64.exe win win.exe winarm.exe winx86.exe winamd64.exe *.pdb lin *.i
+	$(RM_F) $(win) *.o *.obj config.cpp config.mk w3rt.o w3rt.obj w3.obj *.ilk win32 win32.exe win64 win64.exe win win.exe winarm.exe winx86.exe winamd64.exe *.pdb lin *.i
 
 # TODO clang cross
 #
@@ -153,7 +155,7 @@ debug: mac
 	lldb -- ./$(NativeTarget) /s/mono/mcs/class/lib/build-macos/mscorlib.dll
 
 clean:
-	$(RM_F) w3rt.o w3rt.obj mac win32 win32.exe win64 win64.exe win win.exe cyg cyg.exe *.ilk lin win.exe winarm.exe winx86.exe winamd64.exe
+	$(RM_F) *.o *.obj w3rt.o w3rt.obj mac win32 win32.exe win64 win64.exe win win.exe cyg cyg.exe *.ilk lin win.exe winarm.exe winx86.exe winamd64.exe
 
 mac: $(OBJS)
 	g++ -g $(OBJS) -o $@ -Bsymbolic -bind_at_load

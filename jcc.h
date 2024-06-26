@@ -1,4 +1,5 @@
-#pragma once
+#ifndef JCC_H
+#define JCC_H
 
 #include "jbase.h"
 #include "jrtype.h"
@@ -27,7 +28,7 @@ struct cfile
 
 /* cpre */
 
-copen
+//copen
 
 /* clex */
 
@@ -36,3 +37,5 @@ copen
 /* ccheck */
 
 /* ccode */
+
+#endif
