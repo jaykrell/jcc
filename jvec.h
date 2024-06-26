@@ -48,8 +48,10 @@ struct JVecIter {
 struct JVecType {
     JVecIter (*begin)     (JVec*);
     JVecIter (*end)       (JVec*);
-    Long       (*push_back) (JVec*, T*);
-    jbool      (*pop_back)  (JVec*, T*);
+    JErr     (*push_back) (JVec*, T*);
+    jbool    (*pop_back)  (JVec*, T*);
+    Long     (*size) (JVec*);
+    JErr     (*resize) (JVec*);
 };
 
 struct JVec {
@@ -58,8 +60,6 @@ struct JVec {
     T* end;
     T* cap;
 };
-
-void JVecInit (JVec*);
 
 #undef T
 #undef JVec
