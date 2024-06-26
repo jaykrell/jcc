@@ -5,10 +5,10 @@
 #include "jtype.h"
 
 struct JObject;
-typedef struct JObject JObject;
+typedef struct jobject jobject;
 
-typedef struct JObject {
-    JType* t;
-} JObject;
+typedef struct jobject {
+    jtype* t;
+} jobject;
 
 #endif
