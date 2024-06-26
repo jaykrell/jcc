@@ -3,15 +3,16 @@
 
 #include "jbase.h"
 
-struct JType;
-typedef typedef struct JType JType;
+struct jtype;
+typedef typedef struct jtype jtype;
 
 /* runtime type */
-struct JType {
+struct jtype {
     char* type_name; /* not object name */
     jbool is_fixed_size;
     Long fixed_size;
-    void (*free)(voidp);
+    void (*init)(voidp, Long);
+    void (*cleanup)(voidp, Long);
     Long (*dup)(voidp, voidp*);
     Long (*dupto)(voidp, voidp);
     Long (*valid)(voidp);
