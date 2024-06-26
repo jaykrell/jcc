@@ -7,6 +7,7 @@
 #define JArrayType     JArrayIntType
 #define JArrayIter     JArrayIntIter
 #define JArrayIterType JArrayIntIterType
+#define JArrayInit     JArrayIntInit
 #include "jarrayt.c"
 
 #define T double
@@ -14,18 +15,21 @@
 #define JArrayType     JArrayDoubleType
 #define JArrayIter     JArrayDoubleIter
 #define JArrayIterType JArrayDoubleIterType
-//#include "jarrayt.c"
+#define JArrayInit     JArrayDoubleInit
+#include "jarrayt.c"
 
 #else
 
+/* JArrayIter */
 int JPASTE (JArrayIterType, _cmp)(JArrayIter* ai, JArrayIter* aj);
 JArrayIter JPASTE (JArrayIterType, _inc)(JArrayIter* ai);
 JArrayIter JPASTE (JArrayIterType, _dec)(JArrayIter* ai);
 JArrayIter JPASTE (JArrayIterType, _add_int)(JArrayIter* ai, Long i);
 JArrayIter JPASTE (JArrayIterType, _sub_int)(JArrayIter* ai, Long i);
-JArrayIter JPASTE (JArrayIterType, _sub_iter)(JArrayIter* ai, JArrayIter* aj);
+Long JPASTE (JArrayIterType, _sub_iter)(JArrayIter* ai, JArrayIter* aj);
 T* JPASTE (JArrayIterType, _get)(JArrayIter* ai);
 
+/* JArray */
 JArrayIter JPASTE (JArray, _begin)(JArray* a);
 JArrayIter JPASTE (JArray, _end)(JArray* a);
 Long JPASTE (JArray, _push_back)(JArray* a, T* t);
@@ -81,10 +85,9 @@ JArrayIter JPASTE (JArrayIterType, _sub_int)(JArrayIter* ai, Long i)
     return b;
 }
 
-JArrayIter JPASTE (JArrayIterType, _sub_iter)(JArrayIter* ai, JArrayIter* aj)
+Long JPASTE (JArrayIterType, _sub_iter)(JArrayIter* ai, JArrayIter* aj)
 {
-    JArrayIter b = {ai->t, ai->p - aj->p};
-    return b;
+    return (ai->p - aj->p);
 }
 
 T* JPASTE (JArrayIterType, _get)(JArrayIter* ai)
@@ -112,6 +115,11 @@ Long JPASTE (JArray, _push_back)(JArray* a, T* t)
 jbool JPASTE (JArray, _pop_back)(JArray* a, T* t)
 {
     return 0;
+}
+
+void JArrayInit(JArray* a)
+{
+    a->t = &JPASTE (JArrayType_, T);
 }
 
 #if 0
@@ -186,5 +194,6 @@ int jarray_init(jarray_t* ary)
 #undef JArrayType
 #undef JArrayIter
 #undef JArrayIterType
+#undef JArrayInit
 
 #endif

@@ -10,7 +10,7 @@
 #define JArrayType     JArrayIntType
 #define JArrayIter     JArrayIntIter
 #define JArrayIterType JArrayIntIterType
-#define JArrayInit     JArrayInitInit
+#define JArrayInit     JArrayIntInit
 #include "jarrayt.h"
 
 #define T double
@@ -36,7 +36,7 @@ struct JArrayIterType {
     JArrayIter (*dec)      (JArrayIter*);
     JArrayIter (*add_int)  (JArrayIter*, Long);
     JArrayIter (*sub_int)  (JArrayIter*, Long);
-    JArrayIter (*sub_iter) (JArrayIter*, JArrayIter*);
+    Long       (*sub_iter) (JArrayIter*, JArrayIter*);
     T*         (*get)      (JArrayIter*);
 };
 
@@ -59,7 +59,7 @@ struct JArray {
     T* cap;
 };
 
-int JArrayInit (JArray*);
+void JArrayInit (JArray*);
 
 #undef T
 #undef JArray

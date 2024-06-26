@@ -2,9 +2,10 @@
 
 int main()
 {
-    JArrayDouble jd;
-    JArrayInt ji;
+    JArrayDouble jd = {0};
+    JArrayInt ji = {0};
 
-
+    JArrayIntInit(&ji);
+    JArrayIntInit(&jd);
 }
 
