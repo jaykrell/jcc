@@ -1,11 +1,11 @@
-#include "jarrayt.h"
+#include "vec.h"
 
 int main()
 {
-    JArrayDouble jd = {0};
-    JArrayInt ji = {0};
+    JVecDouble jd = {0};
+    JVecInt ji = {0};
 
-    JArrayIntInit(&ji);
-    JArrayIntInit(&jd);
+    JVecIntInit(&ji);
+    JVecIntInit(&jd);
 }
 
