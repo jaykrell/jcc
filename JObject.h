@@ -2,7 +2,7 @@
 #define JOBJECT_H
 
 #include "jbase.h"
-#include "JType.h"
+#include "jtype.h"
 
 struct JObject;
 typedef struct JObject JObject;

@@ -2,8 +2,8 @@
 #define JCC_H
 
 #include "jbase.h"
-#include "jrtype.h"
-#include "jarray.h"
+#include "jtype.h"
+#include "jvec.h"
 
 struct jmap
 {

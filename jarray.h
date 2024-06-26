@@ -2,7 +2,7 @@
 #define JARRAY_H
 
 #include "jbase.h"
-#include "jrtype.h"
+#include "jtype.h"
 
 struct jarray_iter; typedef struct jarray_iter jarray_iter;
 struct jarrayt; typedef struct jarrayt jarrayt;
