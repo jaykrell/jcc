@@ -11,7 +11,7 @@
 #define JVecIter     JVecIntIter
 #define JVecIterType JVecIntIterType
 #define JVecInit     JVecIntInit
-#include "jarrayt.h"
+#include "jvec.h"
 
 #define T double
 #define JVec         JVecDouble
@@ -19,7 +19,7 @@
 #define JVecIter     JVecDoubleIter
 #define JVecIterType JVecDoubleIterType
 #define JVecInit     JVecDoubleInit
-#include "jarrayt.h"
+#include "jvec.h"
 
 #endif
 
@@ -56,6 +56,7 @@ struct JVecType {
 
 struct JVec {
     JVecType* t;
+    jtype* telement;
     T* begin;
     T* end;
     T* cap;
