@@ -3,14 +3,11 @@
 
 #include "jbase.h"
 
-struct jrtype;
-typedef typedef struct jrtype jrtype;
-
-struct jobject;
-typedef struct jobject jobject;
+struct JType;
+typedef typedef struct JType JType;
 
 /* runtime type */
-struct jrtype {
+struct JType {
     char* type_name; /* not object name */
     jbool is_fixed_size;
     Long fixed_size;
@@ -25,9 +22,5 @@ struct jrtype {
     Long (*size)(voidp);
     void (*dump)(voidp);
 };
-
-typedef struct jobject {
-    jrtype* t;
-} jobject;
 
 #endif
