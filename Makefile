@@ -38,7 +38,7 @@ exe:
 # jarray.$O \
 
 OBJS=\
- jarrayt.$O \
+ jvec.$O \
  camd64.$O \
  carm64.$O \
  ccheck.$O \

@@ -11,7 +11,7 @@ extern jrtype jtype_string;
 typedef struct jstring
 {
     jtype* type;
-    Long len;
+    jlong len;
     char* chars;
 } jstring;
 

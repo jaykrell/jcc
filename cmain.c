@@ -1,11 +1,11 @@
-#include "vec.h"
+#include "jvec.h"
 
 int main()
 {
-    JVecDouble jd = {0};
-    JVecInt ji = {0};
+    jvec_double jd = {0};
+    jvec_int ji = {0};
 
-    JVecIntInit(&ji);
-    JVecIntInit(&jd);
+    jvec_int_init (&ji);
+    jvec_double_init (&jd);
 }
 

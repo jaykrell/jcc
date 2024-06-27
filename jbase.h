@@ -3,9 +3,9 @@
 
 /* pointer sized integer, maybe the one true integer */
 #if _WIN32 || VMS
-typedef __int64 Long;
+typedef __int64 jlong;
 #else
-typedef long Long;
+typedef long jlong;
 #endif
 
 typedef void* voidp;

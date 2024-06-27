@@ -4,8 +4,9 @@
 #define JERR_H
 
 #if 0
+
 struct JErrType; typedef struct JErrType JErrType;
-struct JErr;     typedef struct JErr JErr;
+struct JErr;     typedef struct JErr JErr, jerr;
 
 struct JJErrType {
     void (*free)(JErr*);
@@ -15,7 +16,7 @@ struct JErr {
     int i;
     charp str;
     charp strdetail[2];
-    Long  idetail[2]; /* e.g. invalid parameter index */
+    jlong idetail[2]; /* e.g. invalid parameter index */
 };
 
 #define JERR_SUCCESS(x) (((x)->i) == 0)
@@ -26,9 +27,10 @@ extern JErr JErr_NullPtr;
 extern JErr JErr_InvalidParameter;
 extern JErr JErr_FileNotFound;
 extern JErr JErr_SyntaxError;
+
 #elif 0
 
-typedef Long JErr;
+typedef jlong JErr, jerr;
 #define JErr_NoError           (-1)
 #define JErr_OutOfMemory       (-2)
 #define JErr_NullPtr;          (-3)
@@ -44,7 +46,7 @@ typedef enum JErr {
     JErr_InvalidParameter  ,
     JErr_FileNotFound      ,
     JErr_SyntaxError       ,
-} JErr;
+} JErr, jerr;
 
 #endif
 
