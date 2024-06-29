@@ -1,7 +1,7 @@
 #ifndef JBASE_H
 #define JBASE_H
 
-/* pointer sized integer, maybe the one true integer */
+/* pointer sized integer, the one true integer */
 #if _WIN32 || VMS
 typedef __int64 jlong;
 #else

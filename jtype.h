@@ -13,8 +13,8 @@ struct jtype {
     jlong fixed_size;
     void  (*init)(voidp, jlong);
     void  (*cleanup)(voidp, jlong);
-    jlong (*dup)(voidp, voidp*);
-    jlong (*dupto)(voidp, voidp);
+    jlong (*copy)(voidp, voidp*);
+    jlong (*copy_to)(voidp, voidp);
     jlong (*move)(voidp, voidp, long);
     jlong (*valid)(voidp);
     void  (*begin)(voidp, voidp*);

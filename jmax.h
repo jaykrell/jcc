@@ -1,0 +1,1 @@
+#define JMAX(a, b) (((a) > (b)) ? (a) : (b))
