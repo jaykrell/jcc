@@ -48,13 +48,13 @@ struct jvec_iter {
 };
 
 struct jvec_type {
-    jerr (*begin)     (jvec*, jvec_iter*);
-    jerr (*capacity)  (jvec*, jlong*);
-    jerr (*end)       (jvec*, jvec_iter*);
-    jerr (*pop_back)  (jvec*);
-    jerr (*push_back) (jvec*, T*);
-    jerr (*resize)    (jvec*, jlong);
-    jerr (*size)      (jvec*, jlong*);
+    jvec_iter (*begin)     (jvec*);
+    jlong     (*capacity)  (jvec*);
+    jvec_iter (*end)       (jvec*);
+    jerr      (*pop_back)  (jvec*);
+    jerr      (*push_back) (jvec*, T*);
+    jerr      (*resize)    (jvec*, jlong);
+    jlong     (*size)      (jvec*);
 };
 
 struct jvec {

@@ -17,7 +17,7 @@ git add ^
  jarray.h ^
  jbase.h ^
  jcc.h ^
- jrtype.h ^
+ jtype.h ^
  readme.txt ^
  Makefile
 

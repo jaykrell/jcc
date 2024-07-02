@@ -2,6 +2,8 @@
 
 #include "jmax.h"
 #include "jvec.h"
+#include "jerr.h"
+#include <stdlib.h>
 
 #define T int
 #define jvec           jvec_int
@@ -31,13 +33,13 @@ jvec_iter JPASTE (jvec_iter_type, _sub_int)(jvec_iter* ai, jlong i);
 jlong     JPASTE (jvec_iter_type, _sub_iter)(jvec_iter* ai, jvec_iter* aj);
 
 /* jvec */
-jerr JPASTE (jvec, _begin)     (jvec*, jvec_iter*);
-jerr JPASTE (jvec, _capacity)  (jvec*, jlong*);
-jerr JPASTE (jvec, _end)       (jvec*, jvec_iter*);
-jerr JPASTE (jvec, _pop_back)  (jvec*);
-jerr JPASTE (jvec, _push_back) (jvec*, T*);
-jerr JPASTE (jvec, _resize)    (jvec*, jlong);
-jerr JPASTE (jvec, _size)      (jvec*, jlong*);
+jvec_iter JPASTE (jvec, _begin)     (jvec*);
+jlong     JPASTE (jvec, _capacity)  (jvec*);
+jvec_iter JPASTE (jvec, _end)       (jvec*);
+jerr      JPASTE (jvec, _pop_back)  (jvec*);
+jerr      JPASTE (jvec, _push_back) (jvec*, T*);
+jerr      JPASTE (jvec, _resize)    (jvec*, jlong);
+jlong     JPASTE (jvec, _size)      (jvec*);
 
 jvec_iter_type JPASTE (jvec_iter_type_, T) =
 {
@@ -103,43 +105,39 @@ T* JPASTE (jvec_iter_type, _get)(jvec_iter* ai)
     return ai->p;
 }
 
-jerr JPASTE (jvec, _begin)(jvec* v, jvec_iter* iter)
+jvec_iter JPASTE (jvec, _begin)(jvec* v)
 {
     jvec_iter i = {&JPASTE (jvec_iter_type_, T), v->begin};
-    *iter = i;
-    return 0;
+    return i;
 }
 
-jerr JPASTE (jvec, _end)(jvec* v, jvec_iter* iter)
+jvec_iter JPASTE (jvec, _end)(jvec* v)
 {
     jvec_iter i = {&JPASTE (jvec_iter_type_, T), v->end};
-    *iter = i;
-    return 0;
+    return i;
 }
 
-jerr JPASTE (jvec, _size)(jvec* v, jlong* size)
+jlong JPASTE (jvec, _size)(jvec* v)
 {
-    *size = (v->begin - v->end);
-    return 0;
+    return (v->end - v->begin);
 }
 
-jerr JPASTE (jvec, _capacity)(jvec* v, jlong* cap)
+jlong JPASTE (jvec, _capacity)(jvec* v)
 {
-    *cap = (v->cap - v->begin);
-    return 0;
+    return (v->cap - v->begin);
 }
 
 jerr JPASTE (jvec, _push_back)(jvec* v, T* e)
 {
-    jerr err;
-    T* new_elem;
-    jlong size;
-    jvec_type* t;
-    jtype* telem;
+    jerr err = {0};
+    T* new_elem = {0};
+    jlong size = {0};
+    jvec_type* t = {0};
+    jtype* telem = {0};
 
     t = v->t;
     telem = v->telem;
-    err = t->size (v, &size);
+    size = t->size (v);
     if (err < 0) return err;
     err = t->resize (v, size + 1);
     if (err < 0) return err;
@@ -157,8 +155,7 @@ jerr JPASTE (jvec, _pop_back)(jvec* v)
     jlong size = {0};
 
     t = v->t;
-    err = t->size (v, &size);
-    if (err < 0) return err;
+    size = t->size (v);
     if (size == 0) return 0;
     t->resize (v, size - 1);
     return 0;
@@ -176,8 +173,8 @@ jerr JPASTE (jvec, _resize)(jvec* v, jlong new_size)
 
     t = v->t;
     telem = v->telem;
-    err = t->size (v, &size);
-    if (err < 0) return err;
+    size = t->size (v);
+    begin = v->begin;
     if (size == new_size) return 0;
     if (new_size < size) {
         jlong to_cleanup = (size - new_size);
@@ -186,12 +183,11 @@ jerr JPASTE (jvec, _resize)(jvec* v, jlong new_size)
         v->end -= to_cleanup;
         return 0;
     }
-    err = t->capacity (v, &cap);
-    if (err < 0) return err;
+    cap = t->capacity (v);
     if (cap < new_size) {
         new_cap = JMAX (new_size, cap * 2);
         if (!(begin = (T*)calloc (new_cap, sizeof (T))))
-            return JErr_OutOfMemory;
+            return jerr_out_of_memory;
         if (v->begin) {
             if (telem)
                 telem->move (v->begin, begin, size);
@@ -200,11 +196,11 @@ jerr JPASTE (jvec, _resize)(jvec* v, jlong new_size)
             free (v->begin);
         }
         v->begin = begin;
-        v->end = begin + size;
         v->cap = begin + new_cap;
-        if (telem)
-            telem->init (v->begin + size, new_size - size);
     }
+    v->end = begin + new_size;
+    if (telem)
+        telem->init (begin + size, new_size - size);
     return 0;
 }
 
