@@ -25,7 +25,7 @@
 
 /* jvec_iter */
 jvec_iter JPASTE (jvec_iter_type, _add_int)(jvec_iter* ai, jlong i);
-int       JPASTE (jvec_iter_type, _cmp)(jvec_iter* ai, jvec_iter* aj);
+int       JPASTE (jvec_iter_type, _cmp)(jvec_iter ai, jvec_iter aj);
 jvec_iter JPASTE (jvec_iter_type, _dec)(jvec_iter* ai);
 T*        JPASTE (jvec_iter_type, _get)(jvec_iter* ai);
 jvec_iter JPASTE (jvec_iter_type, _inc)(jvec_iter* ai);
@@ -33,13 +33,13 @@ jvec_iter JPASTE (jvec_iter_type, _sub_int)(jvec_iter* ai, jlong i);
 jlong     JPASTE (jvec_iter_type, _sub_iter)(jvec_iter* ai, jvec_iter* aj);
 
 /* jvec */
-jvec_iter JPASTE (jvec, _begin)     (jvec*);
-jlong     JPASTE (jvec, _capacity)  (jvec*);
-jvec_iter JPASTE (jvec, _end)       (jvec*);
+jvec_iter JPASTE (jvec, _begin)     (jvec);
+jlong     JPASTE (jvec, _capacity)  (jvec);
+jvec_iter JPASTE (jvec, _end)       (jvec);
 jerr      JPASTE (jvec, _pop_back)  (jvec*);
 jerr      JPASTE (jvec, _push_back) (jvec*, T*);
 jerr      JPASTE (jvec, _resize)    (jvec*, jlong);
-jlong     JPASTE (jvec, _size)      (jvec*);
+jlong     JPASTE (jvec, _size)      (jvec);
 
 jvec_iter_type JPASTE (jvec_iter_type_, T) =
 {
@@ -64,10 +64,10 @@ jvec_type JPASTE (jvec_type_, T) =
 
 };
 
-int JPASTE (jvec_iter_type, _cmp)(jvec_iter* ai, jvec_iter* aj)
+int JPASTE (jvec_iter_type, _cmp)(jvec_iter ai, jvec_iter aj)
 {
-    T* p1 = ai->p;
-    T* p2 = aj->p;
+    T* p1 = ai.p;
+    T* p2 = aj.p;
     return (p1 < p2) ? -1 : (p1 > p2) ? 1 :  0;
 }
 
@@ -105,26 +105,26 @@ T* JPASTE (jvec_iter_type, _get)(jvec_iter* ai)
     return ai->p;
 }
 
-jvec_iter JPASTE (jvec, _begin)(jvec* v)
+jvec_iter JPASTE (jvec, _begin)(jvec v)
 {
-    jvec_iter i = {&JPASTE (jvec_iter_type_, T), v->begin};
+    jvec_iter i = {&JPASTE (jvec_iter_type_, T), v.begin};
     return i;
 }
 
-jvec_iter JPASTE (jvec, _end)(jvec* v)
+jvec_iter JPASTE (jvec, _end)(jvec v)
 {
-    jvec_iter i = {&JPASTE (jvec_iter_type_, T), v->end};
+    jvec_iter i = {&JPASTE (jvec_iter_type_, T), v.end};
     return i;
 }
 
-jlong JPASTE (jvec, _size)(jvec* v)
+jlong JPASTE (jvec, _size)(jvec v)
 {
-    return (v->end - v->begin);
+    return (v.end - v.begin);
 }
 
-jlong JPASTE (jvec, _capacity)(jvec* v)
+jlong JPASTE (jvec, _capacity)(jvec v)
 {
-    return (v->cap - v->begin);
+    return (v.cap - v.begin);
 }
 
 jerr JPASTE (jvec, _push_back)(jvec* v, T* e)
@@ -137,7 +137,7 @@ jerr JPASTE (jvec, _push_back)(jvec* v, T* e)
 
     t = v->t;
     telem = v->telem;
-    size = t->size (v);
+    size = t->size (*v);
     if (err < 0) return err;
     err = t->resize (v, size + 1);
     if (err < 0) return err;
@@ -155,7 +155,7 @@ jerr JPASTE (jvec, _pop_back)(jvec* v)
     jlong size = {0};
 
     t = v->t;
-    size = t->size (v);
+    size = t->size (*v);
     if (size == 0) return 0;
     t->resize (v, size - 1);
     return 0;
@@ -173,7 +173,7 @@ jerr JPASTE (jvec, _resize)(jvec* v, jlong new_size)
 
     t = v->t;
     telem = v->telem;
-    size = t->size (v);
+    size = t->size (*v);
     begin = v->begin;
     if (size == new_size) return 0;
     if (new_size < size) {
@@ -183,7 +183,7 @@ jerr JPASTE (jvec, _resize)(jvec* v, jlong new_size)
         v->end -= to_cleanup;
         return 0;
     }
-    cap = t->capacity (v);
+    cap = t->capacity (*v);
     if (cap < new_size) {
         new_cap = JMAX (new_size, cap * 2);
         if (!(begin = (T*)calloc (new_cap, sizeof (T))))

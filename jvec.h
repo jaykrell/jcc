@@ -34,10 +34,10 @@ struct jvec_iter_type; typedef struct jvec_iter_type jvec_iter_type;
 
 struct jvec_iter_type {
     jvec_iter (*add_int)  (jvec_iter*, jlong);
-    int       (*cmp)      (jvec_iter*, jvec_iter*);
+    int       (*cmp)      (jvec_iter, jvec_iter);
     jvec_iter (*dec)      (jvec_iter*);
     T*        (*get)      (jvec_iter*);
-    jvec_iter (*inc)      (jvec_iter*);
+    jvec_iter (*inc)      (jvec_iter);
     jvec_iter (*sub_int)  (jvec_iter*, jlong);
     jlong     (*sub_iter) (jvec_iter*, jvec_iter*);
 };
@@ -48,13 +48,13 @@ struct jvec_iter {
 };
 
 struct jvec_type {
-    jvec_iter (*begin)     (jvec*);
-    jlong     (*capacity)  (jvec*);
-    jvec_iter (*end)       (jvec*);
+    jvec_iter (*begin)     (jvec);
+    jlong     (*capacity)  (jvec);
+    jvec_iter (*end)       (jvec);
     jerr      (*pop_back)  (jvec*);
     jerr      (*push_back) (jvec*, T*);
     jerr      (*resize)    (jvec*, jlong);
-    jlong     (*size)      (jvec*);
+    jlong     (*size)      (jvec);
 };
 
 struct jvec {
