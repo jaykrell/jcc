@@ -1,1 +1,4 @@
+jerr ccGetNextToken(ccState* cc)
+{
+}
 
