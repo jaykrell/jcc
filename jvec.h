@@ -7,6 +7,14 @@
 #ifndef JVEC_H
 #define JVEC_H
 
+#define T char
+#define jvec           jvec_char
+#define jvec_type      jvec_char_type
+#define jvec_iter      jvec_char_iter
+#define jvec_iter_type jvec_char_iter_type
+#define jvec_init      jvec_char_init
+#include "jvec.h"
+
 #define T int
 #define jvec           jvec_int
 #define jvec_type      jvec_int_type
@@ -27,10 +35,10 @@
 
 #else
 
-struct jvec;           typedef struct jvec           jvec;
-struct jvec_type;      typedef struct jvec_type      jvec_type;
-struct jvec_iter;      typedef struct jvec_iter      jvec_iter;
-struct jvec_iter_type; typedef struct jvec_iter_type jvec_iter_type;
+typedef struct jvec           jvec;
+typedef struct jvec_type      jvec_type;
+typedef struct jvec_iter      jvec_iter;
+typedef struct jvec_iter_type jvec_iter_type;
 
 struct jvec_iter_type {
     jvec_iter (*add_int)  (jvec_iter*, jlong);
@@ -52,7 +60,7 @@ struct jvec_type {
     jlong     (*capacity)  (jvec);
     jvec_iter (*end)       (jvec);
     jerr      (*pop_back)  (jvec*);
-    jerr      (*push_back) (jvec*, T*);
+    jerr      (*push_back) (jvec*, T*, jlong);
     jerr      (*resize)    (jvec*, jlong);
     jlong     (*size)      (jvec);
 };

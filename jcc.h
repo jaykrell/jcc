@@ -4,25 +4,54 @@
 #include "jbase.h"
 #include "jtype.h"
 #include "jvec.h"
+#include "jmap.h"
+#include "jstring.h"
 
-struct jmap
+//struct jmap { };
+//struct jhash { };
+
+//struct jstr { };
+
+typedef enum ceType
 {
-};
+    ceInvalid,
 
-struct jhash
-{
-};
+    ceTypeInt8,
+    ceTypeInt16,
+    ceTypeInt32,
+    ceTypeInt64,
+    ceTypeUInt8,
+    ceTypeUInt16,
+    ceTypeUInt32,
+    ceTypeUInt64,
+    ceTypeFloat32,
+    ceTypeFloat64,
+    ceTypePointer,
 
-struct jstr
-{
-};
+    ceIntegral,
+    ceFloat,
+    cePointer,
+    ceAggregate,
 
+    ceTypesChar,
+    ceTypesInt,
+    ceTypesLong,
+} ceType;
+
+typedef struct ctype ctype;
 struct ctype
 {
+    ceType e;
 };
 
 /* or hfile, really a cprefile */
-struct cfile {
+typedef struct cfile cfile;
+struct cfile
+{
+    jstring path;
+    jlong size;
+    jlong position;
+    cfile* stack;
 };
 
 typedef enum cpreDirective {
@@ -40,6 +69,7 @@ typedef enum cpreDirective {
 
 typedef enum cpreToken {
     cpreTokenInvalid,
+    cpreTokenDirective,
 } cpreToken;
 
 typedef enum ceToken {
@@ -94,17 +124,13 @@ typedef struct cFrontFunction {
 } cFrontFunction;
 
 typedef struct ccState {
-    jstack_cSourceFile include_stack;
+    //jstack_cSourceFile include_stack;
     cSourceFile source_file;
     cFrontFunction* function;
     cToken token;
 } ccState;
 
-cgetNextToken(cSourceFile* file);
-
-typedef struct cToken {
-    char* pretty;
-} cToken;
+cToken cgetNextToken(cSourceFile* file);
 
 /* cpre */
 

@@ -4,9 +4,9 @@
 #include "jbase.h"
 #include "jtype.h"
 
-struct jarray_iter; typedef struct jarray_iter jarray_iter;
-struct jarrayt; typedef struct jarrayt jarrayt;
-struct jarray_t typedef struct jarray_t jarray_t;
+typedef struct jarray_iter jarray_iter;
+typedef struct jarrayt jarrayt;
+typedef struct jarray_t jarray_t;
 
 struct jarray_iter {
     jlong pos;
@@ -16,7 +16,7 @@ struct jarray_iter {
 };
 
 struct jarrayt {
-    jrtype t;
+    jtype t;
     void (*begin)(jarray_iter*);
     void (*end)(jarray_iter*);
     void (*push_back)(voidp);
@@ -25,7 +25,7 @@ struct jarrayt {
 
 struct jarray_t {
     jarrayt* t;
-    jrtype* telem;
+    jtype* telem;
     charp begin, end, cap;
     jlong size;
     jlong capacity;

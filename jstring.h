@@ -4,8 +4,12 @@
 #define JSTRING_H
 
 #include "jbase.h"
+#include "jtype.h"
+//#include "jvec.h"
 
-extern jrtype jtype_string;
+/* jstring is a jvec(char) with terminal nul */
+
+extern jtype jtype_string;
 
 /* runtime type */
 typedef struct jstring
@@ -14,5 +18,8 @@ typedef struct jstring
     jlong len;
     char* chars;
 } jstring;
+
+jstring* jstring_new(void);
+jerr jstring_append(jstring* str, const char* s, jlong len);
 
 #endif

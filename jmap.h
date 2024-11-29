@@ -2,12 +2,13 @@
 #define JMAPH_H
 
 #include "jbase.h"
-#include "jrtype.h"
+#include "jtype.h"
 #include "jarray.h"
+#include "jrbtree.h"
 
-/* balance */
 struct jmap
 {
+    jrbtree tree;
 };
 
 #endif

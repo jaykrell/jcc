@@ -2,12 +2,13 @@
 #define JTYPE_H
 
 #include "jbase.h"
+#include "jerr.h"
 
-struct jtype;
 typedef struct jtype jtype;
 
 /* runtime type */
-struct jtype {
+struct jtype
+{
     char* type_name; /* not object name */
     jbool is_fixed_size;
     jlong fixed_size;

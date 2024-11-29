@@ -5,6 +5,14 @@
 #include "jerr.h"
 #include <stdlib.h>
 
+#define T char
+#define jvec           jvec_char
+#define jvec_type      jvec_char_type
+#define jvec_iter      jvec_char_iter
+#define jvec_iter_type jvec_char_iter_type
+#define jvec_init      jvec_char_init
+#include "jvec.c"
+
 #define T int
 #define jvec           jvec_int
 #define jvec_type      jvec_int_type
@@ -127,7 +135,7 @@ jlong JPASTE (jvec, _capacity)(jvec v)
     return (v.cap - v.begin);
 }
 
-jerr JPASTE (jvec, _push_back)(jvec* v, T* e)
+jerr JPASTE (jvec, _push_back)(jvec* v, T* e, jlong n)
 {
     jerr err = {0};
     T* new_elem = {0};
@@ -139,12 +147,12 @@ jerr JPASTE (jvec, _push_back)(jvec* v, T* e)
     telem = v->telem;
     size = t->size (*v);
     if (err < 0) return err;
-    err = t->resize (v, size + 1);
+    err = t->resize (v, size + n);
     if (err < 0) return err;
     new_elem = v->begin + size;
     if (telem)
         return telem->copy_to (e, new_elem);
-    memmove (new_elem, e, sizeof (T));
+    memmove (new_elem, e, sizeof (T) * n);
     return 0;
 }
 

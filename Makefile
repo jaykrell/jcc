@@ -40,6 +40,7 @@ exe:
 OBJS=\
  jerr.$O \
  jvec.$O \
+ jstring.$O \
  camd64.$O \
  carm64.$O \
  ccheck.$O \

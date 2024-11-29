@@ -4,8 +4,11 @@
 #define JRBTREE_H
 
 #include "jbase.h"
-#include "jrtype.h"
+#include "jtype.h"
 #include "jarray.h"
+
+typedef struct jrbtree_entry jrbtree_entry;
+typedef struct jrbtree jrbtree;
 
 struct jrbtree_entry
 {
@@ -15,8 +18,8 @@ struct jrbtree_entry
 
 struct jrbtree
 {
-    jrtype* tkey;
-    jrtype* tvalue;
+    jtype* tkey;
+    jtype* tvalue;
 };
 
 #endif
