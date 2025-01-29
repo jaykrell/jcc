@@ -11,6 +11,7 @@ struct jtype
 {
     char* type_name; /* not object name */
     jbool is_fixed_size;
+    jbool pad[7];
     jlong fixed_size;
     void  (*init)(voidp, jlong);
     void  (*cleanup)(voidp, jlong);

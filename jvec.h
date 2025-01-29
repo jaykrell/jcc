@@ -75,6 +75,8 @@ struct jvec {
     T* cap;       /* the allocated end+1 of the vector */
 };
 
+void jvec_init(jvec* v);
+
 #undef T
 #undef jvec
 #undef jvec_type

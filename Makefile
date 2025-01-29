@@ -48,7 +48,6 @@ OBJS=\
  celf.$O \
  clex.$O \
  cmacho.$O \
- cmain.$O \
  copt.$O \
  cparse.$O \
  cpe.$O \
@@ -93,7 +92,7 @@ AMD64=0
 win=win.exe
 !endif
 
-all: $(win)
+all: $(win) test1.exe
 
 config:
 	.\config.cmd
@@ -123,7 +122,13 @@ $(win): $(OBJS)
 	@-del $(@R).pdb $(@R).ilk
 	@rem TODO /GX on old, /EHsc on new
 	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
-	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
+	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX cmain.c /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
+
+test1.exe: $(OBJS)
+	@-del $(@R).pdb $(@R).ilk
+	@rem TODO /GX on old, /EHsc on new
+	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
+	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX test1.c $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
 
 !else
 else
