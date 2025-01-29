@@ -23,4 +23,5 @@ jerr jstring_append(jstring* str, const char* s, jlong len)
     if (err < 0) return err;
     str->chars = i->vec.begin;
     str->len   = i->vec.end - i->vec.begin;
+    return 0;
 }

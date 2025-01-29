@@ -1,3 +1,5 @@
+/* jvec is like std::vector */
+
 #include "jbase.h"
 #include "jerr.h"
 #include "jtype.h"
@@ -35,42 +37,42 @@
 
 #else
 
-typedef struct jvec           jvec;
-typedef struct jvec_type      jvec_type;
-typedef struct jvec_iter      jvec_iter;
-typedef struct jvec_iter_type jvec_iter_type;
+typedef struct jvec           jvec;                /* a vector, a growable array, like std::vector */
+typedef struct jvec_type      jvec_type;           /* the type of a vector, i.e. its functions */
+typedef struct jvec_iter      jvec_iter;           /* an iterator into a vector */
+typedef struct jvec_iter_type jvec_iter_type;      /* the type of an iterator, i.e. its functions */
 
 struct jvec_iter_type {
-    jvec_iter (*add_int)  (jvec_iter*, jlong);
-    int       (*cmp)      (jvec_iter, jvec_iter);
-    jvec_iter (*dec)      (jvec_iter*);
-    T*        (*get)      (jvec_iter*);
-    jvec_iter (*inc)      (jvec_iter);
-    jvec_iter (*sub_int)  (jvec_iter*, jlong);
-    jlong     (*sub_iter) (jvec_iter*, jvec_iter*);
+    jvec_iter (*add_int)  (jvec_iter, jlong);     /* add an integer to an iterator */
+    int       (*cmp)      (jvec_iter, jvec_iter); /* compare two iterators */
+    jvec_iter (*dec)      (jvec_iter);            /* decrement an iterator */
+    T*        (*get)      (jvec_iter);            /* get the data pointed to by the iterator */
+    jvec_iter (*inc)      (jvec_iter);            /* increment an interator */
+    jvec_iter (*sub_int)  (jvec_iter, jlong);     /* subtract an integer from an interator */
+    jlong     (*sub_iter) (jvec_iter, jvec_iter); /* subtract an iterator from another */
 };
 
 struct jvec_iter {
-    jvec_iter_type* t;
-    T* p;
+    jvec_iter_type* t; /* the type of the iterator */
+    T* p;              /* the value of the iterator, a pointer to an element */
 };
 
 struct jvec_type {
-    jvec_iter (*begin)     (jvec);
-    jlong     (*capacity)  (jvec);
-    jvec_iter (*end)       (jvec);
-    jerr      (*pop_back)  (jvec*);
-    jerr      (*push_back) (jvec*, T*, jlong);
-    jerr      (*resize)    (jvec*, jlong);
-    jlong     (*size)      (jvec);
+    jvec_iter (*begin)     (jvec*); /* get the start of the vector */
+    jlong     (*capacity)  (jvec*); /* get the allocaed end of the vector */
+    jvec_iter (*end)       (jvec*); /* get the logical end+1 of the vector */
+    jerr      (*pop_back)  (jvec*); /* remove the last element of the vector */
+    jerr      (*push_back) (jvec*, T*, jlong); /* add elements to the end of the vector, growing it if needed */
+    jerr      (*resize)    (jvec*, jlong); /* change the logical size of the vector, smaller, larger, or unchanged */
+    jlong     (*size)      (jvec*); /* get the logical size of the vector */
 };
 
 struct jvec {
-    jvec_type* t;
-    jtype* telem;
-    T* begin;
-    T* end;
-    T* cap;
+    jvec_type* t; /* the type of the vector */
+    jtype* telem; /* the type of the vector elements */
+    T* begin;     /* the start of the vector */
+    T* end;       /* the logical end+1 of the vector */
+    T* cap;       /* the allocated end+1 of the vector */
 };
 
 #undef T
