@@ -5,7 +5,7 @@
 #include "jtype.h"
 #include "jvec.h"
 #include "jmap.h"
-#include "jstring.h"
+#include "jstr.h"
 
 //struct jmap { };
 //struct jhash { };
