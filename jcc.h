@@ -9,11 +9,10 @@
 
 //struct jmap { };
 //struct jhash { };
-
 //struct jstr { };
 
-typedef enum ceType
-{
+/* C compiler type enum */
+typedef enum ceType {
     ceInvalid,
 
     ceTypeInt8,
@@ -32,28 +31,52 @@ typedef enum ceType
     ceFloat,
     cePointer,
     ceAggregate,
+    ceStruct,
+    ceUnion,
 
-    ceTypesChar,
-    ceTypesInt,
-    ceTypesLong,
+    ceTypeChar,
+    ceTypeShort,
+    ceTypeInt,
+    ceTypeLong,
+    ceTypeLongLong,
+
+    ceTypeSChar,
+    ceTypeUChar,
+    ceTypeUShort,
+    ceTypeUInt,
+    ceTypeULong,
+    ceTypeULongLong,
+
 } ceType;
 
 typedef struct ctype ctype;
-struct ctype
-{
+struct ctype {
     ceType e;
+    int bytes;
+    int bits;
+    int byte_align;
+    int bit_align;
+    jbool integer;
+    jbool unsign; /* unsigned */
+    jbool sign; /* signed */
+    jbool floating_point;
+    jbool aggregate;
+    jbool bitfield;
+    jbool def; /* typedef */
+    jbool user;
+    ctype* link; /* e.g. for typedef */
 };
 
 /* or hfile, really a cprefile */
 typedef struct cfile cfile;
-struct cfile
-{
+struct cfile {
     jstring path;
     jlong size;
     jlong position;
     cfile* stack;
 };
 
+/* C compiler preprocessor directive */
 typedef enum cpreDirective {
     cpreDirectiveInvalid,
     cpreDirectiveDefine,
@@ -67,39 +90,115 @@ typedef enum cpreDirective {
     cpreDirectiveEmpty,
 } cpreDirective;
 
+/* C compiler preprocessor token enum */
 typedef enum cpreToken {
     cpreTokenInvalid,
     cpreTokenDirective,
 } cpreToken;
 
+/* C compiler token enum */
 typedef enum ceToken {
-    cetokenInvalid,
-    cetokenPlus,
-    cetokenStar,
-    cetokenMinus,
-    cetokenDiv,
-    cetokenMod,
-    cetokenAnd,
-    cetokenOr,
-    cetokenEq,
-    cetokenPlusEq,
-    cetokenStarEq,
-    cetokenMinusEq,
-    cetokenDivEq,
-    cetokenModEq,
-    cetokenAndEq,
-    cetokenOrEq,
-    cetokenEqEq,
-    cetokenAnd2,
-    cetokenOr2,
-    cetokenEq2,
+    ceTokenInvalid,
+
+    ceTokenCaret        = '^',
+    ceTokenDot          = '.',
+    ceTokenComma        = ',',
+    ceTokenLeftParen    = '(',
+    ceTokenRigtParen    = ')',
+    ceTokenSemi,        = ';',
+    ceTokenColon,       = ':',
+    ceTokenLeftBracket  = '[',
+    ceTokenRightBracket = ']',
+    ceTokenLeftBrace    = '{',
+    ceTokenRightBrace   = '}',
+    ceTokenPlus         = '+',
+    ceTokenStar         = '*',
+    ceTokenMinus        = '-',
+    ceTokenDiv          = '/',
+    ceTokenMod          = '%',
+    ceTokenAnd          = '&',
+    ceTokenOr           = '|',
+    ceTokenEq           = '=',
+    ceTokenBang         = '!',
+    ceTokenQuestioMark  = '?',
+    ceTokenLessThan     = '<',
+    ceTokenGreaterThan  = '>',
+
+    ceTokenPlusEq       = 128,
+    ceTokenStarEq,
+    ceTokenMinusEq,
+    ceTokenDivEq,
+    ceTokenModEq,
+    ceTokenAndEq,
+    ceTokenOrEq,
+    ceTokenEqEq,
+    ceTokenAnd2,             /* && */
+    ceTokenOr2,              /* || */
+    ceTokenEq2           ,   /* == */
+    ceTokenLeftShift,        /* << */
+    ceTokenRightShift,       /* >> */
+    ceTokenLeftShiftAssign,  /* <<= */
+    ceTokenRightShiftAssign, /* >>= */
+
+    ceTokenContinue,
+    ceTokenDo,
+    ceTokenElse,
+    ceTokenFor,
+    ceTokenIf,
+    ceTokenWhile,
+
+    ceTokenCharacterConstant,
+    ceTokenStringConstant,
+
+    /* integer types */
+    ceTokenInt8,
+    ceTokenInt16,
+    ceTokenInt32,
+    ceTokenInt64,
+    ceTokenChar,
+    ceTokenShort,
+    ceTokenInt,
+    ceTokenLong,
+    ceTokenUnsigned,
+
+    /* floating point types */
+    ceTokenFloat,
+    ceTokenDouble,
+    ceTokenLongDouble, /* translated to LongDouble, really */
+
+    /* fancy types */
+    ceTokenEnum,
+    ceTokenStruct,
+    ceTokenUnion,
+    ceTokenTypedef,
 } ceToken;
+
+struct cMember;
+typedef struct cMember cMember;
+struct cMember {
+    ctype* type;
+    char* name;
+    jlong bit_offset;
+    jlong byte_offset;
+    cMember* next;
+};
+
+struct cAggregate;
+typedef struct cAggregate cAggregate;
+
+struct cAggregate {
+    jbool is_union;
+    jbool is_strut;
+    jbool pad[6];
+    jlong n;
+    cMember* members;
+};
 
 typedef struct cSourceFile {
     char* file;
     long  line;
     char* contents;
-    long position;
+    long position; /* index into position */
 } cSourceFile;
 
 typedef struct cSourceLocation {
