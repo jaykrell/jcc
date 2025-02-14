@@ -1,4 +1,4 @@
-#include "jstring.h"
+#include "jstr.h"
 #include "jvec.h"
 #include <stdlib.h>
 #include "jbase_of.h"
@@ -19,7 +19,7 @@ jstring* jstring_new(void)
 jerr jstring_append(jstring* str, const char* s, jlong len)
 {
     jstring_internal* i = JBASE_OF(jstring_internal, str, str);
-    jerr err = i->vec.t->push_back(&i->vec, (char*)s, len);
+    jerr err = i->vec.push_back(&i->vec, (char*)s, len);
     if (err < 0) return err;
     str->chars = i->vec.begin;
     str->len   = i->vec.end - i->vec.begin;

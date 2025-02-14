@@ -16,40 +16,40 @@ int main(void)
     jvec_int_init (&vi);
     jvec_double_init (&vd);
 
-    size = vi.t->size(&vi);
+    size = vi.size(&vi);
     printf("%" JLONG_PRI "d\n", size);
-    vi.t->push_back(&vi, &a, 1);
-    size = vi.t->size(&vi);
+    vi.push_back(&vi, &a, 1);
+    size = vi.size(&vi);
     printf("%" JLONG_PRI "d\n", size);
     ++a;
-    vi.t->push_back(&vi, &a, 1);
-    vi.t->push_back(&vi, &a, 1);
-    vi.t->push_back(&vi, &a, 1); a *= 2;
-    vi.t->push_back(&vi, &a, 1);
-    vi.t->push_back(&vi, &a, 1);
-    vi.t->push_back(&vi, &a, 1); ++a;
-    vi.t->push_back(&vi, &a, 1);
-    vi.t->push_back(&vi, &a, 1); a *= 3;
-    vi.t->push_back(&vi, &a, 1);
-    vi.t->push_back(&vi, &a, 1);
-    vi.t->push_back(&vi, &a, 1); ++a;
-    vi.t->push_back(&vi, &a, 1);
-    vi.t->push_back(&vi, &a, 1); a *= 4;
-    vi.t->push_back(&vi, &a, 1);
-    vi.t->push_back(&vi, &a, 1); ++a;
-    vi.t->push_back(&vi, &a, 1);
-    vi.t->push_back(&vi, &a, 1);
-    printf("cap: %" JLONG_PRI "d\n", size = vi.t->capacity(&vi));
-    printf("size: %" JLONG_PRI "d\n", size = vi.t->size(&vi));
+    vi.push_back(&vi, &a, 1);
+    vi.push_back(&vi, &a, 1);
+    vi.push_back(&vi, &a, 1); a *= 2;
+    vi.push_back(&vi, &a, 1);
+    vi.push_back(&vi, &a, 1);
+    vi.push_back(&vi, &a, 1); ++a;
+    vi.push_back(&vi, &a, 1);
+    vi.push_back(&vi, &a, 1); a *= 3;
+    vi.push_back(&vi, &a, 1);
+    vi.push_back(&vi, &a, 1);
+    vi.push_back(&vi, &a, 1); ++a;
+    vi.push_back(&vi, &a, 1);
+    vi.push_back(&vi, &a, 1); a *= 4;
+    vi.push_back(&vi, &a, 1);
+    vi.push_back(&vi, &a, 1); ++a;
+    vi.push_back(&vi, &a, 1);
+    vi.push_back(&vi, &a, 1);
+    printf("cap: %" JLONG_PRI "d\n", size = vi.capacity(&vi));
+    printf("size: %" JLONG_PRI "d\n", size = vi.size(&vi));
 
     for (i = 0; i < size; ++i)
         printf("%d ", vi.begin[i]);
 
-    for (vii = vi.t->begin(&vi); vii.t->cmp(vii, vi.t->end(&vi)); vii = vii.t->inc(vii))
-        printf("%d ", *vii.t->get(vii));
+    for (vii = vi.beginiter(&vi); vii.cmp(vii, vi.enditer(&vi)); vii = vii.inc(vii))
+        printf("%d ", *vii.get(vii));
 
-    vd.t->push_back(&vd, &b, 1);
-    size = vd.t->size(&vd);
+    vd.push_back(&vd, &b, 1);
+    size = vd.size(&vd);
     for (i = 0; i < size; ++i)
         printf("%f ", vd.begin[i]);
 }

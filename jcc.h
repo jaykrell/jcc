@@ -105,8 +105,8 @@ typedef enum ceToken {
     ceTokenComma        = ',',
     ceTokenLeftParen    = '(',
     ceTokenRigtParen    = ')',
-    ceTokenSemi,        = ';',
-    ceTokenColon,       = ':',
+    ceTokenSemi         = ';',
+    ceTokenColon        = ':',
     ceTokenLeftBracket  = '[',
     ceTokenRightBracket = ']',
     ceTokenLeftBrace    = '{',
@@ -188,7 +188,7 @@ typedef struct cAggregate cAggregate;
 
 struct cAggregate {
     jbool is_union;
-    jbool is_strut;
+    jbool is_struct;
     jbool pad[6];
     jlong n;
     cMember* members;
