@@ -7,9 +7,9 @@
 #include "jmap.h"
 #include "jstr.h"
 
-//struct jmap { };
-//struct jhash { };
-//struct jstr { };
+/*struct jmap { };*/
+/*struct jhash { };*/
+/*struct jstr { };*/
 
 /* C compiler type enum */
 /* language and backend types must be considered different, i.e. int32 vs. int vs. long */
@@ -225,7 +225,7 @@ typedef struct cFrontFunction {
 } cFrontFunction;
 
 typedef struct ccState {
-    //jstack_cSourceFile include_stack;
+    /*jstack_cSourceFile include_stack;*/
     cSourceFile source_file;
     cFrontFunction* function;
     cToken token;
@@ -235,7 +235,7 @@ cToken cgetNextToken(cSourceFile* file);
 
 /* cpre */
 
-//copen
+/* copen */
 
 /* clex */
 

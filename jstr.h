@@ -5,7 +5,7 @@
 
 #include "jbase.h"
 #include "jtype.h"
-//#include "jvec.h"
+/*#include "jvec.h"*/
 
 /* jstr is a jvec(char) with terminal nul */
 
