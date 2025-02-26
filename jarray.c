@@ -19,15 +19,15 @@ void jarray_free(voidp av)
     }
 }
 
-jlong jarray_dup(voidp, voidp*)
+jssize jarray_dup(voidp, voidp*)
 {
 }
 
-jlong jarray_dupto(voidp, voidp)
+jssize jarray_dupto(voidp, voidp)
 {
 }
 
-jlong jarray_valid(voidp)
+jssize jarray_valid(voidp)
 {
 }
 
@@ -42,7 +42,7 @@ void jarray_inc(voidp pv)
 {
 }
 
-jlong jarray_size(voidp pv)
+jssize jarray_size(voidp pv)
 {
 }
 

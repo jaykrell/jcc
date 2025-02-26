@@ -16,7 +16,7 @@ jstr* jstr_new(void)
     return &str->str;
 }
 
-jerr jstr_append(jstr* str, const char* s, jlong len)
+jerr jstr_append(jstr* str, const char* s, jssize len)
 {
     jstr_internal* i = JBASE_OF(jstr_internal, str, str);
     jerr err = i->vec.push_back(&i->vec, (char*)s, len);

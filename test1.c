@@ -10,8 +10,8 @@ int main(void)
     jvec_int_iter vii = {0};
     int a = 1;
     double b = 1;
-    jlong size = {0};
-    jlong i = {0};
+    jssize size = {0};
+    jssize i = {0};
 
     jvec_int_init (&vi);
     jvec_double_init (&vd);

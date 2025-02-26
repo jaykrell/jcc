@@ -12,18 +12,18 @@ struct jtype
     char* type_name; /* not object name */
     jbool is_fixed_size;
     jbool pad[7];
-    jlong fixed_size;
-    void  (*init)(voidp, jlong);
-    void  (*cleanup)(voidp, jlong);
+    jssize fixed_size;
+    void  (*init)(voidp, jssize);
+    void  (*cleanup)(voidp, jssize);
     jerr  (*copy)(voidp, voidp*);
     jerr  (*copy_to)(voidp, voidp);
     jerr  (*move)(voidp, voidp, long);
-    jlong (*valid)(voidp);
+    jssize (*valid)(voidp);
     void  (*begin)(voidp, voidp*);
     void  (*end)(voidp, voidp*);
     void  (*inc_in_place)(voidp);
     void  (*dec_in_place)(voidp);
-    jlong (*size)(voidp);
+    jssize (*size)(voidp);
     void  (*dump)(voidp);
 };
 

@@ -2,7 +2,7 @@
 #define JBASE_H
 
 #include "jbool.h"
-#include "jlong.h"
+#include "jssize.h"
 
 typedef void* voidp;
 typedef char* charp;

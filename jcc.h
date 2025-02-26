@@ -73,8 +73,8 @@ struct ctype {
 typedef struct cfile cfile;
 struct cfile {
     jstring path;
-    jlong size;
-    jlong position;
+    jssize size;
+    jssize position;
     cfile* stack;
 };
 
@@ -180,8 +180,8 @@ typedef struct cMember cMember;
 struct cMember {
     ctype* type;
     char* name;
-    jlong bit_offset;
-    jlong byte_offset;
+    jssize bit_offset;
+    jssize byte_offset;
     cMember* next;
 };
 
@@ -192,7 +192,7 @@ struct cAggregate {
     jbool is_union;
     jbool is_struct;
     jbool pad[6];
-    jlong n;
+    jssize n;
     cMember* members;
 };
 

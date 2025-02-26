@@ -16,7 +16,7 @@ struct JErr {
     int i;
     charp str;
     charp strdetail[2];
-    jlong idetail[2]; /* e.g. invalid parameter index */
+    jssize idetail[2]; /* e.g. invalid parameter index */
 };
 
 #define JERR_SUCCESS(x) (((x)->i) == 0)

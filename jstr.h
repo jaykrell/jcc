@@ -15,11 +15,11 @@ extern jtype jtype_string;
 typedef struct jstr
 {
     jtype* type;
-    jlong len;
+    jssize len;
     char* chars;
 } jstr;
 
 jstr* jstr_new(void);
-jerr jstr_append(jstr* str, const char* s, jlong len);
+jerr jstr_append(jstr* str, const char* s, jssize len);
 
 #endif
