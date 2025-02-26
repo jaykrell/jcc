@@ -12,6 +12,8 @@
 //struct jstr { };
 
 /* C compiler type enum */
+/* language and backend types must be considered different, i.e. int32 vs. int vs. long */
+/* 'e' for enum */
 typedef enum ceType {
     ceInvalid,
 

@@ -1,25 +1,25 @@
 /* use instead an array of chars */
 
-#ifndef JSTRING_H
-#define JSTRING_H
+#ifndef jstr_H
+#define jstr_H
 
 #include "jbase.h"
 #include "jtype.h"
 //#include "jvec.h"
 
-/* jstring is a jvec(char) with terminal nul */
+/* jstr is a jvec(char) with terminal nul */
 
 extern jtype jtype_string;
 
 /* runtime type */
-typedef struct jstring
+typedef struct jstr
 {
     jtype* type;
     jlong len;
     char* chars;
-} jstring;
+} jstr;
 
-jstring* jstring_new(void);
-jerr jstring_append(jstring* str, const char* s, jlong len);
+jstr* jstr_new(void);
+jerr jstr_append(jstr* str, const char* s, jlong len);
 
 #endif
