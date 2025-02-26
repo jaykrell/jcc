@@ -51,6 +51,8 @@ typedef enum ceType {
 
 } ceType;
 
+typedef struct cmember cmember;
+
 typedef struct ctype ctype;
 struct ctype {
     ceType e;
@@ -58,6 +60,8 @@ struct ctype {
     int bits;
     int byte_align;
     int bit_align;
+    int member_count; /* for struct or union */
+    cmember* members; /* for struct or union */
     jbool integer;
     jbool unsign; /* unsigned */
     jbool sign; /* signed */
@@ -69,10 +73,17 @@ struct ctype {
     ctype* link; /* e.g. for typedef */
 };
 
+typedef struct cmember cmember;
+struct cmember {
+    ctype* type;
+    jvec*  name;
+    int    bit_offset;
+};
+
 /* or hfile, really a cprefile */
 typedef struct cfile cfile;
 struct cfile {
-    jstring path;
+    jstr* path;
     jssize size;
     jssize position;
     cfile* stack;
