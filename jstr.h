@@ -1,4 +1,5 @@
-/* use instead an array of chars */
+/* It remains to be seen if "string" is useful, vs. vector */
+/* use instead an array of chars, maybe */
 
 #ifndef jstr_H
 #define jstr_H
