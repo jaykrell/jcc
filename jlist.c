@@ -8,11 +8,11 @@ void jlist_init(jlist_t* list)
 
 static void jlist_graft(jlist_t* list, jlist_t* element, int append)
 {
-	list_t_t insert = (append ? list->prev : list->next);
-	*(append ? &insert->next : &insert->prev) = element;
-	*(append ? &list->prev : &list->next) = element;
-	*(append ? &element->next : &element->prev) = list;
-	*(append ? &element->prev : &element->next) = insert;
+	list_t* insert = (append ? list->blink : list->flink);
+	*(append ? &insert->flink : &insert->blink) = element;
+	*(append ? &list->blink : &list->flink) = element;
+	*(append ? &element->flink : &element->blink) = list;
+	*(append ? &element->blink : &element->flink) = insert;
 }
 
 /* Element becomes the new end of the list. */
