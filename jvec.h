@@ -7,7 +7,7 @@
 #ifndef T
 
 #ifndef JVEC_H
-#define JVEC_H
+#define JVEC_H 1
 
 #define T char
 #define jvec           jvec_char

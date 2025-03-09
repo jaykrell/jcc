@@ -1,8 +1,8 @@
 /* It remains to be seen if "string" is useful, vs. vector */
 /* use instead an array of chars, maybe */
 
-#ifndef jstr_H
-#define jstr_H
+#ifndef JSTR_H
+#define JSTR_H 1
 
 #include "jbase.h"
 #include "jtype.h"
@@ -13,8 +13,7 @@
 extern jtype jtype_string;
 
 /* runtime type */
-typedef struct jstr
-{
+typedef struct jstr {
     jtype* type;
     jlong len;
     char* chars;
