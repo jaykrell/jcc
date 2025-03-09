@@ -2,7 +2,7 @@
 #define JBASE_H
 
 #include "jbool.h"
-#include "jssize.h"
+#include "jlong.h"
 
 typedef void* voidp; /* void pointer, not portable to pre-ANSI C */
 typedef char* charp; /* character pointer */

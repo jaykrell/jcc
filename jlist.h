@@ -1,7 +1,10 @@
 #ifndef JLIST
 #define JLIST
 
-/* Based on NT and EFI LIST_ENTRY, etc. */
+/* Circular doubly linked lists.
+   This is the same as NT and EFI LIST_ENTRY, etc. but the only part
+   copied/pasted (from memory) is the data structure.
+*/
 
 #include "jbase.h"
 

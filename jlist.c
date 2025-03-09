@@ -1,6 +1,9 @@
 #include "jssize.h"
 #include "jlist.h"
-
+/* Circular doubly linked lists.
+   This is the same as NT and EFI but the only part
+   copied/pasted from memory is the data structure.
+*/
 void jlist_init(jlist_t* list)
 {
 	list->flink = list;
