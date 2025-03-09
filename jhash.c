@@ -13,14 +13,6 @@ typedef struct jhash_keyvalue_t {
     jlong value_size;
 } jhash_keyvalue_t;
 
-struct jhash_t
-{
-    jhash_init_t init;
-    julong bucket_count;
-    jlist_t* buckets; /* array[bucket_count] of lists of jhash_keyvalue_t */
-    julong element_count;
-};
-
 int jhash_new(jhash_init_t* init, jhash_t** hash)
 {
     *hash = (jhash_t*)calloc(1, sizeof(jhash_t));
@@ -89,5 +81,24 @@ int jhash_insert(jhash_t* hash, jhash_lookup_t* lookup)
         return err;
 
     jlist_append(&hash->buckets[lookup->hashcode % hash->bucket_count], &keyvalue->list);
+    ++(hash->element_count);
     return 0;
+}
+
+int jhash_remove_after_lookup(jhash_t* hash, jhash_lookup_t* lookup)
+{
+    jlist_t* element = lookup->element;
+    if (element)
+    {
+        jlist_remove_element(element);
+        free(element);
+        --(hash->element_count);
+    }
+    return 0;
+}
+
+int jhash_lookup_and_remove(jhash_t* hash, jhash_lookup_t* lookup)
+{
+    int err = jhash_lookup(hash, lookup);
+    return  (err ? err : jhash_remove_after_lookup(hash, lookup));
 }

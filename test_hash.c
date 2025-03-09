@@ -39,7 +39,9 @@ int main(void)
         jhash_new(&init1, &hash1);
         jhash_lookup_t lookup={&key,sizeof(key),&value,sizeof(value)};
         jhash_lookup(hash1, &lookup);
+        assert(hash1->element_count == 0);
         jhash_insert(hash1, &lookup);
+        assert(hash1->element_count == 1);
         lookup.key=&key;
         jhash_lookup(hash1, &lookup);
     }
@@ -47,6 +49,13 @@ int main(void)
         jhash_lookup_t lookup={&key};
         jhash_lookup(hash1, &lookup);
         key = 2;
+        assert(3 == *(int*)lookup.value);
         printf("%d\n", *(int*)lookup.value);
+    }
+    {
+        jhash_lookup_t lookup={&key};
+        key = 1;
+        jhash_lookup_and_remove(hash1, &lookup);
+        assert(hash1->element_count == 0);
     }
 }
