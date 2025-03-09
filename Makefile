@@ -39,6 +39,7 @@ exe:
 
 OBJS=\
  jerr.$O \
+ jhash.$O \
  jlist.$O \
  jvec.$O \
  jstr.$O \

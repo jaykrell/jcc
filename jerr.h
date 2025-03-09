@@ -1,7 +1,7 @@
 #include "jbase.h"
 
 #ifndef JERR_H
-#define JERR_H
+#define JERR_H 1
 
 #if 0
 

@@ -1,5 +1,5 @@
 #ifndef JLONG_H
-#define JLONG_H
+#define JLONG_H 1
 
 /* pointer sized integer, the one true integer */
 #if _WIN32 || VMS

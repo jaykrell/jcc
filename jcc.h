@@ -1,5 +1,5 @@
 #ifndef JCC_H
-#define JCC_H
+#define JCC_H 1
 
 #include "jbase.h"
 #include "jtype.h"

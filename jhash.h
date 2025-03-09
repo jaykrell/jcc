@@ -1,23 +1,24 @@
-#ifndef jhash_h
-#define jhash_h 1
+#ifndef JHASH_H
+#define JHASH_H 1
 
-#include "jint.h"
+#include "julong.h"
 
-typedef struct jhash        jhash;
-typedef struct jhash_init   jhash_init;
-typedef struct jhash_bucket jhash_bucket;
+typedef struct jhash_t          jhash_t;
+typedef struct jhash_init_t     jhash_init_t;
+typedef struct jhash_keyvalue_t jhash_keyvalue_t;
 
-typedef julong jhashcode;
+typedef julong jhashcode_t;
 
 /* todo: is this jtype? */
-struct jhash_init
+struct jhash_init_t
 {
-    jhashcode (*hash)(charp data);
-    int (*compare)(charp a, charp b);
-    int (*copy)(charp to, charp from);
+	voidp context;
+    jhashcode_t (*hash)(voidp context, charp data);
+    int (*compare)(voidp context, charp a, charp b);
+    int (*copy)(voidp context, charp to, charp from);
 };
 
-typedef struct jhash_lookup_data
+typedef struct jhash_lookup_data_t
 {
     /* inout */
     charp* key;
@@ -26,13 +27,13 @@ typedef struct jhash_lookup_data
     charp* value;
 
     /* internal */
-    jhashcode hashcode;
-    jhash_bucket* bucket;
+    jhashcode_t hashcode;
+    jhash_keyvalue_t* bucket;
 
-} jhash_lookup_data;
+} jhash_lookup_data_t;
 
-jhash* jhash_new(jhash_init* init);
-void jhash_lookup(jhash* hash, jhash_lookup_data*);
-void jhash_insert(jhash* hash, jhash_lookup_data*);
+jhash_t* jhash_new(jhash_init_t* init);
+void jhash_lookup(jhash_t* hash, jhash_lookup_data_t*);
+void jhash_insert(jhash_t* hash, jhash_lookup_data_t*);
 
 #endif

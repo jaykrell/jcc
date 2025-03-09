@@ -5,6 +5,7 @@
 #include "jlist.h"
 #include "jbase_of.h"
 #include "jmem.h"
+#include "jhash.h"
 #include <assert.h>
 #include <stdio.h>
 

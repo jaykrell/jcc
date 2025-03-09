@@ -1,5 +1,5 @@
-#ifndef JLIST
-#define JLIST
+#ifndef JLIST_H
+#define JLIST_H 1
 
 /* Circular doubly linked lists.
    This is the same as NT and EFI LIST_ENTRY, etc. but the only part

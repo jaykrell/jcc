@@ -1,5 +1,5 @@
 #ifndef JARRAY_H
-#define JARRAY_H
+#define JARRAY_H 1
 
 #include "jbase.h"
 #include "jtype.h"

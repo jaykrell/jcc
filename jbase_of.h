@@ -1,7 +1,7 @@
 /* Based on Windows CONTAINING_RECORD and EFI CR. */
 
 #ifndef JBASE_OF_H
-#define JBASE_OF_H
+#define JBASE_OF_H 1
 
 #include <stddef.h>
 

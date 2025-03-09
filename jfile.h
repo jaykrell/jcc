@@ -1,5 +1,5 @@
-#ifndef JFILE
-#define JFILE
+#ifndef JFILE_H
+#define JFILE_H 1
 
 typedef struct jfile_t jfile_t;
 

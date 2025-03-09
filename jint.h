@@ -1,6 +1,8 @@
 
-#ifndef jint_h
-#define jint_h
+#ifndef JINT_H
+#define JINT_H 1
+
+#include "jlong.h"
 
 /* todo
 figure out what we really need
