@@ -8,6 +8,6 @@
 
 void *jmem_intern(charp p, jssize n);
 
-#define jmem_zero(p, n) memset((p), 0, (n))
+#define JMEM_ZERO(p, n) memset((p), 0, (n))
 
 #endif

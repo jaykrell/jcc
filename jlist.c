@@ -7,8 +7,17 @@ void jlist_init(jlist_t* list)
 	list->blink = list;
 }
 
+void jlist_init_on_demand(jlist_t* list)
+{
+	if (!list->flink && !list->flink)
+	{
+		jlist_init(list);
+	}
+}
+
 static void jlist_graft(jlist_t* list, jlist_t* element, int append)
 {
+	jlist_init_on_demand(list);
 	jlist_t* insert = (append ? list->blink : list->flink);
 	*(append ? &insert->flink : &insert->blink) = element;
 	*(append ? &list->blink : &list->flink) = element;
@@ -33,7 +42,7 @@ jlong jlist_size(jlist_t* list)
 {
 	jlong size = 0;
 	jlist_t* element = list->flink;
-	while (element != list)
+	while (element && element != list)
 	{
 		++size;
 		element = element->flink;
@@ -71,12 +80,14 @@ jlong jlist_iterate(jlist_t* list,
 					jlong offset)
 {
 	jlong overall_result = 0;
-	jlong result = 1;
+	jlong result = 0;
 	jlist_t* element = list->flink;
-	while (result && element != list)
+	while (element && element != list)
 	{
 		result = callback(context, ((char*)element) - offset);
 		overall_result += result;
+		element = element->flink;
+		if (!result) break;
 	}
 	return result;
 }
