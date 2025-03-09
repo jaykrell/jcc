@@ -21,13 +21,13 @@ struct jhash_init_t {
 };
 
 struct jhash_t {
-	/* public */
+    /* public */
     size_t element_count;
-	/* private */
+    /* private */
     jhash_init_t init;
     size_t bucket_count;
     jlist_t* buckets; /* array[bucket_count] of lists of jhash_keyvalue_t */
-	juint hash_prime_index;
+    juint hash_prime_index;
 };
 
 typedef struct jhash_lookup_t

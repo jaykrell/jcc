@@ -9,6 +9,7 @@
 #include "jvoidp.h"
 #include "jbool.h"
 #include "jlong.h"
+#include "juint.h"
 
 typedef struct jlist_t jlist_t;
 
