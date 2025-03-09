@@ -13,7 +13,7 @@ typedef struct jhash_keyvalue_t jhash_keyvalue_t;
 /* todo: is this jtype? */
 struct jhash_init_t
 {
-	jvoidp context;
+    jvoidp context;
     jhashcode_t (*hash)(jvoidp context, jvoidp data);
     int (*compare)(jvoidp context, jvoidp a, jvoidp b);
     int (*copy_key)(jvoidp context, jvoidp to, jvoidp from);
@@ -23,28 +23,28 @@ struct jhash_init_t
 typedef struct jhash_lookup_t
 {
     /* inout
-	Upon call, is the key to lookup.
-	Upon return, is the equivalent key found, not necessarily the same,
-	unlikely the same, since hash table can copy in the data.
-	i.e. This is an interior pointer into the table.
-	*/
+    Upon call, is the key to lookup.
+    Upon return, is the equivalent key found, not necessarily the same,
+    unlikely the same, since hash table can copy in the data.
+    i.e. This is an interior pointer into the table.
+    */
     jvoidp key;
-	jlong key_size; /* for insert */
+    jlong key_size; /* for insert */
 
     /* lookup out
-	Upon return, address of value found, or null
-	Since the table stores value and this points to the value, null is represented, by a pointer to it.
-	i.e. null unambiguously means not found
+    Upon return, address of value found, or null
+    Since the table stores value and this points to the value, null is represented, by a pointer to it.
+    i.e. null unambiguously means not found
 
     insert in
-	*/
+    */
     jvoidp value;
-	jlong value_size; /* for insert */
+    jlong value_size; /* for insert */
 
     /* internal
-	If key is not found, this helps insert.
-	If found, this helps remove.
-	*/
+    If key is not found, this helps insert.
+    If found, this helps remove.
+    */
     jhashcode_t hashcode;
     jlist_t* element;
 

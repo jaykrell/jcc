@@ -94,7 +94,7 @@ AMD64=0
 win=win.exe
 !endif
 
-all: $(win) test1.exe
+all: $(win) test_vec.exe test_list.exe test_hash.exe
 
 config:
 	.\config.cmd
@@ -123,11 +123,23 @@ $(win): $(OBJS)
 	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
 	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX cmain.c /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
 
-test1.exe: $(OBJS)
+test_vec.exe: $(OBJS)
 	@-del $(@R).pdb $(@R).ilk
 	@rem TODO /GX on old, /EHsc on new
 	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
-	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX test1.c $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
+	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX test_vec.c $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
+
+test_list.exe: $(OBJS)
+	@-del $(@R).pdb $(@R).ilk
+	@rem TODO /GX on old, /EHsc on new
+	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
+	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX test_list.c $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
+
+test_hash.exe: $(OBJS)
+	@-del $(@R).pdb $(@R).ilk
+	@rem TODO /GX on old, /EHsc on new
+	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
+	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX test_hash.c $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
 
 !else
 else
@@ -184,7 +196,7 @@ clean:
 	$(RM_F) camd64.obj carm64.obj ccheck.obj ccpe.obj celf.obj clex.obj
 	$(RM_F) cmacho.obj cmain.obj config.cpp config.mk config.obj
 	$(RM_F) copt.obj cparse.obj cpe.obj cpre.obj cx86.obj jerr.obj
-	$(RM_F) jhash.obj jlist.obj jpe.c jpe.h jstr.obj jvec.obj mscver.cpp test1.exe
+	$(RM_F) jhash.obj jlist.obj jpe.c jpe.h jstr.obj jvec.obj mscver.cpp test1.exe test_vec.exe test_list.exe test_hash.exe
 	$(RM_F) test1.obj test1.pdb typedenum.cpp typedenum.obj winamd64.exe winamd64.pdb
 	$(RM_F) mscver.cpp typedenum.cpp *.o *.obj w3rt.o w3rt.obj mac win32 win32.exe win64 win64.exe win win.exe cyg cyg.exe *.ilk lin win.exe winarm.exe winx86.exe winamd64.exe
 	$(RM_F) $(win) mscver.cpp typedenum.cpp *.o *.obj config.cpp config.mk w3rt.o w3rt.obj w3.obj *.ilk win32 win32.exe win64 win64.exe win win.exe winarm.exe winx86.exe winamd64.exe *.pdb lin *.i
