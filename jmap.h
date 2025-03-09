@@ -1,9 +1,8 @@
 #ifndef JMAPH_H
-#define JMAPH_H
+#define JMAPH_H 1
 
 #include "jbase.h"
 #include "jtype.h"
-#include "jarray.h"
 #include "jrbtree.h"
 
 struct jmap

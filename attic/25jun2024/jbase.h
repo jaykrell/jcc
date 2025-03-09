@@ -4,10 +4,10 @@
 /* pointer sized integer, maybe the one true integer */
 #if _WIN32 || VMS
 typedef __int64 Long;
-typedef __int64 jlong, jssize, jlong_t, jssize_t;
+typedef __int64 jlong, jssize, jssize_t;
 #else
 typedef long Long;
-typedef long jlong, jssize, jlong_t, jssize_t;
+typedef long jlong, jssize, jssize_t;
 #endif
 
 typedef void* jvoidp; /* void pointer, not portable to pre-ANSI C */

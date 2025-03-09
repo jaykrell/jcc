@@ -1,10 +1,11 @@
 #ifndef JHASH_H
 #define JHASH_H 1
 
-#include "julong.h"
+#include <stdint.h>
 #include "jvoidp.h"
 #include "jlist.h"
 #include "jhashcode.h"
+#include "juint.h"
 
 typedef struct jhash_t          jhash_t;
 typedef struct jhash_init_t     jhash_init_t;
@@ -21,11 +22,12 @@ struct jhash_init_t {
 
 struct jhash_t {
 	/* public */
-    julong element_count;
+    size_t element_count;
 	/* private */
     jhash_init_t init;
-    julong bucket_count;
+    size_t bucket_count;
     jlist_t* buckets; /* array[bucket_count] of lists of jhash_keyvalue_t */
+	juint hash_prime_index;
 };
 
 typedef struct jhash_lookup_t

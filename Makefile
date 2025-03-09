@@ -59,17 +59,6 @@ OBJS=\
 ifdef MAKEDIR:
 !ifdef MAKEDIR
 
-!if !exist (./config.mk)
-!if [.\config.cmd]
-!endif
-!endif
-!if exist (./config.mk)
-!include ./config.mk
-!endif
-
-#!message AMD64=$(AMD64)
-#!message 386=$(386)
-
 !if !defined (AMD64) && !defined (386) && !defined (ARM)
 AMD64=1
 386=0

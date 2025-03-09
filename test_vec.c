@@ -14,8 +14,8 @@ int main(void)
     jvec_int_iter vii = {0};
     int a = 1;
     double b = 1;
-    jlong size = {0};
-    jlong i = {0};
+    size_t size = {0};
+    size_t i = {0};
 
     /* test vector */
 
