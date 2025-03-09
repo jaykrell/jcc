@@ -6,13 +6,13 @@
 #include "jerr.h"
 #include "jcharp.h"
 
-static uint64_t hash_primes[] ={53, 163, 491, 1481, 4447, 13367, 40111, 120349, 361069};
+static size_t hash_primes[] ={53, 163, 491, 1481, 4447, 13367, 40111, 120349, 361069};
 
 typedef struct jhash_keyvalue_t {
     jlist_t list; /* list of jhash_keyvalue_t */
     jhashcode_t hashcode;
-    uint64_t key_size;
-    uint64_t value_size;
+    size_t key_size;
+    size_t value_size;
 } jhash_keyvalue_t;
 
 int jhash_new(jhash_init_t* init, jhash_t** hash)

@@ -18,6 +18,7 @@ RM_F = del 2>nul /f
 #RUN_EACH=for %%a in (
 #RUN_EACH_END=) do @$Q$(MONO)$Q %%a
 O=obj
+EXE=.exe
 
 !else
 else
@@ -25,6 +26,7 @@ else
 # GNU/Posix make on Unix with gcc, clang, etc.
 RM_F = rm -f
 O=o
+EXE=
 
 endif
 !endif :
@@ -66,24 +68,24 @@ ARM=0
 !endif
 
 !if $(AMD64)
-win=winamd64.exe
+win=winamd64$(EXE)
 386=0
 ARM=0
 !elseif $(386)
-win=winx86.exe
+win=winx86$(EXE)
 AMD64=0
 ARM=0
 !elseif $(ARM)
-win=winarm.exe
+win=winarm$(EXE)
 AMD64=0
 386=0
 !endif
 
 !ifndef win
-win=win.exe
+win=win$(EXE)
 !endif
 
-all: $(win) test_vec.exe test_list.exe test_hash.exe
+all: $(win) test_vec$(EXE) test_list$(EXE) test_hash$(EXE)
 
 config:
 	.\config.cmd
@@ -112,19 +114,19 @@ $(win): $(OBJS)
 	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
 	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX cmain.c /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
 
-test_vec.exe: $(OBJS)
+test_vec$(EXE): $(OBJS)
 	@-del $(@R).pdb $(@R).ilk
 	@rem TODO /GX on old, /EHsc on new
 	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
 	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX test_vec.c $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
 
-test_list.exe: $(OBJS)
+test_list$(EXE): $(OBJS)
 	@-del $(@R).pdb $(@R).ilk
 	@rem TODO /GX on old, /EHsc on new
 	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
 	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX test_list.c $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
 
-test_hash.exe: $(OBJS)
+test_hash$(EXE): $(OBJS)
 	@-del $(@R).pdb $(@R).ilk
 	@rem TODO /GX on old, /EHsc on new
 	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
@@ -153,7 +155,7 @@ endif
 # TODO Darwin, Linux, etc.
 
 # FIXME winarm64 etc.
-all: $(NativeTarget) win32.exe win64.exe
+all: $(NativeTarget) win32$(EXE) win64$(EXE)
 
 run: $(NativeTarget)
 	./$(NativeTarget) /s/mono/mcs/class/lib/build-macos/mscorlib.dll
@@ -170,10 +172,10 @@ cyg: $(OBJS)
 lin: $(OBJS)
 	g++ -Wall -g $(OBJS) -o $@ -Bsymbolic -znow -zrelro
 
-win32.exe: $(OBJS)
+win32$(EXE): $(OBJS)
 	i686-w64-mingw32-g++ -g $(OBJS) -o $@ -Bsymbolic
 
-win64.exe: $(OBJS)
+win64$(EXE): $(OBJS)
 	x86_64-w64-mingw32-g++ -g $(OBJS) -o $@ -Bsymbolic
 
 test:
@@ -182,10 +184,11 @@ endif
 !endif :
 
 clean:
-	$(RM_F) camd64.obj carm64.obj ccheck.obj ccpe.obj celf.obj clex.obj
-	$(RM_F) cmacho.obj cmain.obj config.cpp config.mk config.obj
-	$(RM_F) copt.obj cparse.obj cpe.obj cpre.obj cx86.obj jerr.obj
-	$(RM_F) jhash.obj jlist.obj jpe.c jpe.h jstr.obj jvec.obj mscver.cpp test1.exe test_vec.exe test_list.exe test_hash.exe
-	$(RM_F) test1.obj test1.pdb typedenum.cpp typedenum.obj winamd64.exe winamd64.pdb
-	$(RM_F) mscver.cpp typedenum.cpp *.o *.obj w3rt.o w3rt.obj mac win32 win32.exe win64 win64.exe win win.exe cyg cyg.exe *.ilk lin win.exe winarm.exe winx86.exe winamd64.exe
-	$(RM_F) $(win) mscver.cpp typedenum.cpp *.o *.obj config.cpp config.mk w3rt.o w3rt.obj w3.obj *.ilk win32 win32.exe win64 win64.exe win win.exe winarm.exe winx86.exe winamd64.exe *.pdb lin *.i
+	$(RM_F) 1$(EXE) 2$(EXE) genprimes$(EXE)
+	$(RM_F) camd64.$(O) carm64.$(O) ccheck.$(O) ccpe.$(O) celf.$(O) clex.$(O)
+	$(RM_F) cmacho.$(O) cmain.$(O) config.cpp config.mk config.$(O)
+	$(RM_F) copt.$(O) cparse.$(O) cpe.$(O) cpre.$(O) cx86.$(O) jerr.$(O)
+	$(RM_F) jhash.$(O) jlist.$(O) jpe.c jpe.h jstr.$(O) jvec.$(O) mscver.cpp test1$(EXE) test_vec$(EXE) test_list$(EXE) test_hash$(EXE)
+	$(RM_F) test1.$(O) test1.pdb typedenum.cpp typedenum.$(O) winamd64$(EXE) winamd64.pdb
+	$(RM_F) mscver.cpp typedenum.cpp *.o *.$(O) w3rt.o w3rt.$(O) mac win32 win32$(EXE) win64 win64$(EXE) win win$(EXE) cyg cyg$(EXE) *.ilk lin win$(EXE) winarm$(EXE) winx86$(EXE) winamd64$(EXE)
+	$(RM_F) $(win) mscver.cpp typedenum.cpp *.o *.$(O) config.cpp config.mk w3rt.o w3rt.$(O) w3.$(O) *.ilk win32 win32$(EXE) win64 win64$(EXE) win win$(EXE) winarm$(EXE) winx86$(EXE) winamd64$(EXE) *.pdb lin *.i
