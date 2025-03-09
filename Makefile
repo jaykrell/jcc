@@ -111,9 +111,6 @@ debug: $(win)
 	\bin\x86\cdb .\$(win) hello.wasm
 !endif
 
-clean:
-	$(RM_F) $(win) mscver.cpp typedenum.cpp *.o *.obj config.cpp config.mk w3rt.o w3rt.obj w3.obj *.ilk win32 win32.exe win64 win64.exe win win.exe winarm.exe winx86.exe winamd64.exe *.pdb lin *.i
-
 # TODO clang cross
 #
 #mac: w3.cpp
@@ -163,9 +160,6 @@ run: $(NativeTarget)
 debug: mac
 	lldb -- ./$(NativeTarget) /s/mono/mcs/class/lib/build-macos/mscorlib.dll
 
-clean:
-	$(RM_F) mscver.cpp typedenum.cpp *.o *.obj w3rt.o w3rt.obj mac win32 win32.exe win64 win64.exe win win.exe cyg cyg.exe *.ilk lin win.exe winarm.exe winx86.exe winamd64.exe
-
 mac: $(OBJS)
 	g++ -g $(OBJS) -o $@ -Bsymbolic -bind_at_load
 
@@ -185,3 +179,12 @@ test:
 
 endif
 !endif :
+
+clean:
+	$(RM_F) camd64.obj carm64.obj ccheck.obj ccpe.obj celf.obj clex.obj
+	$(RM_F) cmacho.obj cmain.obj config.cpp config.mk config.obj
+	$(RM_F) copt.obj cparse.obj cpe.obj cpre.obj cx86.obj jerr.obj
+	$(RM_F) jhash.obj jlist.obj jpe.c jpe.h jstr.obj jvec.obj mscver.cpp test1.exe
+	$(RM_F) test1.obj test1.pdb typedenum.cpp typedenum.obj winamd64.exe winamd64.pdb
+	$(RM_F) mscver.cpp typedenum.cpp *.o *.obj w3rt.o w3rt.obj mac win32 win32.exe win64 win64.exe win win.exe cyg cyg.exe *.ilk lin win.exe winarm.exe winx86.exe winamd64.exe
+	$(RM_F) $(win) mscver.cpp typedenum.cpp *.o *.obj config.cpp config.mk w3rt.o w3rt.obj w3.obj *.ilk win32 win32.exe win64 win64.exe win win.exe winarm.exe winx86.exe winamd64.exe *.pdb lin *.i
