@@ -4,12 +4,7 @@
 #include "jbool.h"
 #include "jlong.h"
 #include "julong.h"
-
-typedef void* voidp; /* void pointer, not portable to pre-ANSI C */
-typedef void* jvoidp; /* void pointer, not portable to pre-ANSI C */
-typedef char* charp; /* character pointer */
-
-#define JPASTEx(x, y) x ## y
-#define JPASTE(x, y) JPASTEx(x, y)
+#include "jvoidp.h"
+#include "jpaste.h"
 
 #endif

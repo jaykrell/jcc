@@ -3,8 +3,9 @@
  * mem_dup
  */
 
-#include "jbase.h"
+#include "jcharp.h"
+#include "jssize.h"
 
-void *jmem_intern(charp p, jssize n)
+void *jmem_intern(jcharp p, jssize n)
 {
 }

@@ -6,7 +6,9 @@
    copied/pasted (from memory) is the data structure.
 */
 
-#include "jbase.h"
+#include "jvoidp.h"
+#include "jbool.h"
+#include "jlong.h"
 
 typedef struct jlist_t jlist_t;
 

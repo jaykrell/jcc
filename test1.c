@@ -1,6 +1,7 @@
 /* tests */
 
 #pragma warning(disable:4100) /* unused parameter */
+#include <string.h>
 #include "jvoidp.h"
 #include "jvec.h"
 #include "jlist.h"
@@ -186,7 +187,7 @@ int main(void)
 	{
 		jhash_new(&init1, &hash1);
 		int key = 1;
-		jhash_lookup_t lookup={0, &key};
+		jhash_lookup_t lookup={&key};
 		jhash_lookup(hash1, &lookup);
 		key = 2;
 		printf("%d\n", *(int*)lookup.key);

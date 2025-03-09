@@ -10,9 +10,7 @@ typedef long Long;
 typedef long jlong, jssize, jlong_t, jssize_t;
 #endif
 
-typedef void* voidp; /* void pointer, not portable to pre-ANSI C */
 typedef void* jvoidp; /* void pointer, not portable to pre-ANSI C */
-typedef char* charp; /* character pointer */
 typedef char* jcharp; /* character pointer */
 
 typedef char jbool;

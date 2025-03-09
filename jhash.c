@@ -54,7 +54,7 @@ int jhash_lookup(jhash_t* hash, jhash_lookup_t* lookup)
 			if (hashcode == keyvalue->hashcode && 0 == init->compare(init->context, keyvalue + 1, key))
 			{
 				lookup->key = (1 + keyvalue);
-				lookup->value = keyvalue->key_size + (charp)lookup->key;
+				lookup->value = keyvalue->key_size + (jcharp)lookup->key;
 				lookup->element = element;
 				return 0;
 			}

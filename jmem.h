@@ -1,13 +1,17 @@
 /* memory
  * mem_intern
  * mem_dup
+ * MEM_ZERO (Win32 ZeroMemory)
  */
 
-#ifndef jmem_h
-#define jmem_h 1
+#ifndef JMEM_H
+#define JMEM_H 1
 
-void *jmem_intern(charp p, jssize n);
+#include "jssize.h"
+#include "jvoidp.h"
 
-#define JMEM_ZERO(p, n) memset((p), 0, (n))
+void *jmem_intern(jvoidp p, jssize n);
+
+#define JMEM_ZERO(p, n) (memset((p), 0, (n)))
 
 #endif

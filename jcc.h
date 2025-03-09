@@ -1,7 +1,13 @@
 #ifndef JCC_H
 #define JCC_H 1
 
-#include "jbase.h"
+//#include "jbool.h"
+//#include "jlong.h"
+//#include "julong.h"
+//#include "jvoidp.h"
+//#include "jcharp.h"
+//#include "jpaste.h"
+
 #include "jtype.h"
 #include "jvec.h"
 #include "jmap.h"

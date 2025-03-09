@@ -3,6 +3,7 @@
 
 #include "jbase.h"
 #include "jrtype.h"
+#include "jcharp.h"
 
 struct jarray_iter; typedef struct jarray_iter jarray_iter;
 struct jarrayt; typedef struct jarrayt jarrayt;
@@ -26,7 +27,7 @@ struct jarrayt {
 struct jarray_t {
     jarrayt* t;
     jrtype* telem;
-    charp begin, end, cap;
+    jcharp begin, end, cap;
     Long size;
     Long capacity;
 };
