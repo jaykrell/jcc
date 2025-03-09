@@ -47,7 +47,7 @@ Callback can want the list entry or the base, passing the correct
 offset, or 0.
 */
 jlong jlist_iterate(jlist_t* list,
-					jlong (*callback)(voidp context, voidp element),
-					voidp context,
+					jlong (*callback)(jvoidp context, jvoidp element),
+					jvoidp context,
 					jlong offset);
 #endif

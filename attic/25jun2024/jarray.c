@@ -1,6 +1,6 @@
 #include "jarray.h"
 
-void jarray_free(voidp av)
+void jarray_free(jvoidp av)
 {
     jarray_t* a = (jarray_t*)av;
     jarray_iter iter = {0};
@@ -19,34 +19,34 @@ void jarray_free(voidp av)
     }
 }
 
-jlong jarray_dup(voidp, voidp*)
+jlong jarray_dup(jvoidp, jvoidp*)
 {
 }
 
-jlong jarray_dupto(voidp, voidp)
+jlong jarray_dupto(jvoidp, jvoidp)
 {
 }
 
-jlong jarray_valid(voidp)
+jlong jarray_valid(jvoidp)
 {
 }
 
-void jarray_begin(voidp, voidp*);
+void jarray_begin(jvoidp, jvoidp*);
 
-void jarray_end(voidp av, voidp* iter)
+void jarray_end(jvoidp av, jvoidp* iter)
 {
 }
 
 
-void jarray_inc(voidp pv)
+void jarray_inc(jvoidp pv)
 {
 }
 
-jlong jarray_size(voidp pv)
+jlong jarray_size(jvoidp pv)
 {
 }
 
-void jarray_dump(voidp pv)
+void jarray_dump(jvoidp pv)
 {
 }
 

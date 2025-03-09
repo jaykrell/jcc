@@ -124,7 +124,7 @@ void JVecInit(JVec* a)
 
 #if 0
 
-void jarray_free(voidp av)
+void jarray_free(jvoidp av)
 {
     jarray_t* a = (jarray_t*)av;
     jarray_iter iter = {0};
@@ -143,34 +143,34 @@ void jarray_free(voidp av)
     }
 }
 
-Long jarray_dup(voidp, voidp*)
+Long jarray_dup(jvoidp, jvoidp*)
 {
 }
 
-Long jarray_dupto(voidp, voidp)
+Long jarray_dupto(jvoidp, jvoidp)
 {
 }
 
-Long jarray_valid(voidp)
+Long jarray_valid(jvoidp)
 {
 }
 
-void jarray_begin(voidp, voidp*);
+void jarray_begin(jvoidp, jvoidp*);
 
-void jarray_end(voidp av, voidp* iter)
+void jarray_end(jvoidp av, jvoidp* iter)
 {
 }
 
 
-void jarray_inc(voidp pv)
+void jarray_inc(jvoidp pv)
 {
 }
 
-Long jarray_size(voidp pv)
+Long jarray_size(jvoidp pv)
 {
 }
 
-void jarray_dump(voidp pv)
+void jarray_dump(jvoidp pv)
 {
 }
 

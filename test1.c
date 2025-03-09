@@ -1,11 +1,13 @@
 /* tests */
 
 #pragma warning(disable:4100) /* unused parameter */
+#include "jvoidp.h"
 #include "jvec.h"
 #include "jlist.h"
 #include "jbase_of.h"
 #include "jmem.h"
 #include "jhash.h"
+#include "jhashcode.h"
 #include <assert.h>
 #include <stdio.h>
 
@@ -14,17 +16,36 @@ typedef struct jlist_int_t {
 	jlist_t list;
 } jlist_int_t;
 
-jlong list_enumerate_test1(voidp context, voidp element)
+jlong list_enumerate_test1(jvoidp context, jvoidp element)
 {
 	printf("list_enumerate_test1: %d\n", (int)((jlist_int_t*)element)->value);
 	return 1;
 }
 
-jlong list_enumerate_test2(voidp context, voidp element)
+jlong list_enumerate_test2(jvoidp context, jvoidp element)
 {
 	printf("list_enumerate_test2: %d\n", (int)JBASE_OF(jlist_int_t, list, element)->value);
 	return 1;
 }
+
+/*************************************************************************************************/
+
+jhashcode_t jhash1(jvoidp context, jvoidp data)
+{
+	return *(int*)data;
+}
+static int compare1(jvoidp context, jvoidp data1, jvoidp data2)
+{
+	return *(int*)data1 == *(int*)data2;
+}
+static int copy1(jvoidp context, jvoidp data1, jvoidp data2)
+{
+	*(int*)data1 = *(int*)data2;
+	return 0;
+}
+jhash_init_t init1 = {0, jhash1, compare1, copy1, copy1 };
+
+/*************************************************************************************************/
 
 int main(void)
 {
@@ -149,5 +170,25 @@ int main(void)
 		printf("%d\n", (int)jlist_size(&l1));
 		printf("%d\n", (int)JBASE_OF(jlist_int_t, list, l1.flink)->value);
 		assert(3 == JBASE_OF(jlist_int_t, list, l1.flink)->value);
+	}
+
+	jhash_t* hash1 = {0};
+
+	{
+		jhash_new(&init1, &hash1);
+		int key = 1;
+		jhash_lookup_t lookup={&key};
+		jhash_lookup(hash1, &lookup);
+		jhash_insert(hash1, &lookup);
+		jhash_lookup(hash1, &lookup);
+	}
+
+	{
+		jhash_new(&init1, &hash1);
+		int key = 1;
+		jhash_lookup_t lookup={0, &key};
+		jhash_lookup(hash1, &lookup);
+		key = 2;
+		printf("%d\n", *(int*)lookup.key);
 	}
 }

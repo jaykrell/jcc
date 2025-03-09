@@ -45,6 +45,7 @@ typedef enum JErr {
     jerr_nullptr            ,
     jerr_invalid_parameter  ,
     jerr_file_not_found     ,
+    jerr_not_found          ,
     jerr_syntax_error       ,
     jnoerr = 0   ,
 } JErr, jerr;

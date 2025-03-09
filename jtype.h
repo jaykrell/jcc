@@ -14,18 +14,18 @@ struct jtype
     jbool is_fixed_size;
     jbool pad[7];
     jlong fixed_size;
-    void  (*init)(voidp, jlong);
-    void  (*cleanup)(voidp, jlong);
-    jerr  (*copy)(voidp, voidp*);
-    jerr  (*copy_to)(voidp, voidp);
-    jerr  (*move)(voidp, voidp, long);
-    jlong (*valid)(voidp);
-    void  (*begin)(voidp, voidp*);
-    void  (*end)(voidp, voidp*);
-    void  (*inc_in_place)(voidp);
-    void  (*dec_in_place)(voidp);
-    jlong (*size)(voidp);
-    void  (*dump)(voidp);
+    void  (*init)(jvoidp, jlong);
+    void  (*cleanup)(jvoidp, jlong);
+    jerr  (*copy)(jvoidp, jvoidp*);
+    jerr  (*copy_to)(jvoidp, jvoidp);
+    jerr  (*move)(jvoidp, jvoidp, long);
+    jlong (*valid)(jvoidp);
+    void  (*begin)(jvoidp, jvoidp*);
+    void  (*end)(jvoidp, jvoidp*);
+    void  (*inc_in_place)(jvoidp);
+    void  (*dec_in_place)(jvoidp);
+    jlong (*size)(jvoidp);
+    void  (*dump)(jvoidp);
 };
 
 #endif

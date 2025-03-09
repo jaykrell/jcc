@@ -78,8 +78,8 @@ jlist_t* jlist_remove_last(jlist_t* list)
 }
 
 jlong jlist_iterate(jlist_t* list,
-					jlong (*callback)(voidp context, voidp element),
-					voidp context,
+					jlong (*callback)(jvoidp context, jvoidp element),
+					jvoidp context,
 					jlong offset)
 {
 	jlong overall_result = 0;

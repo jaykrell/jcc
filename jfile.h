@@ -5,8 +5,8 @@ typedef struct jfile_t jfile_t;
 
 typedef struct jfile_t {
 	int (*get_size) (jlong* size);
-	int (*read) ( jfile* self, jlong offset, voidp buf, jlong requested, jlong* actual);
-	int (*write) ( jfile* self, jlong offset, voidp buf, jlong requested, jlong* actual);
+	int (*read) ( jfile* self, jlong offset, jvoidp buf, jlong requested, jlong* actual);
+	int (*write) ( jfile* self, jlong offset, jvoidp buf, jlong requested, jlong* actual);
 	int (*close) ( jfile* self);
 } jfile_t;
 

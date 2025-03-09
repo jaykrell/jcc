@@ -9,8 +9,8 @@
 
 struct jrbtree_entry
 {
-    voidp key;
-    voidp value;
+    jvoidp key;
+    jvoidp value;
 };
 
 struct jrbtree

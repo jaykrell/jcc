@@ -9,15 +9,15 @@ typedef struct jrtype
     char* name;
     jbool is_fixed_size;
     Long fixed_size;
-    void (*free)(voidp);
-    Long (*dup)(voidp, voidp*);
-    Long (*dupto)(voidp, voidp);
-    Long (*valid)(voidp);
-    void (*begin)(voidp, voidp*);
-    void (*end)(voidp, voidp*);
-    void (*inc)(voidp);
-    Long (*size)(voidp);
-    void (*dump)(voidp);
+    void (*free)(jvoidp);
+    Long (*dup)(jvoidp, jvoidp*);
+    Long (*dupto)(jvoidp, jvoidp);
+    Long (*valid)(jvoidp);
+    void (*begin)(jvoidp, jvoidp*);
+    void (*end)(jvoidp, jvoidp*);
+    void (*inc)(jvoidp);
+    Long (*size)(jvoidp);
+    void (*dump)(jvoidp);
 } jrtype;
 
 typedef struct jobject

@@ -12,15 +12,15 @@ struct jarray_iter {
     jlong pos;
     int (*eq)(jarray_iter*);
     void (*inc)(jarray_iter*);
-    voidp (*get)(jarray_iter*);
+    jvoidp (*get)(jarray_iter*);
 };
 
 struct jarrayt {
     jtype t;
     void (*begin)(jarray_iter*);
     void (*end)(jarray_iter*);
-    void (*push_back)(voidp);
-    void (*pop_back)(voidp);
+    void (*push_back)(jvoidp);
+    void (*pop_back)(jvoidp);
 };
 
 struct jarray_t {
