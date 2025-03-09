@@ -9,7 +9,7 @@ typedef struct jarrayt jarrayt;
 typedef struct jarray_t jarray_t;
 
 struct jarray_iter {
-    jssize pos;
+    jlong pos;
     int (*eq)(jarray_iter*);
     void (*inc)(jarray_iter*);
     voidp (*get)(jarray_iter*);
@@ -27,8 +27,8 @@ struct jarray_t {
     jarrayt* t;
     jtype* telem;
     charp begin, end, cap;
-    jssize size;
-    jssize capacity;
+    jlong size;
+    jlong capacity;
 };
 
 int jarray_init(jarray_t*);

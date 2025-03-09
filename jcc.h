@@ -73,19 +73,21 @@ struct ctype {
     ctype* link; /* e.g. for typedef */
 };
 
+#if 0
 typedef struct cmember cmember;
 struct cmember {
     ctype* type;
     jvec*  name;
     int    bit_offset;
 };
+#endif
 
 /* or hfile, really a cprefile */
 typedef struct cfile cfile;
 struct cfile {
     jstr* path;
-    jssize size;
-    jssize position;
+    jlong size;
+    jlong position;
     cfile* stack;
 };
 
@@ -191,8 +193,8 @@ typedef struct cMember cMember;
 struct cMember {
     ctype* type;
     char* name;
-    jssize bit_offset;
-    jssize byte_offset;
+    jlong bit_offset;
+    jlong byte_offset;
     cMember* next;
 };
 
@@ -203,7 +205,7 @@ struct cAggregate {
     jbool is_union;
     jbool is_struct;
     jbool pad[6];
-    jssize n;
+    jlong n;
     cMember* members;
 };
 

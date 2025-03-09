@@ -13,8 +13,8 @@ typedef struct jhash_keyvalue jhash_keyvalue;
 struct jhash_keyvalue
 {
     jhash_keyvalue* next;
-    jssize key_size;
-    jssize value_size;
+    jlong key_size;
+    jlong value_size;
 };
 
 struct jhash_bucket
