@@ -1,1 +1,1 @@
-typedef char* jcharp; /* character pointer */
+typedef char *jcharp; /* character pointer */

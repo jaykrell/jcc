@@ -26,8 +26,8 @@ julong is useful for a hashcode, however large it is
 /* todo depend there being an int32? probe via limits.h? */
 /*typedef unsigned int   juint32;*/
 
-typedef long        jlong;
-typedef unsigned long  julong;
+typedef long jlong;
+typedef unsigned long julong;
 
 /*todo: depend on there being an int64? */
 

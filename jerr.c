@@ -2,7 +2,7 @@
 
 #if 0
 
-#define JERR(x) extern char* jerr_ ## x = #x;
+#define JERR(x) extern char *jerr_##x = #x;
 
 JERR (out_of_memory)
 JERR (nullptr)

@@ -8,7 +8,7 @@ struct JObject;
 typedef struct jobject jobject;
 
 typedef struct jobject {
-    jtype* t;
+  jtype *t;
 } jobject;
 
 #endif

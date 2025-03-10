@@ -2,12 +2,11 @@
 #define JMAPH_H 1
 
 #include "jbase.h"
-#include "jtype.h"
 #include "jrbtree.h"
+#include "jtype.h"
 
-struct jmap
-{
-    jrbtree tree;
+struct jmap {
+  jrbtree tree;
 };
 
 #endif

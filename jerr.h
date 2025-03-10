@@ -31,27 +31,32 @@ extern JErr JErr_SyntaxError;
 #elif 0
 
 typedef int JErr, jerr;
-#define JErr_NoError           (-1)
-#define JErr_OutOfMemory       (-2)
-#define JErr_NullPtr;          (-3)
-#define JErr_InvalidParameter  (-4)
-#define JErr_FileNotFound;     (-5)
-#define JErr_SyntaxError       (-6)
+#define JErr_NoError (-1)
+#define JErr_OutOfMemory (-2)
+#define JErr_NullPtr                                                           \
+  ;                                                                            \
+  (-3)
+#define JErr_InvalidParameter (-4)
+#define JErr_FileNotFound                                                      \
+  ;                                                                            \
+  (-5)
+#define JErr_SyntaxError (-6)
 
 #elif 1
 
 typedef enum JErr {
-    jerr_out_of_memory      = -32767,
-    jerr_nullptr            ,
-    jerr_invalid_parameter  ,
-    jerr_file_not_found     ,
-    jerr_not_found          ,
-    jerr_syntax_error       ,
-    jnoerr = 0   ,
-} JErr, jerr;
+  jerr_out_of_memory = -32767,
+  jerr_nullptr,
+  jerr_invalid_parameter,
+  jerr_file_not_found,
+  jerr_not_found,
+  jerr_syntax_error,
+  jnoerr = 0,
+} JErr,
+    jerr;
 
 #else
-typedef char* jerr;
+typedef char *jerr;
 extern jerr jerr_out_of_memory;
 extern jerr jerr_nullptr;
 extern jerr jerr_invalid_parameter;

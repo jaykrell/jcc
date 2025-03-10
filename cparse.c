@@ -1,10 +1,6 @@
 /* The parser of a C compiler. */
 
-#include "jerr.h"
 #include "jcc.h"
+#include "jerr.h"
 
-jerr ccGetNextToken(ccState* cc)
-{
-    return -1;
-}
-
+jerr ccGetNextToken(ccState *cc) { return -1; }
