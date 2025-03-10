@@ -1,5 +1,4 @@
 #include "jlist.h"
-#include "jssize.h"
 /* Circular doubly linked lists.
    Based on NT and EFI LIST_ENTRY.
 */
