@@ -1,10 +1,10 @@
 /*
-* A hash table.
-*
-* Array of buckets, prime count.
-* Collisions are doubly linked list (jlist_t).
-* Full hash code is remembered for quick comparison.
-*/
+ * A hash table.
+ *
+ * Array of buckets, prime count.
+ * Collisions are doubly linked list (jlist_t).
+ * Full hash code is remembered for quick comparison.
+ */
 #ifndef JHASH_H
 #define JHASH_H 1
 
@@ -74,16 +74,16 @@ typedef struct jhash_lookup_t {
    }
 */
 typedef struct jhash_enum_t {
-	jhash_t *hash;
+  jhash_t *hash;
 
-	/* public */
-	void* key;
-	void* value;
+  /* public */
+  void *key;
+  void *value;
 
-	/* internal */
-	size_t bucket_index;
-	jlist_t* list;
-	jlist_t* element;
+  /* internal */
+  size_t bucket_index;
+  jlist_t *list;
+  jlist_t *element;
 } jhash_enum_t;
 
 int jhash_new(jhash_init_t *init, jhash_t **);
@@ -91,6 +91,6 @@ int jhash_lookup(jhash_t *hash, jhash_lookup_t *);
 int jhash_insert(jhash_t *hash, jhash_lookup_t *);
 int jhash_lookup_and_remove(jhash_t *hash, jhash_lookup_t *lookup);
 int jhash_remove_after_lookup(jhash_t *hash, jhash_lookup_t *lookup);
-int jhash_enum(jhash_enum_t* e);
+int jhash_enum(jhash_enum_t *e);
 
 #endif

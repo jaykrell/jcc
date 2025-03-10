@@ -34,12 +34,12 @@ int main(void) {
   jhash_new(&init1, &hash1);
 
   {
-	jhash_enum_t e = {hash1};
-	   printf("enumerate empty hash\n");
-		 for (;jhash_enum(&e);)
-			 printf("%d = %d\n", *(int*)e.key, *(int*)e.value);
+    jhash_enum_t e = {hash1};
+    printf("enumerate empty hash\n");
+    for (; jhash_enum(&e);)
+      printf("%d = %d\n", *(int *)e.key, *(int *)e.value);
 
-		 /* add one element to hashtable */
+    /* add one element to hashtable */
     jhash_lookup_t lookup = {&key, sizeof(key), &value, sizeof(value)};
     jhash_lookup(hash1, &lookup);
     assert(hash1->element_count == 0);
@@ -49,12 +49,12 @@ int main(void) {
     jhash_lookup(hash1, &lookup);
   }
 
-   printf("enumerate one element hash\n");
+  printf("enumerate one element hash\n");
   {
     jhash_enum_t e = {hash1};
-     for (;jhash_enum(&e);)
-		 printf("%d = %d\n", *(int*)e.key, *(int*)e.value);
-   }
+    for (; jhash_enum(&e);)
+      printf("%d = %d\n", *(int *)e.key, *(int *)e.value);
+  }
 
   /* lookup one element */
   {
@@ -74,24 +74,28 @@ int main(void) {
     assert(hash1->element_count == 0);
   }
 
-   printf("enumerate few element hash\n");
-   {
-      jhash_lookup_t lookup = {&key, sizeof(key), &value, sizeof(value)};
-	  key = 10; value = 100;
-     jhash_lookup(hash1, &lookup);
-      jhash_insert(hash1, &lookup);
-	  key = 20; value = 200;
-     jhash_lookup(hash1, &lookup);
-      jhash_insert(hash1, &lookup);
-	  key = 30; value = 300;
-     jhash_lookup(hash1, &lookup);
-      jhash_insert(hash1, &lookup);
-	  key = 40; value = 400;
-     jhash_lookup(hash1, &lookup);
-      jhash_insert(hash1, &lookup);
+  printf("enumerate few element hash\n");
+  {
+    jhash_lookup_t lookup = {&key, sizeof(key), &value, sizeof(value)};
+    key = 10;
+    value = 100;
+    jhash_lookup(hash1, &lookup);
+    jhash_insert(hash1, &lookup);
+    key = 20;
+    value = 200;
+    jhash_lookup(hash1, &lookup);
+    jhash_insert(hash1, &lookup);
+    key = 30;
+    value = 300;
+    jhash_lookup(hash1, &lookup);
+    jhash_insert(hash1, &lookup);
+    key = 40;
+    value = 400;
+    jhash_lookup(hash1, &lookup);
+    jhash_insert(hash1, &lookup);
 
     jhash_enum_t e = {hash1};
-     for (;jhash_enum(&e);)
-		 printf("%d = %d\n", *(int*)e.key, *(int*)e.value);
-   }
+    for (; jhash_enum(&e);)
+      printf("%d = %d\n", *(int *)e.key, *(int *)e.value);
+  }
 }
