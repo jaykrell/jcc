@@ -14,12 +14,12 @@ typedef struct jlist_int_t {
   jlist_t list;
 } jlist_int_t;
 
-jlong list_enumerate_test1(jvoidp context, jvoidp element) {
+uint64_t list_enumerate_test1(jvoidp context, jvoidp element) {
   printf("list_enumerate_test1: %d\n", (int)((jlist_int_t *)element)->value);
   return 1;
 }
 
-jlong list_enumerate_test2(jvoidp context, jvoidp element) {
+uint64_t list_enumerate_test2(jvoidp context, jvoidp element) {
   printf("list_enumerate_test2: %d\n",
          (int)JBASE_OF(jlist_int_t, list, element)->value);
   return 1;

@@ -69,11 +69,11 @@ jlist_t *jlist_remove_last(jlist_t *list) {
   return list ? jlist_remove_element(list->blink) : 0;
 }
 
-jlong jlist_iterate(jlist_t *list,
-                    jlong (*callback)(jvoidp context, jvoidp element),
-                    jvoidp context, jlong offset) {
-  jlong overall_result = 0;
-  jlong result = 0;
+uint64_t jlist_iterate(jlist_t *list,
+                       uint64_t (*callback)(jvoidp context, jvoidp element),
+                       jvoidp context, jlong offset) {
+  uint64_t overall_result = 0;
+  uint64_t result = 0;
   jlist_t *element = list->flink;
   while (element && element != list) {
     result = callback(context, ((jcharp)element) - offset);

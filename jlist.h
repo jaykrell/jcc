@@ -9,6 +9,7 @@
 #include "jbool.h"
 #include "jlong.h"
 #include "jvoidp.h"
+#include <stdint.h>
 
 typedef struct jlist_t jlist_t;
 
@@ -48,7 +49,7 @@ adding up the results. The return value may or may not be useful.
 Callback can want the list entry or the base, passing the correct
 offset, or 0.
 */
-jlong jlist_iterate(jlist_t *list,
-                    jlong (*callback)(jvoidp context, jvoidp element),
-                    jvoidp context, jlong offset);
+uint64_t jlist_iterate(jlist_t *list,
+                       uint64_t (*callback)(jvoidp context, jvoidp element),
+                       jvoidp context, jlong offset);
 #endif
