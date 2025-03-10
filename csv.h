@@ -60,7 +60,7 @@ union persistant_index_t {
     int64_t offset_to_path;     /* 0 if not present */
     int64_t offset_to_contents; /* 0 if not present */
   };
-  uint8_t page[0x10000];
+  uint8_t page[0x1000];
 };
 
 struct persistant_index_line_t {
