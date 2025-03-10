@@ -1,4 +1,5 @@
 #include "jlist.h"
+#include "jcharp.h"
 /* Circular doubly linked lists.
    Based on NT and EFI LIST_ENTRY.
 */
@@ -72,7 +73,7 @@ jlong jlist_iterate(jlist_t *list,
   jlong result = 0;
   jlist_t *element = list->flink;
   while (element && element != list) {
-    result = callback(context, ((char *)element) - offset);
+    result = callback(context, ((jcharp)element) - offset);
     overall_result += result;
     element = element->flink;
     if (!result)
