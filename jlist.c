@@ -1,5 +1,6 @@
 #include "jlist.h"
 #include "jcharp.h"
+#include "jvoidp.h"
 /* Circular doubly linked lists.
    Based on NT and EFI LIST_ENTRY.
 */
@@ -36,10 +37,12 @@ void jlist_prepend(jlist_t *list, jlist_t *element) {
 /* Count the elements in the list. This is slow. Use with caution. */
 jlong jlist_size(jlist_t *list) {
   jlong size = 0;
-  jlist_t *element = list->flink;
-  while (element && element != list) {
-    ++size;
-    element = element->flink;
+  if (list) {
+    jlist_t *element = list->flink;
+    while (element && element != list) {
+      ++size;
+      element = element->flink;
+    }
   }
   return size;
 }

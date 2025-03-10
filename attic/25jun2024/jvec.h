@@ -6,60 +6,64 @@
 #define JVEC_H
 
 #define T int
-#define JVec         JVecInt
-#define JVecType     JVecIntType
-#define JVecIter     JVecIntIter
+#define JVec JVecInt
+#define JVecType JVecIntType
+#define JVecIter JVecIntIter
 #define JVecIterType JVecIntIterType
-#define JVecInit     JVecIntInit
+#define JVecInit JVecIntInit
 #include "jarrayt.h"
 
 #define T double
-#define JVec         JVecDouble
-#define JVecType     JVecDoubleType
-#define JVecIter     JVecDoubleIter
+#define JVec JVecDouble
+#define JVecType JVecDoubleType
+#define JVecIter JVecDoubleIter
 #define JVecIterType JVecDoubleIterType
-#define JVecInit     JVecDoubleInit
+#define JVecInit JVecDoubleInit
 #include "jarrayt.h"
 
 #endif
 
 #else
 
-struct JVec;         typedef struct JVec         JVec;
-struct JVecType;     typedef struct JVecType     JVecType;
-struct JVecIter;     typedef struct JVecIter     JVecIter;
-struct JVecIterType; typedef struct JVecIterType JVecIterType;
+struct JVec;
+typedef struct JVec JVec;
+struct JVecType;
+typedef struct JVecType JVecType;
+struct JVecIter;
+typedef struct JVecIter JVecIter;
+struct JVecIterType;
+typedef struct JVecIterType JVecIterType;
 
 struct JVecIterType {
-    int        (*cmp)      (JVecIter*, JVecIter*);
-    JVecIter (*inc)      (JVecIter*);
-    JVecIter (*dec)      (JVecIter*);
-    JVecIter (*add_int)  (JVecIter*, Long);
-    JVecIter (*sub_int)  (JVecIter*, Long);
-    Long       (*sub_iter) (JVecIter*, JVecIter*);
-    T*         (*get)      (JVecIter*);
+  int (*cmp)(JVecIter *, JVecIter *);
+  JVecIter (*inc)(JVecIter *);
+  JVecIter (*dec)(JVecIter *);
+  JVecIter (*add_int)(JVecIter *, Long);
+  JVecIter (*sub_int)(JVecIter *, Long);
+  Long (*sub_iter)(JVecIter *, JVecIter *);
+  T *(*get)(JVecIter *);
 };
 
 struct JVecIter {
-    JVecIterType* t;
-    T* p;
+  JVecIterType *t;
+  T *p;
 };
 
 struct JVecType {
-    JVecIter (*begin)     (JVec*);
-    JVecIter (*end)       (JVec*);
-    Long       (*push_back) (JVec*, T*);
-    jbool      (*pop_back)  (JVec*, T*);
+  JVecIter (*begin)(JVec *);
+  JVecIter (*end)(JVec *);
+  Long (*push_back)(JVec *, T *);
+  jbool (*pop_back)(JVec *, T *);
 };
 
 struct JVec {
-    JVecType* t;
-    T* begin;
-    T* end;
-    T* cap;
+  JVecType *t;
+  T *begin;
+  T *end;
+  T *cap;
 };
 
-void JVecInit (JVec*);
+void JVecInit(JVec *);
 
 #undef T
 #undef JVec

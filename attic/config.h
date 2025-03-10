@@ -1,1 +1,1 @@
-#define HAS_TYPED_ENUM 
+#define HAS_TYPED_ENUM

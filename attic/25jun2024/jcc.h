@@ -1,34 +1,24 @@
 #ifndef JCC_H
 #define JCC_H
 
+#include "jarray.h"
 #include "jbase.h"
 #include "jrtype.h"
-#include "jarray.h"
 
-struct jmap
-{
-};
+struct jmap {};
 
-struct jhash
-{
-};
+struct jhash {};
 
-struct jstr
-{
-};
+struct jstr {};
 
-struct ctype
-{
-};
+struct ctype {};
 
 /* or hfile, really a cprefile */
-struct cfile
-{
-};
+struct cfile {};
 
 /* cpre */
 
-//copen
+// copen
 
 /* clex */
 

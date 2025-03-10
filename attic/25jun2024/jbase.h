@@ -10,12 +10,12 @@ typedef long Long;
 typedef long jlong, jssize, jssize_t;
 #endif
 
-typedef void* jvoidp; /* void pointer, not portable to pre-ANSI C */
-typedef char* jcharp; /* character pointer */
+typedef void *jvoidp; /* void pointer, not portable to pre-ANSI C */
+typedef char *jcharp; /* character pointer */
 
 typedef char jbool;
 
-#define JPASTEx(x, y) x ## y
+#define JPASTEx(x, y) x##y
 #define JPASTE(x, y) JPASTEx(x, y)
 
 #endif

@@ -8,11 +8,10 @@
 extern jrtype jtype_string;
 
 /* runtime type */
-typedef struct jstring
-{
-    jtype* type;
-    Int len;
-    char* chars;
+typedef struct jstring {
+  jtype *type;
+  Int len;
+  char *chars;
 } jstring;
 
 #endif
