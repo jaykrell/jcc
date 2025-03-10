@@ -62,11 +62,11 @@ jlist_t *jlist_remove_element(jlist_t *element) {
 }
 
 jlist_t *jlist_remove_first(jlist_t *list) {
-  return jlist_remove_element(list->flink);
+  return list ? jlist_remove_element(list->flink) : 0;
 }
 
 jlist_t *jlist_remove_last(jlist_t *list) {
-  return jlist_remove_element(list->blink);
+  return list ? jlist_remove_element(list->blink) : 0;
 }
 
 jlong jlist_iterate(jlist_t *list,
