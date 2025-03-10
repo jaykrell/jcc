@@ -31,9 +31,7 @@ int8_t bytes_for_value(int64_t a) {
 
 int8_t bits_for_value(int64_t a) { return bytes_for_value(a) * 8; }
 
-void index_line_work_t::work() {
-  indexing_line_t indexing_line{};
-  auto &fields = indexing_line.fields;
+void indexing_line_t::work() {
   int64_t field_size{};
   int64_t field_offset{};
   int64_t file_position{};
@@ -42,10 +40,8 @@ void index_line_work_t::work() {
     if (indexer->contents[file_position] == ',') {
       fields.push_back(indexing_field_t{field_offset, field_size});
 
-      indexing_line.max_field_offset =
-          std::max(indexing_line.max_field_offset, field_offset);
-      indexing_line.max_field_size =
-          std::max(indexing_line.max_field_size, field_size);
+      max_field_offset = std::max(max_field_offset, field_offset);
+      max_field_size = std::max(max_field_size, field_size);
 
       field_offset = file_position + 1;
       field_size = 0;
@@ -57,13 +53,13 @@ void index_line_work_t::work() {
   // Indexing each line will finish unordered.
   // Queue the data to master to sort and write.
   std::unique_lock<std::mutex> lock(indexer->mutex);
-  indexer->lines.emplace_back(indexing_line);
+  indexer->lines.emplace_back(*this);
   --(indexer->queue_size);
   indexer->condition.notify_one();
 }
 
-unsigned long index_line_work_t::static_work(void *p) {
-  index_line_work_t *self = static_cast<index_line_work_t *>(p);
+unsigned long indexing_line_t::static_work(void *p) {
+  indexing_line_t *self = static_cast<indexing_line_t *>(p);
   self->work();
   delete self;
   return 0;
@@ -92,11 +88,11 @@ void indexer_t::index_file(const char *file_path) {
           std::max(pindex.max_line_contents_offset, file_position);
 
       auto work =
-          std::make_unique<index_line_work_t>(this, line_start, line_size);
+          std::make_unique<indexing_line_t>(this, line_start, line_size);
 
       {
         std::unique_lock<std::mutex> lock(mutex);
-        QueueUserWorkItem(&index_line_work_t::static_work, work.get(), 0);
+        QueueUserWorkItem(&indexing_line_t::static_work, work.get(), 0);
         work.release();
         ++queue_size;
       }

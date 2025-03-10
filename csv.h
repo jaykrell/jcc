@@ -11,6 +11,8 @@
 
 namespace csv {
 
+struct indexer_t;
+
 // temporary in memory form while indexing
 struct indexing_field_t {
   int64_t offset{};
@@ -19,14 +21,22 @@ struct indexing_field_t {
 
 // temporary in memory form while indexing
 struct indexing_line_t {
+
+  indexing_line_t(indexer_t *a, int64_t b, int64_t c)
+      : indexer(a), line_offset(b), line_size(c) {}
+
   bool operator<(const indexing_line_t &other) const {
     return line_offset < other.line_offset;
   }
-  std::vector<indexing_field_t> fields{};
+  indexer_t *indexer{};
   int64_t line_offset{};
   int64_t line_size{};
   int64_t max_field_offset{};
   int64_t max_field_size{};
+  std::vector<indexing_field_t> fields{};
+
+  void work();
+  static unsigned long static_work(void *p);
 };
 
 struct indexer_t;
@@ -73,20 +83,9 @@ struct persistant_index_line_t {
   */
 };
 
-struct index_line_work_t {
-  index_line_work_t(indexer_t *a, int64_t b, int64_t c)
-      : indexer(a), line_offset(b), line_size(c) {}
-  indexer_t *indexer{};
-  int64_t line_offset{};
-  int64_t line_size{};
-
-  void work();
-  static unsigned long static_work(void *p);
-};
-
 struct indexer_t {
-  std::vector<indexing_line_t> lines;
-  std::mutex mutex;
+  std::vector<indexing_line_t> lines{};
+  std::mutex mutex{};
   std::vector<char> contents{};
   int64_t queue_size{};
   std::condition_variable_any condition{};
