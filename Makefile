@@ -10,7 +10,7 @@ ifdef MAKEDIR:
 
 # Microsoft nmake on Windows. Visual C++.
 CFLAGS=-MD -Gy -Z7 -GX
-CPPFLAGS=-MD -Gy -Z7 -GX
+CPPFLAGS=-MD -Gy -Z7 -GX -std:c++20
 
 RM_F = del 2>nul /f
 #ILDASM = ildasm /nobar /out:$@
@@ -40,6 +40,7 @@ exe:
 # jarray.$O \
 
 OBJS=\
+ read_entire_file.$O \
  jerr.$O \
  jhash.$O \
  jlist.$O \
@@ -85,7 +86,12 @@ AMD64=0
 win=win$(EXE)
 !endif
 
-all: $(win) test_vec$(EXE) test_list$(EXE) test_hash$(EXE)
+all: $(win) \
+	test_vec$(EXE) \
+	test_list$(EXE) \
+	test_hash$(EXE) \
+	csv$(EXE) \
+	csv_random_write$(EXE) \
 
 config:
 	.\config.cmd
@@ -131,6 +137,14 @@ test_hash$(EXE): $(OBJS)
 	@rem TODO /GX on old, /EHsc on new
 	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
 	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX test_hash.c $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
+
+csv$(EXE): $(OBJS)
+	@-del $(@R).pdb $(@R).ilk
+	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX csv.cpp $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
+
+csv_random_write$(EXE): $(OBJS)
+	@-del $(@R).pdb $(@R).ilk
+	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX csv_random_write.cpp $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
 
 !else
 else
