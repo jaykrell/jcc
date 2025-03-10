@@ -10,7 +10,7 @@
 #include <string.h>
 
 typedef struct jlist_int_t {
-  jlong value;
+  int value;
   jlist_t list;
 } jlist_int_t;
 
@@ -28,10 +28,6 @@ uint64_t list_enumerate_test2(jvoidp context, jvoidp element) {
 /*************************************************************************************************/
 
 int main(void) {
-  int a = 1;
-  double b = 1;
-  jlong size = {0};
-  jlong i = {0};
   jlist_t l1 = {0};
   jlist_int_t li1 = {1};
   jlist_int_t li2 = {2};
