@@ -12,11 +12,13 @@
 namespace csv {
 
 struct indexer_t;
+union persistant_index_t;
+struct persistant_index_line_t;
 
 // temporary in memory form while indexing
 struct indexing_field_t {
-  int64_t offset{};
-  int64_t size{};
+  int64_t offset;
+  int64_t size;
 };
 
 // temporary in memory form while indexing
@@ -38,10 +40,6 @@ struct indexing_line_t {
   void work();
   static unsigned long static_work(void *p);
 };
-
-struct indexer_t;
-union persistant_index_t;
-struct persistant_index_line_t;
 
 union persistant_index_t {
   struct {

@@ -34,16 +34,12 @@ int8_t bits_for_value(int64_t a) { return bytes_for_value(a) * 8; }
 void indexing_line_t::work() {
   int64_t field_size{};
   int64_t field_offset{};
-  int64_t file_position{};
-  for (file_position = line_offset; file_position < (line_offset + line_size);
-       ++file_position) {
-    if (indexer->contents[file_position] == ',') {
+  for (int64_t i = 0; i < line_size; ++i) {
+    if (indexer->contents[i + line_offset] == ',') {
       fields.push_back(indexing_field_t{field_offset, field_size});
-
       max_field_offset = std::max(max_field_offset, field_offset);
       max_field_size = std::max(max_field_size, field_size);
-
-      field_offset = file_position + 1;
+      field_offset = i + 1;
       field_size = 0;
     } else {
       ++field_size;
