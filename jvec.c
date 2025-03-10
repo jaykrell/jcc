@@ -1,3 +1,4 @@
+/* jvec is like std::vector */
 #ifndef T
 
 #include "jvec.h"

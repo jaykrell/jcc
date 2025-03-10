@@ -8,3 +8,5 @@ But compiling C++ is difficult.
 
 So let's write it in C, so we can compile ourselves.
 But with an approach based on C++. Maybe too much.
+
+Let's have our own libraries too.

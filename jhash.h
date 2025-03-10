@@ -1,3 +1,10 @@
+/*
+* A hash table.
+*
+* Array of buckets, prime count.
+* Collisions are doubly linked list (jlist_t).
+* Full hash code is remembered for quick comparison.
+*/
 #ifndef JHASH_H
 #define JHASH_H 1
 
@@ -11,7 +18,10 @@ typedef struct jhash_t jhash_t;
 typedef struct jhash_init_t jhash_init_t;
 typedef struct jhash_keyvalue_t jhash_keyvalue_t;
 
-/* todo: is this jtype? */
+/* internal */
+typedef struct jhash_keyvalue_t jhash_keyvalue_t;
+
+/* TODO: is this jtype? */
 struct jhash_init_t {
   jvoidp context;
   jhashcode_t (*hash)(jvoidp context, jvoidp data);
@@ -27,7 +37,6 @@ struct jhash_t {
   jhash_init_t init;
   size_t bucket_count;
   jlist_t *buckets; /* array[bucket_count] of lists of jhash_keyvalue_t */
-  juint hash_prime_index;
 };
 
 typedef struct jhash_lookup_t {
@@ -59,10 +68,29 @@ typedef struct jhash_lookup_t {
 
 } jhash_lookup_t;
 
+/* jhash_enum_t e = {h};
+   for (;jhash_enum(e);) {
+     e->key, e->value
+   }
+*/
+typedef struct jhash_enum_t {
+	jhash_t *hash;
+
+	/* public */
+	void* key;
+	void* value;
+
+	/* internal */
+	size_t bucket_index;
+	jlist_t* list;
+	jlist_t* element;
+} jhash_enum_t;
+
 int jhash_new(jhash_init_t *init, jhash_t **);
 int jhash_lookup(jhash_t *hash, jhash_lookup_t *);
 int jhash_insert(jhash_t *hash, jhash_lookup_t *);
 int jhash_lookup_and_remove(jhash_t *hash, jhash_lookup_t *lookup);
 int jhash_remove_after_lookup(jhash_t *hash, jhash_lookup_t *lookup);
+int jhash_enum(jhash_enum_t* e);
 
 #endif
