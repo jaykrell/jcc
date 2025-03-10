@@ -66,8 +66,8 @@ unsigned long indexing_line_t::static_work(void *p) {
 }
 
 void indexer_t::index_file(const char *file_path) {
-  persistant_index_t pindex{};
-  pindex.version[0] = 1;
+  persistant_index_t index_header{};
+  index_header.version[0] = 1;
   std::string index_file_path = std::string(file_path) + ".index";
   read_entire_file(file_path, contents);
 
@@ -82,10 +82,10 @@ void indexer_t::index_file(const char *file_path) {
       file_position += (ch == '\r' && (file_position + 1) < contents.size() &&
                         contents[file_position + 1] == '\n');
 
-      pindex.max_line_contents_size =
-          std::max(pindex.max_line_contents_size, line_size);
-      pindex.max_line_contents_offset =
-          std::max(pindex.max_line_contents_offset, file_position);
+      index_header.max_line_contents_size =
+          std::max(index_header.max_line_contents_size, line_size);
+      index_header.max_line_contents_offset =
+          std::max(index_header.max_line_contents_offset, file_position);
 
       auto work =
           std::make_unique<indexing_line_t>(this, line_start, line_size);
@@ -110,21 +110,21 @@ void indexer_t::index_file(const char *file_path) {
 
   std::sort(lines.begin(), lines.end());
 
-  pindex.max_field_count =
+  index_header.max_field_count =
       std::max_element(lines.begin(), lines.end(),
                        [](const auto &a, const auto &b) {
                          return a.fields.size() < b.fields.size();
                        })
           ->fields.size();
 
-  pindex.max_field_size =
+  index_header.max_field_size =
       std::max_element(lines.begin(), lines.end(),
                        [](const auto &a, const auto &b) {
                          return a.max_field_size < b.max_field_size;
                        })
           ->max_field_size;
 
-  pindex.max_field_offset =
+  index_header.max_field_offset =
       std::max_element(lines.begin(), lines.end(),
                        [](const auto &a, const auto &b) {
                          return a.max_field_offset < b.max_field_offset;
@@ -132,10 +132,10 @@ void indexer_t::index_file(const char *file_path) {
           ->max_field_offset;
 
   std::vector<char> index_contents;
-  index_contents.resize(sizeof(pindex));
+  index_contents.resize(sizeof(index_header));
 
-  pindex.path_size = strlen(file_path);
-  pindex.offset_to_path = index_contents.size();
+  index_header.path_size = strlen(file_path);
+  index_header.offset_to_path = index_contents.size();
   index_contents.insert(index_contents.end(), file_path,
                         file_path + strlen(file_path) + 1);
 
@@ -146,7 +146,8 @@ void indexer_t::index_file(const char *file_path) {
     index_contents.resize(offset + size);
   };
 
-  pindex.offset_to_lines = index_contents.size();
+  index_contents.resize(round_up(index_contents.size(), 8), 0);
+  index_header.offset_to_lines = index_contents.size();
 
   for (auto &line : lines) {
     index_contents.resize(round_up(index_contents.size(), 8), 0);
@@ -168,9 +169,9 @@ void indexer_t::index_file(const char *file_path) {
       put_int(field.size, field_size_size);
   }
 
-  pindex.total_size = index_contents.size();
+  index_header.total_size = index_contents.size();
 
-  *reinterpret_cast<persistant_index_t *>(&index_contents[0]) = pindex;
+  *reinterpret_cast<persistant_index_t *>(&index_contents[0]) = index_header;
 
   FILE *file = fopen(index_file_path.c_str(), "wb");
   fwrite(&index_contents[0], 1, index_contents.size(), file);
