@@ -1,6 +1,8 @@
 /* comma separated value text file handling */
 
-#pragma once
+#ifndef CVS_H
+#define CVS_H 1
+
 #pragma warning(disable : 4201) // anonymous
 
 #include <condition_variable>
@@ -102,3 +104,5 @@ typedef struct csv_indexer_t {
   std::condition_variable_any condition{};
   void index_file(const char *file_path);
 } csv_indexer_t;
+
+#endif

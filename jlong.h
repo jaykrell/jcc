@@ -7,7 +7,7 @@ typedef __int64 jlong, jlong_t;
 #define JLONG_PRI "I64"
 #else
 typedef long jlong, jlong_t;
-#define JLONG_PRI ""
+#define JLONG_PRI "l"
 #endif
 
 #endif

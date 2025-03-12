@@ -1,5 +1,5 @@
-#ifndef JPECOFF
-#define JPECOFF
+#ifndef JPECOFF_H
+#define JPECOFF_H 1
 
 /*
 pecoff_dos_header
@@ -12,9 +12,8 @@ pecoff_data_directory
 */
 
 typedef struct jpecoff_dos_header_t jpecoff_dos_header_t;
-typedef struct jpecoff_nt_headers32_t
-    jpecoff_nt_headers32v typedef struct jpecoff_nt_headers64_t
-        jpecoff_nt_headers64_t;
+typedef struct jpecoff_nt_headers32_t jpecoff_nt_headers32;
+typedef struct jpecoff_nt_headers64_t jpecoff_nt_headers64_t;
 typedef struct jpecoff_file_header_t jpecoff_file_header_t;
 typedef struct jpecoff_optional_header32_t jpecoff_optional_header32_t;
 typedef struct jpecoff_optional_header64_t jpecoff_optional_header64_t;
@@ -31,37 +30,36 @@ typedef struct jpecoff_section_t jpecoff_section_t;
 
 extern char jpecoff_dos_signature[2];
 extern char jpecoff_pe_signature[4];
-extern char jpecoff_pe_signature;
 
-typedef struct jepecoff_payload_t {
+typedef struct jpecoff_payload_t {
   char *bytes;
   int size;
 
-} jepecoff_payload_t;
+} jpecoff_payload_t;
 
-typedef struct jepecoff_section_t {
+typedef struct jpecoff_section_t {
   const char *name;
   int ordinal;
   int no_name : 1;
   jpecoff_section_t *section;
   int rva;
-} jepecoff_section_t;
+} jpecoff_section_t;
 
-typedef struct jepecoff_export_t {
+typedef struct jpecoff_export_t {
   const char *name;
   int ordinal;
   int no_name : 1;
   jpecoff_section_t *section;
   int rva;
-} jepecoff_export_t;
+} jpecoff_export_t;
 
-int jepecoff_dos_header_get_serialized_size();
-int jepecoff_dos_header_serialized();
+int jepecoff_dos_header_get_serialized_size(void);
+int jepecoff_dos_header_serialized(void);
 
 int jepecoff_lib_new(jpecoff_lib_t **self);
 int jepecoff_file_new(jpecoff_file_t **self, int type);
 
-int jepecoff_file_section_new(jepecoff_file_t *, jpecoff_section_t **);
-int jepecoff_finish();
+int jepecoff_file_section_new(jpecoff_file_t *, jpecoff_section_t **);
+int jepecoff_finish(void);
 
 #endif

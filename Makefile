@@ -9,10 +9,13 @@ ifdef MAKEDIR:
 !ifdef MAKEDIR
 
 # Microsoft nmake on Windows. Visual C++.
-CFLAGS=-MD -Gy -Z7 -GX
-CPPFLAGS=-MD -Gy -Z7 -GX -std:c++20
+CFLAGS=-MD -Gy -Z7 -GX -W4 -GX
+CPPFLAGS=-MD -Gy -Z7 -GX -std:c++20 -W4 -GX
+CXXFLAGS=-MD -Gy -Z7 -GX -std:c++20 -W4 -GX
+CXX=cl
 
-RM_F = del 2>nul /f
+RM = del 2>nul
+RM_F = $(RM) /f
 #ILDASM = ildasm /nobar /out:$@
 #ILASM = ilasm /quiet
 #RUN_EACH=for %%a in (
@@ -20,13 +23,19 @@ RM_F = del 2>nul /f
 O=obj
 EXE=.exe
 
+CLINK_FLAGS=/link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
+
 !else
 else
 
 # GNU/Posix make on Unix with gcc, clang, etc.
-RM_F = rm -f
+RM = rm
+RM_F = $(RM) -f
 O=o
 EXE=
+CXX=g++
+
+CLINK_FLAGS=-o $@
 
 endif
 !endif :
@@ -88,12 +97,14 @@ AMD64=0
 win=win$(EXE)
 !endif
 
-all: $(win) \
-	test_vec$(EXE) \
-	test_list$(EXE) \
-	test_hash$(EXE) \
-	csv$(EXE) \
-	csv_random_write$(EXE) \
+all:
+
+#all: $(win) \
+#	test_vec$(EXE) \
+#	test_list$(EXE) \
+#	test_hash$(EXE) \
+#	csv$(EXE) \
+#	csv_random_write$(EXE) \
 
 config:
 	.\config.cmd
@@ -109,44 +120,6 @@ debug: $(win)
 !elseif $(386)
 	\bin\x86\cdb .\$(win) hello.wasm
 !endif
-
-# TODO clang cross
-#
-#mac: w3.cpp
-#	g++ -g -o $@
-#
-
-$(win): $(OBJS)
-	@-del $(@R).pdb $(@R).ilk
-	@rem TODO /GX on old, /EHsc on new
-	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
-	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX cmain.c /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
-
-test_vec$(EXE): $(OBJS)
-	@-del $(@R).pdb $(@R).ilk
-	@rem TODO /GX on old, /EHsc on new
-	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
-	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX test_vec.c $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
-
-test_list$(EXE): $(OBJS)
-	@-del $(@R).pdb $(@R).ilk
-	@rem TODO /GX on old, /EHsc on new
-	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
-	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX test_list.c $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
-
-test_hash$(EXE): $(OBJS)
-	@-del $(@R).pdb $(@R).ilk
-	@rem TODO /GX on old, /EHsc on new
-	rem cl -MD -Gy -Z7 /O2s $(Wall) $(Qspectre) -W4 -GX $** /link /out:$@ /incremental:no /opt:ref,icf
-	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX test_hash.c $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
-
-csv$(EXE): $(OBJS)
-	@-del $(@R).pdb $(@R).ilk
-	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX csv.cpp $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
-
-csv_random_write$(EXE): $(OBJS)
-	@-del $(@R).pdb $(@R).ilk
-	cl -MD -Gy -Z7 $(Wall) $(Qspectre) -W4 /GX csv_random_write.cpp $** /link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
 
 !else
 else
@@ -171,7 +144,8 @@ endif
 # TODO Darwin, Linux, etc.
 
 # FIXME winarm64 etc.
-all: $(NativeTarget) win32$(EXE) win64$(EXE)
+#all: $(NativeTarget) win32$(EXE) win64$(EXE)
+all:
 
 run: $(NativeTarget)
 	./$(NativeTarget) /s/mono/mcs/class/lib/build-macos/mscorlib.dll
@@ -199,7 +173,44 @@ test:
 endif
 !endif :
 
+all: test_vec$(EXE) \
+	test_list$(EXE) \
+	test_hash$(EXE) \
+	csv$(EXE) \
+	csv_random_write$(EXE) \
+
+# TODO clang cross
+#
+#mac: w3.cpp
+#	g++ -g -o $@
+#
+
+$(win): $(OBJS)
+	-$(RM) $(@R).pdb $(@R).ilk
+	$(CXX) $(CXXFLAGS) $(Wall) $(Qspectre) cmain.c $(CLINK_FLAGS)
+
+test_vec$(EXE): $(OBJS)
+	-$(RM) $(@R).pdb $(@R).ilk
+	$(CXX) $(CXXFLAGS) $(Wall) $(Qspectre) test_vec.c $(OBJS) $(CLINK_FLAGS)
+
+test_list$(EXE): $(OBJS)
+	-$(RM) $(@R).pdb $(@R).ilk
+	$(CXX) $(CXXFLAGS) $(Wall) $(Qspectre) test_list.c $(OBJS) $(CLINK_FLAGS)
+
+test_hash$(EXE): $(OBJS)
+	-$(RM) $(@R).pdb $(@R).ilk
+	$(CXX) $(CXXFLAGS) $(Wall) $(Qspectre) test_hash.c $(OBJS) $(CLINK_FLAGS)
+
+csv$(EXE): $(OBJS)
+	-$(RM) $(@R).pdb $(@R).ilk
+	$(CXX) $(CXXFLAGS) $(Wall) $(Qspectre) csv.cpp $(OBJS) $(CLINK_FLAGS)
+
+csv_random_write$(EXE): $(OBJS)
+	-$(RM) $(@R).pdb $(@R).ilk
+	$(CXX) $(CXXFLAGS) $(Wall) $(Qspectre) csv_random_write.cpp $(OBJS) $(CLINK_FLAGS)
+
 clean:
+	$(RM_F) *.h.gch
 	$(RM_F) 1$(EXE) 2$(EXE) genprimes$(EXE)
 	$(RM_F) csv$(EXE) csv_random_write$(EXE)
 	$(RM_F) camd64.$(O) carm64.$(O) ccheck.$(O) ccpe.$(O) celf.$(O) clex.$(O)

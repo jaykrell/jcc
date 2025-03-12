@@ -1,5 +1,6 @@
 /* comma separated value text file handling */
 
+#if _WIN32
 #define NOMINMAX
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma warning(disable : 4018) // unsigned/signed mismatch
@@ -243,3 +244,5 @@ int main(int /*argc*/, char **argv) {
 #include "jvec_deps.h"
 #define T csv_indexing_field_t
 #include "jvec.c"
+
+#endif

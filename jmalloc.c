@@ -18,7 +18,7 @@ void jmalloc_free(jmalloc_t* self, void* p)
 	free(p);
 }
 
-extern jmalloc_t jmalloc_default = {
+jmalloc_t jmalloc_default = {
 	jmalloc_malloc,
 	jmalloc_realloc,
 	jmalloc_free
