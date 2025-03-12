@@ -201,6 +201,7 @@ endif
 
 clean:
 	$(RM_F) 1$(EXE) 2$(EXE) genprimes$(EXE)
+	$(RM_F) csv$(EXE) csv_random_write$(EXE)
 	$(RM_F) camd64.$(O) carm64.$(O) ccheck.$(O) ccpe.$(O) celf.$(O) clex.$(O)
 	$(RM_F) cmacho.$(O) cmain.$(O) config.cpp config.mk config.$(O)
 	$(RM_F) copt.$(O) cparse.$(O) cpe.$(O) cpre.$(O) cx86.$(O) jerr.$(O)
@@ -208,3 +209,6 @@ clean:
 	$(RM_F) test1.$(O) test1.pdb typedenum.cpp typedenum.$(O) winamd64$(EXE) winamd64.pdb
 	$(RM_F) mscver.cpp typedenum.cpp *.o *.$(O) w3rt.o w3rt.$(O) mac win32 win32$(EXE) win64 win64$(EXE) win win$(EXE) cyg cyg$(EXE) *.ilk lin win$(EXE) winarm$(EXE) winx86$(EXE) winamd64$(EXE)
 	$(RM_F) $(win) mscver.cpp typedenum.cpp *.o *.$(O) config.cpp config.mk w3rt.o w3rt.$(O) w3.$(O) *.ilk win32 win32$(EXE) win64 win64$(EXE) win win$(EXE) winarm$(EXE) winx86$(EXE) winamd64$(EXE) *.pdb lin *.i
+
+realclean: clean
+	$(RM_F) 1.csv 1.csv.index
