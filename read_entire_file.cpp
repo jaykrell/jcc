@@ -2,22 +2,36 @@
 #include <stdio.h>
 #include <vector>
 
-void read_entire_file(const char *file_path, std::vector<char> &contents) {
-  size_t size = 0;
-  contents.resize(0x10000);
-  FILE *file = fopen(file_path, "rb");
-  if (!file)
+void read_entire_file(read_entire_file_t* self) {
+  size_t capacity = 0x10000;
+  jstdio_t* stdio = self->stdio;
+  jmalloc_t* malloc = self->malloc;
+
+  FILE *file = stdio->fopen(stdio, self->file_path, "rb");
+  self->size = 0;
+  if (!file) {
+	  self->fopen_failed = 1;
     return;
+  }
+  if (!(self->contents = (char*)malloc->malloc(malloc, capacity)))
+  {
+	  self->out_of_memory = 1;
+	  return;
+  }
   while (1) {
-    size_t bytes_to_read = (contents.size() - size);
-    size_t bytes_read = fread(&contents[size], 1, bytes_to_read, file);
-    if (bytes_read)
-      size += bytes_read;
+    size_t bytes_to_read = (capacity - self->size);
+    size_t bytes_read = stdio->fread(stdio, &self->contents[self->size], 1, bytes_to_read, file);
+    self->size += bytes_read;
     if (bytes_read < bytes_to_read) {
-      contents.resize(size);
-      fclose(file);
+		self->contents = (char*)malloc->realloc(malloc, self->contents, self->size);
+      stdio->fclose(stdio, file);
       return;
     }
-    contents.resize(contents.size() * 2);
+	void* new_contents = malloc->realloc(malloc, self->contents, capacity *= 2);
+	if (!new_contents) {
+	  self->out_of_memory = 1;
+	  return;
+	}
+	self->contents = (char*)new_contents;
   }
 }
