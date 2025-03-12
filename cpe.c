@@ -1,3 +1,3 @@
-/* WIndows pecoff handling. */
+/* Windows pecoff handling. */
 char cpe;
 
