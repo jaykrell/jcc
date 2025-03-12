@@ -44,7 +44,7 @@ typedef int JErr, jerr;
 
 #elif 1
 
-typedef enum JErr {
+enum {
   jerr_out_of_memory = -32767,
   jerr_nullptr,
   jerr_invalid_parameter,
@@ -52,8 +52,9 @@ typedef enum JErr {
   jerr_not_found,
   jerr_syntax_error,
   jnoerr = 0,
-} JErr,
-    jerr;
+};
+
+typedef int jerr;
 
 #else
 typedef char *jerr;

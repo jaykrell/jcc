@@ -9,6 +9,8 @@
 #include <thread>
 #include <vector>
 
+#include "jvec.h"
+
 struct csv_indexer_t;
 union csv_persistant_index_t;
 struct csv_persistant_index_line_t;
@@ -19,8 +21,14 @@ typedef struct csv_indexing_field_t {
   int64_t size;
 } csv_indexing_field_t;
 
-// temporary in memory form while indexing
-typedef struct csv_indexing_line_t {
+typedef struct csv_indexing_line_t csv_indexing_line_t;
+
+/* temporary in memory form while indexing */
+
+#define T csv_indexing_field_t
+#include "jvec.h"
+
+struct csv_indexing_line_t {
 
   csv_indexing_line_t(csv_indexer_t *a, int64_t b, int64_t c)
       : indexer(a), line_offset(b), line_size(c) {}
@@ -34,10 +42,13 @@ typedef struct csv_indexing_line_t {
   int64_t max_field_offset{};
   int64_t max_field_size{};
   std::vector<csv_indexing_field_t> fields{};
+  jvec_csv_indexing_field_t fields2{};
 
   void work();
   static unsigned long static_work(void *p);
-} csv_indexing_line_t;
+};
+
+void csv_indexing_line_init(csv_indexing_line_t* self);
 
 typedef union csv_persistant_index_t {
   struct {

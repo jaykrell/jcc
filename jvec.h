@@ -3,6 +3,7 @@
 #include "jbase.h"
 #include "jerr.h"
 #include "jtype.h"
+#include "jpaste.h"
 
 #ifndef T
 
@@ -10,32 +11,27 @@
 #define JVEC_H 1
 
 #define T char
-#define jvec jvec_char
-#define jvec_type jvec_char_type
-#define jvec_iter jvec_char_iter
-#define jvec_iter_type jvec_char_iter_type
-#define jvec_init jvec_char_init
 #include "jvec.h"
 
 #define T int
-#define jvec jvec_int
-#define jvec_type jvec_int_type
-#define jvec_iter jvec_int_iter
-#define jvec_iter_type jvec_int_iter_type
-#define jvec_init jvec_int_init
 #include "jvec.h"
 
 #define T double
-#define jvec jvec_double
-#define jvec_type jvec_double_type
-#define jvec_iter jvec_double_iter
-#define jvec_iter_type jvec_double_iter_type
-#define jvec_init jvec_double_init
 #include "jvec.h"
 
 #endif
 
 #else
+
+#if __cplusplus
+extern "C" {
+#endif
+
+#define jvec           JPASTE(jvec_, T)
+#define jvec_type      JPASTE3(jvec_,T,_type)
+#define jvec_iter      JPASTE3(jvec_,T,_iter)
+#define jvec_iter_type JPASTE3(jvec_,T,_iter_type)
+#define jvec_init      JPASTE3(jvec_,T,_init)
 
 typedef struct jvec jvec; /* a vector, a growable array, like std::vector */
 typedef struct jvec_type
@@ -91,5 +87,9 @@ void jvec_init(jvec *v);
 #undef jvec_iter
 #undef jvec_iter_type
 #undef jvec_init
+
+#if __cplusplus
+}
+#endif
 
 #endif

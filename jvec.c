@@ -5,32 +5,25 @@
 #include "jerr.h"
 #include "jmax.h"
 #include <stdlib.h>
+#include "jpaste.h"
+#include "jlong.h"
 
 #define T char
-#define jvec jvec_char
-#define jvec_type jvec_char_type
-#define jvec_iter jvec_char_iter
-#define jvec_iter_type jvec_char_iter_type
-#define jvec_init jvec_char_init
 #include "jvec.c"
 
 #define T int
-#define jvec jvec_int
-#define jvec_type jvec_int_type
-#define jvec_iter jvec_int_iter
-#define jvec_iter_type jvec_int_iter_type
-#define jvec_init jvec_int_init
 #include "jvec.c"
 
 #define T double
-#define jvec jvec_double
-#define jvec_type jvec_double_type
-#define jvec_iter jvec_double_iter
-#define jvec_iter_type jvec_double_iter_type
-#define jvec_init jvec_double_init
 #include "jvec.c"
 
 #else
+
+#define jvec           JPASTE(jvec_, T)
+#define jvec_type      JPASTE3(jvec_,T,_type)
+#define jvec_iter      JPASTE3(jvec_,T,_iter)
+#define jvec_iter_type JPASTE3(jvec_,T,_iter_type)
+#define jvec_init      JPASTE3(jvec_,T,_init)
 
 /* jvec_iter */
 jvec_iter JPASTE(jvec_iter_type, _add_int)(jvec_iter ai, jlong i);

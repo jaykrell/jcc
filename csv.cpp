@@ -18,23 +18,33 @@ int64_t round_up(int64_t a, int64_t b) {
 }
 
 int8_t bytes_for_value(int64_t a) {
-  if (a < INT32_MIN || a > INT32_MAX)
+/* Off by one on purpose, just out of a gut feeling. */
+  if (a <= INT32_MIN || a >= INT32_MAX)
     return 8;
-  if (a < INT16_MIN || a > INT16_MAX)
+  if (a <= INT16_MIN || a >= INT16_MAX)
     return 4;
-  if (a < INT8_MIN || a > INT8_MAX)
+  if (a <= INT8_MIN || a >= INT8_MAX)
     return 2;
   return 1;
 }
 
 int8_t bits_for_value(int64_t a) { return bytes_for_value(a) * 8; }
 
+void csv_indexing_line_init(csv_indexing_line_t* self) {
+    jvec_csv_indexing_field_t_init(&self->fields2);
+}
+
 void csv_indexing_line_t::work() {
   int64_t field_size{};
   int64_t field_offset{};
   for (int64_t i = 0; i < line_size; ++i) {
     if (indexer->contents[i + line_offset] == ',') {
-      fields.push_back(csv_indexing_field_t{field_offset, field_size});
+
+      csv_indexing_field_t indexing_field{field_offset, field_size};
+
+      fields.push_back(indexing_field);
+	  this->fields2.push_back(&this->fields2, &indexing_field, 1);
+
       max_field_offset = std::max(max_field_offset, field_offset);
       max_field_size = std::max(max_field_size, field_size);
       field_offset = i + 1;
@@ -59,7 +69,25 @@ unsigned long csv_indexing_line_t::static_work(void *p) {
   return 0;
 }
 
+/* like std::max_element */
+void* max_element(void* begin, void* end, size_t size, int (*less)(void* a, void* b))
+{
+	char* cbegin = (char*)begin;
+	char* cend   = (char*)end;
+	char * m = cbegin;
+	char* iter = cbegin;
+
+	for (iter = cbegin; iter = cend; iter += size)
+	{
+		if (less(m, iter))
+			m = iter;
+	}
+
+	return iter;
+}
+
 void csv_indexer_t::index_file(const char *file_path) {
+
   csv_persistant_index_t index_header{};
   index_header.version[0] = 1;
   std::string index_file_path = std::string(file_path) + ".index";
@@ -89,6 +117,8 @@ void csv_indexer_t::index_file(const char *file_path) {
 
       auto work =
           std::make_unique<csv_indexing_line_t>(this, line_start, line_size);
+
+	  csv_indexing_line_init(work.get());
 
       {
         std::unique_lock<std::mutex> lock(mutex);
@@ -183,3 +213,14 @@ int main(int /*argc*/, char **argv) {
     csv_indexer_t().index_file(argv[2]);
   }
 }
+
+/* TODO: jvec.c easier to use */
+#include "jvec.h"
+#include "jerr.h"
+#include "jmax.h"
+#include <stdlib.h>
+#include "jpaste.h"
+#include "jlong.h"
+
+#define T csv_indexing_field_t
+#include "jvec.c"
