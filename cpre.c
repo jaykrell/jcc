@@ -1,1 +1,4 @@
+/* C preprocessor. */
+
+char cpre;
 
