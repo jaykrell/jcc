@@ -1,7 +1,7 @@
 #include "jlist.h"
 #include "jcharp.h"
 #include "jvoidp.h"
-/* Circular doubly linked lists.
+/* Intrusive circular doubly linked lists.
    Based on NT and EFI LIST_ENTRY.
 */
 void jlist_init(jlist_t *list) {
