@@ -14,6 +14,14 @@ typedef struct read_entire_file_t {
 	int fopen_failed;
 } read_entire_file_t;
 
+#if __cplusplus
+extern "C" {
+#endif
+
 void read_entire_file(read_entire_file_t* self);
+
+#if __cplusplus
+}
+#endif
 
 #endif
