@@ -162,14 +162,21 @@ fail:
 
 /* TODO: useful for reuse during rehash */
 static int jhash_insert_data(jhash_t *hash, jhash_lookup_t *lookup,
-                             jhash_data_t *data) {
+                             jhash_data_t *data)
+/* Internal common code for inserting new data.
+*/
+{
   jlist_append(&hash->buckets[lookup->hashcode % hash->bucket_count],
                &data->list);
   ++(hash->element_count);
   return 0;
 }
 
-int jhash_insert_new_after_lookup(jhash_t *hash, jhash_lookup_t *lookup) {
+int jhash_insert_new_after_lookup(jhash_t *hash, jhash_lookup_t *lookup)
+/* Having already looked up an element and presumably it was not found,
+   insert new. This reduces excess calls to hash in common patterns.
+*/
+{
   int err = {0};
   jhash_init_t *const init = &hash->init;
   jhash_data_t *data =
@@ -189,15 +196,27 @@ int jhash_insert_new_after_lookup(jhash_t *hash, jhash_lookup_t *lookup) {
   return jhash_insert_data(hash, lookup, data);
 }
 
-int jhash_lookup_and_insert_new(jhash_t *hash, jhash_lookup_t *lookup) {
+int jhash_lookup_and_insert_new(jhash_t *hash, jhash_lookup_t *lookup)
+/* Lookup an element and if it is there, return jerr_found.
+   It not found, insert it, and return jerr_not_found.
+   Wierd to always error?
+*/
+{
   jhash_lookup_t existing = *lookup;
   if (!jhash_lookup(hash, &existing))
     return jerr_found;
   lookup->hashcode = existing.hashcode;
-  return jhash_insert_new_after_lookup(hash, lookup);
+  int err = jhash_insert_new_after_lookup(hash, lookup);
+  return err ? err : jerr_not_found;
 }
 
-int jhash_lookup_and_insert_replace(jhash_t *hash, jhash_lookup_t *lookup) {
+int jhash_lookup_and_insert_replace(jhash_t *hash, jhash_lookup_t *lookup)
+/* Lookup an element and if it is there, replace it, if not add new.
+   Return value jerr_found if it was found and replaced.
+   Return value jerr_not_found if not found and new added.
+   Wierd to always error?
+*/
+{
   jhash_lookup_t existing = *lookup;
   jhash_init_t *const init = &hash->init;
   jhash_lookup(hash, &existing);
@@ -207,7 +226,8 @@ int jhash_lookup_and_insert_replace(jhash_t *hash, jhash_lookup_t *lookup) {
   }
   jhash_remove_after_lookup(hash, &existing);
   lookup->hashcode = existing.hashcode;
-  return jhash_insert_new_after_lookup(hash, lookup);
+  int err = jhash_insert_new_after_lookup(hash, lookup);
+  return err ? err : jerr_not_found;
 }
 
 /* Remove data from a hashtable, having already looked it up. */
