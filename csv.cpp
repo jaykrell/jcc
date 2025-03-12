@@ -224,13 +224,6 @@ int main(int /*argc*/, char **argv) {
   }
 }
 
-/* TODO: jvec.c easier to use */
-#include "jvec.h"
-#include "jerr.h"
-#include "jmax.h"
-#include <stdlib.h>
-#include "jpaste.h"
-#include "jssize.h"
-
+#include "jvec_deps.h"
 #define T csv_indexing_field_t
 #include "jvec.c"

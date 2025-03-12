@@ -1,12 +1,13 @@
+/* jcc, jlib, etc. by Jay Krell */
+
 /* jvec is like std::vector */
+
+/* TODO: Remove the len parameter from push_back? */
+/* TODO: vptr instead of vtable? */
+
 #ifndef T
 
-#include "jvec.h"
-#include "jerr.h"
-#include "jmax.h"
-#include <stdlib.h>
-#include "jpaste.h"
-#include "jssize.h"
+#include "jvec_deps.h"
 
 #define T char
 #include "jvec.c"
