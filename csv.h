@@ -9,39 +9,37 @@
 #include <thread>
 #include <vector>
 
-namespace csv {
-
-struct indexer_t;
-union persistant_index_t;
-struct persistant_index_line_t;
+struct csv_indexer_t;
+union csv_persistant_index_t;
+struct csv_persistant_index_line_t;
 
 // temporary in memory form while indexing
-struct indexing_field_t {
+typedef struct csv_indexing_field_t {
   int64_t offset;
   int64_t size;
-};
+} csv_indexing_field_t;
 
 // temporary in memory form while indexing
-struct indexing_line_t {
+typedef struct csv_indexing_line_t {
 
-  indexing_line_t(indexer_t *a, int64_t b, int64_t c)
+  csv_indexing_line_t(csv_indexer_t *a, int64_t b, int64_t c)
       : indexer(a), line_offset(b), line_size(c) {}
 
-  bool operator<(const indexing_line_t &other) const {
+  bool operator<(const csv_indexing_line_t &other) const {
     return line_offset < other.line_offset;
   }
-  indexer_t *indexer{};
+  csv_indexer_t *indexer{};
   int64_t line_offset{};
   int64_t line_size{};
   int64_t max_field_offset{};
   int64_t max_field_size{};
-  std::vector<indexing_field_t> fields{};
+  std::vector<csv_indexing_field_t> fields{};
 
   void work();
   static unsigned long static_work(void *p);
-};
+} csv_indexing_line_t;
 
-union persistant_index_t {
+typedef union csv_persistant_index_t {
   struct {
     int8_t version[8];
     int8_t endian;
@@ -61,9 +59,9 @@ union persistant_index_t {
     int64_t offset_to_contents; /* 0 if not present */
   };
   uint8_t page[0x1000];
-};
+} csv_persistant_index_t;
 
-struct persistant_index_line_t {
+typedef struct csv_persistant_index_line_t {
   /* Realistically there are only a few encodings and this could be
   an index into an array of them collected across all lines.
   Index 0 could be reserved for 64/64/64, then store one byte here
@@ -79,15 +77,13 @@ struct persistant_index_line_t {
           int<field_offset_size>_t field_offsets[field_count]; // from start of
      line int<field_size_size>_t   field_sizes[field_count];
   */
-};
+} csv_persistant_index_line_t;
 
-struct indexer_t {
-  std::vector<indexing_line_t> lines{};
+typedef struct csv_indexer_t {
+  std::vector<csv_indexing_line_t> lines{};
   std::mutex mutex{};
   char* contents{};
   int64_t queue_size{};
   std::condition_variable_any condition{};
   void index_file(const char *file_path);
-};
-
-} // namespace csv
+} csv_indexer_t;

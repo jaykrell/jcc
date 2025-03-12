@@ -12,8 +12,6 @@
 #include <thread>
 #include <windows.h> // TODO: C++20 std::thread and portable mmap
 
-namespace csv {
-
 int64_t round_up(int64_t a, int64_t b) {
   int64_t mod = (a % b);
   return (mod ? (a + b - mod) : a);
@@ -31,12 +29,12 @@ int8_t bytes_for_value(int64_t a) {
 
 int8_t bits_for_value(int64_t a) { return bytes_for_value(a) * 8; }
 
-void indexing_line_t::work() {
+void csv_indexing_line_t::work() {
   int64_t field_size{};
   int64_t field_offset{};
   for (int64_t i = 0; i < line_size; ++i) {
     if (indexer->contents[i + line_offset] == ',') {
-      fields.push_back(indexing_field_t{field_offset, field_size});
+      fields.push_back(csv_indexing_field_t{field_offset, field_size});
       max_field_offset = std::max(max_field_offset, field_offset);
       max_field_size = std::max(max_field_size, field_size);
       field_offset = i + 1;
@@ -54,15 +52,15 @@ void indexing_line_t::work() {
   indexer->condition.notify_one();
 }
 
-unsigned long indexing_line_t::static_work(void *p) {
-  indexing_line_t *self = static_cast<indexing_line_t *>(p);
+unsigned long csv_indexing_line_t::static_work(void *p) {
+  csv_indexing_line_t *self = static_cast<csv_indexing_line_t *>(p);
   self->work();
   delete self;
   return 0;
 }
 
-void indexer_t::index_file(const char *file_path) {
-  persistant_index_t index_header{};
+void csv_indexer_t::index_file(const char *file_path) {
+  csv_persistant_index_t index_header{};
   index_header.version[0] = 1;
   std::string index_file_path = std::string(file_path) + ".index";
 
@@ -90,11 +88,11 @@ void indexer_t::index_file(const char *file_path) {
           std::max(index_header.max_line_contents_offset, file_position);
 
       auto work =
-          std::make_unique<indexing_line_t>(this, line_start, line_size);
+          std::make_unique<csv_indexing_line_t>(this, line_start, line_size);
 
       {
         std::unique_lock<std::mutex> lock(mutex);
-        QueueUserWorkItem(&indexing_line_t::static_work, work.get(), 0);
+        QueueUserWorkItem(&csv_indexing_line_t::static_work, work.get(), 0);
         work.release();
         ++queue_size;
       }
@@ -173,17 +171,15 @@ void indexer_t::index_file(const char *file_path) {
 
   index_header.total_size = index_contents.size();
 
-  *reinterpret_cast<persistant_index_t *>(&index_contents[0]) = index_header;
+  *reinterpret_cast<csv_persistant_index_t *>(&index_contents[0]) = index_header;
 
   FILE *file_w = fopen(index_file_path.c_str(), "wb");
   fwrite(&index_contents[0], 1, index_contents.size(), file_w);
   fclose(file_w);
 }
 
-} // namespace csv
-
 int main(int /*argc*/, char **argv) {
   if (strcmp(argv[1], "index") == 0) {
-    csv::indexer_t().index_file(argv[2]);
+    csv_indexer_t().index_file(argv[2]);
   }
 }
