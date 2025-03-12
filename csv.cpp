@@ -5,13 +5,13 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma warning(disable : 4018) // unsigned/signed mismatch
 #include "csv.h"
+#include "jmax.h"
 #include "read_entire_file.h"
 #include <algorithm>
 #include <stdio.h>
 #include <string.h>
 #include <string>
 #include <thread>
-#include "jmax.h"
 #include <windows.h> // TODO: C++20 std::thread and portable mmap
 
 int64_t round_up(int64_t a, int64_t b) {
@@ -20,7 +20,7 @@ int64_t round_up(int64_t a, int64_t b) {
 }
 
 int8_t bytes_for_value(int64_t a) {
-/* Off by one on purpose, just out of a gut feeling. */
+  /* Off by one on purpose, just out of a gut feeling. */
   if (a <= INT32_MIN || a >= INT32_MAX)
     return 8;
   if (a <= INT16_MIN || a >= INT16_MAX)
@@ -32,8 +32,8 @@ int8_t bytes_for_value(int64_t a) {
 
 int8_t bits_for_value(int64_t a) { return bytes_for_value(a) * 8; }
 
-void csv_indexing_line_init(csv_indexing_line_t* self) {
-    jvec_csv_indexing_field_t_init(&self->fields2);
+void csv_indexing_line_init(csv_indexing_line_t *self) {
+  jvec_csv_indexing_field_t_init(&self->fields2);
 }
 
 void csv_indexing_line_t::work() {
@@ -45,7 +45,7 @@ void csv_indexing_line_t::work() {
       csv_indexing_field_t indexing_field = {field_offset, field_size};
 
       fields.push_back(indexing_field);
-	  this->fields2.push_back(&this->fields2, &indexing_field, 1);
+      this->fields2.push_back(&this->fields2, &indexing_field, 1);
 
       max_field_offset = JMAX(max_field_offset, field_offset);
       max_field_size = JMAX(max_field_size, field_size);
@@ -72,55 +72,50 @@ unsigned long csv_indexing_line_t::static_work(void *p) {
 }
 
 /* like std::max_element */
-void* max_element(void* begin, void* end, size_t size, bool (*less)(void* a, void* b))
-{
-	char* cbegin = (char*)begin;
-	char* cend   = (char*)end;
-	char * m = cbegin;
-	char* iter = cbegin;
+void *max_element(void *begin, void *end, size_t size,
+                  bool (*less)(void *a, void *b)) {
+  char *cbegin = (char *)begin;
+  char *cend = (char *)end;
+  char *m = cbegin;
+  char *iter = cbegin;
 
-	for (iter = cbegin; iter != cend; iter += size)
-	{
-		if (less(m, iter))
-			m = iter;
-	}
+  for (iter = cbegin; iter != cend; iter += size) {
+    if (less(m, iter))
+      m = iter;
+  }
 
-	return iter;
+  return iter;
 }
 
-bool line_less_by_field_size(void* va, void* vb)
-{
-	csv_indexing_line_t* a = (csv_indexing_line_t*)va;
-	csv_indexing_line_t* b = (csv_indexing_line_t*)vb;
-	return a->fields.size() < b->fields.size();
+bool line_less_by_field_size(void *va, void *vb) {
+  csv_indexing_line_t *a = (csv_indexing_line_t *)va;
+  csv_indexing_line_t *b = (csv_indexing_line_t *)vb;
+  return a->fields.size() < b->fields.size();
 }
 
-bool line_less_by_max_field_size(void* va, void* vb)
-{
-	csv_indexing_line_t* a = (csv_indexing_line_t*)va;
-	csv_indexing_line_t* b = (csv_indexing_line_t*)vb;
-	return a->max_field_size < b->max_field_size;
+bool line_less_by_max_field_size(void *va, void *vb) {
+  csv_indexing_line_t *a = (csv_indexing_line_t *)va;
+  csv_indexing_line_t *b = (csv_indexing_line_t *)vb;
+  return a->max_field_size < b->max_field_size;
 }
 
-bool line_less_by_max_field_offset(void* va, void* vb)
-{
-	csv_indexing_line_t* a = (csv_indexing_line_t*)va;
-	csv_indexing_line_t* b = (csv_indexing_line_t*)vb;
-	return a->max_field_offset < b->max_field_offset;
+bool line_less_by_max_field_offset(void *va, void *vb) {
+  csv_indexing_line_t *a = (csv_indexing_line_t *)va;
+  csv_indexing_line_t *b = (csv_indexing_line_t *)vb;
+  return a->max_field_offset < b->max_field_offset;
 }
 
-int csv_indexing_line_compare(csv_indexing_line_t* a, csv_indexing_line_t* b)
-{
-    if (a->line_offset < b->line_offset)
-		return -1;
-    if (a->line_offset > b->line_offset)
-		return 1;
-	return 0;
+int csv_indexing_line_compare(csv_indexing_line_t *a, csv_indexing_line_t *b) {
+  if (a->line_offset < b->line_offset)
+    return -1;
+  if (a->line_offset > b->line_offset)
+    return 1;
+  return 0;
 }
 
-int csv_indexing_line_compare_v(void* a, void* b)
-{
-	return csv_indexing_line_compare((csv_indexing_line_t*)a, (csv_indexing_line_t*)b);
+int csv_indexing_line_compare_v(void *a, void *b) {
+  return csv_indexing_line_compare((csv_indexing_line_t *)a,
+                                   (csv_indexing_line_t *)b);
 }
 
 void csv_indexer_t::index_file(const char *file_path) {
@@ -140,8 +135,7 @@ void csv_indexer_t::index_file(const char *file_path) {
   int64_t line_start = 0;
   int64_t line_size = 0;
 
-  for (int64_t file_position = 0; file_position < file.size;
-       ++file_position) {
+  for (int64_t file_position = 0; file_position < file.size; ++file_position) {
     char ch = file.contents[file_position];
     if (ch == '\r' || ch == '\n') {
       file_position += (ch == '\r' && (file_position + 1) < file.size &&
@@ -156,7 +150,7 @@ void csv_indexer_t::index_file(const char *file_path) {
       auto work =
           std::make_unique<csv_indexing_line_t>(this, line_start, line_size);
 
-	  csv_indexing_line_init(work.get());
+      csv_indexing_line_init(work.get());
 
       {
         std::unique_lock<std::mutex> lock(mutex);
@@ -177,15 +171,20 @@ void csv_indexer_t::index_file(const char *file_path) {
   }
 
   std::sort(lines.begin(), lines.end());
-  //qsort(csv_indexing_line_compare_v
+  // qsort(csv_indexing_line_compare_v
 
-  csv_indexing_line_t* maxelem = (csv_indexing_line_t*)max_element(&lines.front(), &lines.back(), sizeof(*maxelem), line_less_by_field_size);
+  csv_indexing_line_t *maxelem = (csv_indexing_line_t *)max_element(
+      &lines.front(), &lines.back(), sizeof(*maxelem), line_less_by_field_size);
   index_header.max_field_count = maxelem->fields2.size(&maxelem->fields2);
 
-  maxelem = (csv_indexing_line_t*)max_element(&lines.front(), &lines.back(), sizeof(*maxelem), line_less_by_max_field_size);
+  maxelem = (csv_indexing_line_t *)max_element(&lines.front(), &lines.back(),
+                                               sizeof(*maxelem),
+                                               line_less_by_max_field_size);
   index_header.max_field_size = maxelem->max_field_size;
 
-  maxelem = (csv_indexing_line_t*)max_element(&lines.front(), &lines.back(), sizeof(*maxelem), line_less_by_max_field_offset);
+  maxelem = (csv_indexing_line_t *)max_element(&lines.front(), &lines.back(),
+                                               sizeof(*maxelem),
+                                               line_less_by_max_field_offset);
   index_header.max_field_offset = maxelem->max_field_offset;
 
   std::vector<char> index_contents;
@@ -228,7 +227,8 @@ void csv_indexer_t::index_file(const char *file_path) {
 
   index_header.total_size = index_contents.size();
 
-  *reinterpret_cast<csv_persistant_index_t *>(&index_contents[0]) = index_header;
+  *reinterpret_cast<csv_persistant_index_t *>(&index_contents[0]) =
+      index_header;
 
   FILE *file_w = fopen(index_file_path.c_str(), "wb");
   fwrite(&index_contents[0], 1, index_contents.size(), file_w);
