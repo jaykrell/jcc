@@ -60,7 +60,6 @@ OBJS=\
  camd64.$O \
  carm64.$O \
  ccheck.$O \
- ccpe.$O \
  celf.$O \
  clex.$O \
  cmacho.$O \
