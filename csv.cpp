@@ -65,13 +65,13 @@ void indexer_t::index_file(const char *file_path) {
   persistant_index_t index_header{};
   index_header.version[0] = 1;
   std::string index_file_path = std::string(file_path) + ".index";
+
   read_entire_file_t file = {0};
   file.file_path = file_path;
   file.malloc = &jmalloc_default;
   file.stdio = &jstdio_default;
-  this->contents = file.contents;
-
   read_entire_file(&file);
+  this->contents = file.contents;
 
   /* Split each line rapidly and hand off line parsing to line workers. */
   int64_t line_start = 0;
