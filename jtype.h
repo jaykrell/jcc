@@ -3,6 +3,7 @@
 
 #include "jbase.h"
 #include "jerr.h"
+#include "jssize.h"
 
 struct jtype;
 typedef struct jtype jtype;
@@ -17,7 +18,7 @@ struct jtype {
   void (*cleanup)(jvoidp, jlong);
   jerr (*copy)(jvoidp, jvoidp *);
   jerr (*copy_to)(jvoidp, jvoidp);
-  jerr (*move)(jvoidp, jvoidp, long);
+  jerr (*move)(jvoidp, jvoidp, jssize_t);
   jlong (*valid)(jvoidp);
   void (*begin)(jvoidp, jvoidp *);
   void (*end)(jvoidp, jvoidp *);
