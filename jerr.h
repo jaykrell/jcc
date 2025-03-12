@@ -50,6 +50,7 @@ enum {
   jerr_invalid_parameter,
   jerr_file_not_found,
   jerr_not_found,
+  jerr_found,
   jerr_syntax_error,
   jnoerr = 0,
 };

@@ -51,7 +51,7 @@ int main(void) {
     jhash_lookup_t lookup = {&data, sizeof(data)};
     jhash_lookup(hash1, &lookup);
     assert(hash1->element_count == 0);
-    jhash_insert(hash1, &lookup);
+    jhash_insert_new_after_lookup(hash1, &lookup);
     assert(hash1->element_count == 1);
     lookup.data = &data;
     jhash_lookup(hash1, &lookup);
@@ -87,20 +87,16 @@ int main(void) {
     jhash_lookup_t lookup = {&data, sizeof(data)};
     data.key = 10;
     data.value = 100;
-    jhash_lookup(hash1, &lookup);
-    jhash_insert(hash1, &lookup);
+    jhash_lookup_and_insert_new(hash1, &lookup);
     data.key = 20;
     data.value = 200;
-    jhash_lookup(hash1, &lookup);
-    jhash_insert(hash1, &lookup);
+    jhash_lookup_and_insert_new(hash1, &lookup);
     data.key = 30;
     data.value = 300;
-    jhash_lookup(hash1, &lookup);
-    jhash_insert(hash1, &lookup);
+    jhash_lookup_and_insert_new(hash1, &lookup);
     data.key = 40;
     data.value = 400;
-    jhash_lookup(hash1, &lookup);
-    jhash_insert(hash1, &lookup);
+    jhash_lookup_and_insert_new(hash1, &lookup);
 
     jhash_enum_t e = {hash1};
     for (; jhash_enum(&e);)

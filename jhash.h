@@ -27,7 +27,8 @@ struct jhash_init_t {
   jvoidp context;
   jhashcode_t (*hash)(jvoidp context, jvoidp data);
   int (*compare)(jvoidp context, jvoidp a, jvoidp b);
-  int (*copy)(jvoidp context, jvoidp to, jvoidp from);
+  int (*copy_uninit)(jvoidp context, jvoidp to, jvoidp from);
+  int (*copy_over)(jvoidp context, jvoidp to, jvoidp from);
 };
 
 struct jhash_t {
@@ -77,7 +78,9 @@ typedef struct jhash_enum_t {
 
 int jhash_new(jhash_init_t *init, jhash_t **);
 int jhash_lookup(jhash_t *hash, jhash_lookup_t *);
-int jhash_insert(jhash_t *hash, jhash_lookup_t *);
+int jhash_lookup_and_insert_new(jhash_t *hash, jhash_lookup_t *lookup);
+int jhash_lookup_and_insert_replace(jhash_t *hash, jhash_lookup_t *lookup);
+int jhash_insert_new_after_lookup(jhash_t *hash, jhash_lookup_t *lookup);
 int jhash_lookup_and_remove(jhash_t *hash, jhash_lookup_t *lookup);
 int jhash_remove_after_lookup(jhash_t *hash, jhash_lookup_t *lookup);
 int jhash_enum(jhash_enum_t *e);

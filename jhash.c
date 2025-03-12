@@ -121,11 +121,15 @@ static int jhash_new_buckets(jhash_t *hash, size_t bucket_count) {
 
 int jhash_enum(jhash_enum_t *e) {
   jhash_data_t *data;
-  if (e->element && (e->element = e->element->flink) != e->list) {
-  ret:
-    data = JBASE_OF(jhash_data_t, list, e->element);
-    e->data = (data + 1);
-    return 1;
+  if (e->element) {
+    if ((e->element = e->element->flink) != e->list) {
+    ret:
+      data = JBASE_OF(jhash_data_t, list, e->element);
+      e->data = (data + 1);
+      return 1;
+    } else {
+      ++(e->bucket_index);
+    }
   }
   for (; e->bucket_index < e->hash->bucket_count; ++(e->bucket_index)) {
     if (!jlist_is_empty(e->list = &e->hash->buckets[e->bucket_index])) {
@@ -165,9 +169,7 @@ static int jhash_insert_data(jhash_t *hash, jhash_lookup_t *lookup,
   return 0;
 }
 
-/* Insert data into hashtable, having already called lookup to hash it.
- */
-int jhash_insert(jhash_t *hash, jhash_lookup_t *lookup) {
+int jhash_insert_new_after_lookup(jhash_t *hash, jhash_lookup_t *lookup) {
   int err = {0};
   jhash_init_t *const init = &hash->init;
   jhash_data_t *data =
@@ -175,16 +177,37 @@ int jhash_insert(jhash_t *hash, jhash_lookup_t *lookup) {
   if (!data)
     return jerr_out_of_memory;
   data->hashcode = lookup->hashcode;
-  init->copy(init->context, (data + 1), lookup->data);
+  init->copy_uninit(init->context, (data + 1), lookup->data);
   data->size = lookup->size;
 
-  if (err = jhash_new_buckets(
-          hash, jhash_decide_bucket_count(2 * (hash->element_count + 1)))) {
+  if ((err = jhash_new_buckets(
+           hash, jhash_decide_bucket_count(2 * (hash->element_count + 1))))) {
     free(data);
     return err;
   }
 
   return jhash_insert_data(hash, lookup, data);
+}
+
+int jhash_lookup_and_insert_new(jhash_t *hash, jhash_lookup_t *lookup) {
+  jhash_lookup_t existing = *lookup;
+  if (!jhash_lookup(hash, &existing))
+    return jerr_found;
+  lookup->hashcode = existing.hashcode;
+  return jhash_insert_new_after_lookup(hash, lookup);
+}
+
+int jhash_lookup_and_insert_replace(jhash_t *hash, jhash_lookup_t *lookup) {
+  jhash_lookup_t existing = *lookup;
+  jhash_init_t *const init = &hash->init;
+  jhash_lookup(hash, &existing);
+  if (existing.data && existing.size == lookup->size) {
+    init->copy_over(init->context, existing.data, lookup->data);
+    return jerr_found;
+  }
+  jhash_remove_after_lookup(hash, &existing);
+  lookup->hashcode = existing.hashcode;
+  return jhash_insert_new_after_lookup(hash, lookup);
 }
 
 /* Remove data from a hashtable, having already looked it up. */

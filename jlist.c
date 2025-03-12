@@ -48,7 +48,7 @@ jlong jlist_size(jlist_t *list) {
 }
 
 jbool jlist_is_empty(jlist_t *list) {
-  return !(list->flink && list->flink != list->blink);
+  return !list->flink || list->flink == list;
 }
 
 jlist_t *jlist_remove_element(jlist_t *element) {
