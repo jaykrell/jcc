@@ -30,7 +30,7 @@ else
 
 # GNU/Posix make on Unix with gcc, clang, etc.
 RM = rm 2>/dev/null
-RM_F = $(RM) -f 2>/dev/null
+RM_F = rm -f 2>/dev/null
 O=o
 EXE=
 CXX=g++
