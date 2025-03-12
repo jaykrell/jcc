@@ -10,6 +10,7 @@
 #include <string.h>
 #include <string>
 #include <thread>
+#include "jmax.h"
 #include <windows.h> // TODO: C++20 std::thread and portable mmap
 
 int64_t round_up(int64_t a, int64_t b) {
@@ -40,13 +41,13 @@ void csv_indexing_line_t::work() {
   for (int64_t i = 0; i < line_size; ++i) {
     if (indexer->contents[i + line_offset] == ',') {
 
-      csv_indexing_field_t indexing_field{field_offset, field_size};
+      csv_indexing_field_t indexing_field = {field_offset, field_size};
 
       fields.push_back(indexing_field);
 	  this->fields2.push_back(&this->fields2, &indexing_field, 1);
 
-      max_field_offset = std::max(max_field_offset, field_offset);
-      max_field_size = std::max(max_field_size, field_size);
+      max_field_offset = JMAX(max_field_offset, field_offset);
+      max_field_size = JMAX(max_field_size, field_size);
       field_offset = i + 1;
       field_size = 0;
     } else {
@@ -107,6 +108,20 @@ bool line_less_by_max_field_offset(void* va, void* vb)
 	return a->max_field_offset < b->max_field_offset;
 }
 
+int csv_indexing_line_compare(csv_indexing_line_t* a, csv_indexing_line_t* b)
+{
+    if (a->line_offset < b->line_offset)
+		return -1;
+    if (a->line_offset > b->line_offset)
+		return 1;
+	return 0;
+}
+
+int csv_indexing_line_compare_v(void* a, void* b)
+{
+	return csv_indexing_line_compare((csv_indexing_line_t*)a, (csv_indexing_line_t*)b);
+}
+
 void csv_indexer_t::index_file(const char *file_path) {
 
   csv_persistant_index_t index_header{};
@@ -132,10 +147,10 @@ void csv_indexer_t::index_file(const char *file_path) {
                         file.contents[file_position + 1] == '\n');
 
       index_header.max_line_contents_size =
-          std::max(index_header.max_line_contents_size, line_size);
+          JMAX(index_header.max_line_contents_size, line_size);
 
       index_header.max_line_contents_offset =
-          std::max(index_header.max_line_contents_offset, file_position);
+          JMAX(index_header.max_line_contents_offset, file_position);
 
       auto work =
           std::make_unique<csv_indexing_line_t>(this, line_start, line_size);
@@ -161,9 +176,10 @@ void csv_indexer_t::index_file(const char *file_path) {
   }
 
   std::sort(lines.begin(), lines.end());
+  qsort(csv_indexing_line_compare_v
 
   csv_indexing_line_t* maxelem = (csv_indexing_line_t*)max_element(&lines.front(), &lines.back(), sizeof(*maxelem), line_less_by_field_size);
-  index_header.max_field_count = maxelem->fields.size();
+  index_header.max_field_count = maxelem->fields2.size(&maxelem->fields2);
 
   maxelem = (csv_indexing_line_t*)max_element(&lines.front(), &lines.back(), sizeof(*maxelem), line_less_by_max_field_size);
   index_header.max_field_size = maxelem->max_field_size;

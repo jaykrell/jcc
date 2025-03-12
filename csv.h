@@ -48,6 +48,10 @@ struct csv_indexing_line_t {
   static unsigned long static_work(void *p);
 };
 
+
+int csv_indexing_line_compare_v(void* a, void* b);
+int csv_indexing_line_compare(csv_indexing_line_t* a, csv_indexing_line_t* b);
+
 void csv_indexing_line_init(csv_indexing_line_t* self);
 
 typedef union csv_persistant_index_t {
