@@ -1,1 +1,2 @@
-
+/* type checking */
+char ccheck;

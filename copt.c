@@ -1,1 +1,3 @@
+/* optimizer */
+char copt;
 
