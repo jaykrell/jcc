@@ -41,6 +41,8 @@ exe:
 
 OBJS=\
  read_entire_file.$O \
+ jstdio.$O \
+ jmalloc.$O \
  jerr.$O \
  jhash.$O \
  jlist.$O \
