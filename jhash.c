@@ -164,7 +164,7 @@ fail:
 static int jhash_insert_data(jhash_t *hash, jhash_lookup_t *lookup,
                              jhash_data_t *data)
 /* Internal common code for inserting new data.
-*/
+ */
 {
   jlist_append(&hash->buckets[lookup->hashcode % hash->bucket_count],
                &data->list);
@@ -230,8 +230,9 @@ int jhash_lookup_and_insert_replace(jhash_t *hash, jhash_lookup_t *lookup)
   return err ? err : jerr_not_found;
 }
 
+int jhash_remove_after_lookup(jhash_t *hash, jhash_lookup_t *lookup)
 /* Remove data from a hashtable, having already looked it up. */
-int jhash_remove_after_lookup(jhash_t *hash, jhash_lookup_t *lookup) {
+{
   jlist_t *element = lookup->element;
   if (element) {
     jlist_remove_element(element);
@@ -241,8 +242,9 @@ int jhash_remove_after_lookup(jhash_t *hash, jhash_lookup_t *lookup) {
   return 0;
 }
 
+int jhash_lookup_and_remove(jhash_t *hash, jhash_lookup_t *lookup)
 /* Lookup and remove data from a hashtable. */
-int jhash_lookup_and_remove(jhash_t *hash, jhash_lookup_t *lookup) {
+{
   int err = jhash_lookup(hash, lookup);
   return (err ? err : jhash_remove_after_lookup(hash, lookup));
 }
