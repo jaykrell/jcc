@@ -1,4 +1,8 @@
 /* comma separated value text file handling */
+/* TODO:
+   There are mistakes here, it will be rewritten.
+   And port to C.
+*/
 
 #if _WIN32
 #define NOMINMAX
