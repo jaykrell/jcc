@@ -235,11 +235,17 @@ void csv_indexer_t::index_file(const char *file_path) {
   fclose(file_w);
 }
 
+#endif
+
 int main(int /*argc*/, char **argv) {
+#if _WIN32
   if (strcmp(argv[1], "index") == 0) {
     csv_indexer_t().index_file(argv[2]);
   }
+#endif
 }
+
+#if _WIN32
 
 #include "jvec_deps.h"
 #define T csv_indexing_field_t

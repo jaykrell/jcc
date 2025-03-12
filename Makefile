@@ -29,8 +29,8 @@ CLINK_FLAGS=/link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
 else
 
 # GNU/Posix make on Unix with gcc, clang, etc.
-RM = rm
-RM_F = $(RM) -f
+RM = rm 2>/dev/null
+RM_F = $(RM) -f 2>/dev/null
 O=o
 EXE=
 CXX=g++
@@ -186,28 +186,28 @@ all: test_vec$(EXE) \
 #
 
 $(win): $(OBJS)
-	-$(RM) $(@R).pdb $(@R).ilk
-	$(CXX) $(CXXFLAGS) $(Wall) $(Qspectre) cmain.c $(CLINK_FLAGS)
+	@-$(RM_F) $(@R).pdb $(@R).ilk
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) cmain.c $(CLINK_FLAGS)
 
 test_vec$(EXE): $(OBJS)
-	-$(RM) $(@R).pdb $(@R).ilk
-	$(CXX) $(CXXFLAGS) $(Wall) $(Qspectre) test_vec.c $(OBJS) $(CLINK_FLAGS)
+	@-$(RM_F) $(@R).pdb $(@R).ilk
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_vec.c $(OBJS) $(CLINK_FLAGS)
 
 test_list$(EXE): $(OBJS)
-	-$(RM) $(@R).pdb $(@R).ilk
-	$(CXX) $(CXXFLAGS) $(Wall) $(Qspectre) test_list.c $(OBJS) $(CLINK_FLAGS)
+	@-$(RM_F) $(@R).pdb $(@R).ilk
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_list.c $(OBJS) $(CLINK_FLAGS)
 
 test_hash$(EXE): $(OBJS)
-	-$(RM) $(@R).pdb $(@R).ilk
-	$(CXX) $(CXXFLAGS) $(Wall) $(Qspectre) test_hash.c $(OBJS) $(CLINK_FLAGS)
+	@-$(RM_F) $(@R).pdb $(@R).ilk
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_hash.c $(OBJS) $(CLINK_FLAGS)
 
 csv$(EXE): $(OBJS)
-	-$(RM) $(@R).pdb $(@R).ilk
-	$(CXX) $(CXXFLAGS) $(Wall) $(Qspectre) csv.cpp $(OBJS) $(CLINK_FLAGS)
+	@-$(RM_F) $(@R).pdb $(@R).ilk
+	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) csv.cpp $(OBJS) $(CLINK_FLAGS)
 
 csv_random_write$(EXE): $(OBJS)
-	-$(RM) $(@R).pdb $(@R).ilk
-	$(CXX) $(CXXFLAGS) $(Wall) $(Qspectre) csv_random_write.cpp $(OBJS) $(CLINK_FLAGS)
+	@-$(RM_F) $(@R).pdb $(@R).ilk
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) csv_random_write.cpp $(OBJS) $(CLINK_FLAGS)
 
 clean:
 	$(RM_F) *.h.gch

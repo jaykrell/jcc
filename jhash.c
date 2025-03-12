@@ -15,6 +15,8 @@
 #include <stdlib.h> /* TODO replace */
 #include <stddef.h>
 
+#pragma warning(disable:4100) /* unused parameter */
+
 #define JHASH_PRIMES                                                           \
   JHASH_PRIME(53)                                                              \
   JHASH_PRIME(163)                                                             \
