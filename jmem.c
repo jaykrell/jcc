@@ -6,4 +6,4 @@
 #include "jcharp.h"
 #include "jssize.h"
 
-void *jmem_intern(jcharp p, jssize n) {return 0;}
+void *jmem_intern(jcharp p, jssize n) { return 0; }

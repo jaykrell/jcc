@@ -12,8 +12,8 @@
 #include "jlist.h"
 #include "juint.h"
 #include "jvoidp.h"
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 typedef struct jhash_t jhash_t;
 typedef struct jhash_init_t jhash_init_t;

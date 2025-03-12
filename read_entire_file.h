@@ -5,20 +5,20 @@
 #include "jstdio.h"
 
 typedef struct read_entire_file_t {
-	const char *file_path;
-	jmalloc_t* malloc;
-	jstdio_t*  stdio;
-	char* contents;
-	size_t size;
-	int out_of_memory;
-	int fopen_failed;
+  const char *file_path;
+  jmalloc_t *malloc;
+  jstdio_t *stdio;
+  char *contents;
+  size_t size;
+  int out_of_memory;
+  int fopen_failed;
 } read_entire_file_t;
 
 #if __cplusplus
 extern "C" {
 #endif
 
-void read_entire_file(read_entire_file_t* self);
+void read_entire_file(read_entire_file_t *self);
 
 #if __cplusplus
 }

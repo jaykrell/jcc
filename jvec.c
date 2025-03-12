@@ -20,11 +20,11 @@
 
 #else
 
-#define jvec           JPASTE(jvec_, T)
-#define jvec_type      JPASTE3(jvec_,T,_type)
-#define jvec_iter      JPASTE3(jvec_,T,_iter)
-#define jvec_iter_type JPASTE3(jvec_,T,_iter_type)
-#define jvec_init      JPASTE3(jvec_,T,_init)
+#define jvec JPASTE(jvec_, T)
+#define jvec_type JPASTE3(jvec_, T, _type)
+#define jvec_iter JPASTE3(jvec_, T, _iter)
+#define jvec_iter_type JPASTE3(jvec_, T, _iter_type)
+#define jvec_init JPASTE3(jvec_, T, _init)
 
 /* jvec_iter */
 jvec_iter JPASTE(jvec_iter_type, _add_int)(jvec_iter ai, jssize_t i);

@@ -2,25 +2,21 @@
 #include "jstdio.h"
 #include <stdio.h>
 
-#pragma warning(disable:4100) /* unused parameter */
+#pragma warning(disable : 4100) /* unused parameter */
 
-FILE* jstdio_fopen(jstdio_t* self, const char* path, const char *mode)
-{
-	return fopen(path, mode);
+FILE *jstdio_fopen(jstdio_t *self, const char *path, const char *mode) {
+  return fopen(path, mode);
 }
 
-size_t jstdio_fread(jstdio_t* self, void* buffer, size_t size, size_t count, FILE* file)
-{
-	return fread(buffer, size, count, file);
+size_t jstdio_fread(jstdio_t *self, void *buffer, size_t size, size_t count,
+                    FILE *file) {
+  return fread(buffer, size, count, file);
 }
 
-void jstdio_fclose(jstdio_t* self, FILE* file)
-{
-	fclose(file);
-}
+void jstdio_fclose(jstdio_t *self, FILE *file) { fclose(file); }
 
 jstdio_t jstdio_default = {
-	jstdio_fopen,
-	jstdio_fread,
-	jstdio_fclose,
+    jstdio_fopen,
+    jstdio_fread,
+    jstdio_fclose,
 };

@@ -1,8 +1,8 @@
 #ifndef JFILE_H
 #define JFILE_H 1
 
-#include <stddef.h>
 #include "jvoidp.h"
+#include <stddef.h>
 
 typedef struct jfile_t jfile_t;
 

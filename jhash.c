@@ -12,10 +12,10 @@
 #include "jerr.h"
 #include "jlist.h"
 #include "jmem.h"
-#include <stdlib.h> /* TODO replace */
 #include <stddef.h>
+#include <stdlib.h> /* TODO replace */
 
-#pragma warning(disable:4100) /* unused parameter */
+#pragma warning(disable : 4100) /* unused parameter */
 
 #define JHASH_PRIMES                                                           \
   JHASH_PRIME(53)                                                              \
@@ -158,7 +158,7 @@ fail:
 
 /* TODO: useful for reuse during rehash */
 static int jhash_insert_data(jhash_t *hash, jhash_lookup_t *lookup,
-                                 jhash_data_t *data) {
+                             jhash_data_t *data) {
   jlist_append(&hash->buckets[lookup->hashcode % hash->bucket_count],
                &data->list);
   ++(hash->element_count);
@@ -170,8 +170,8 @@ static int jhash_insert_data(jhash_t *hash, jhash_lookup_t *lookup,
 int jhash_insert(jhash_t *hash, jhash_lookup_t *lookup) {
   int err = {0};
   jhash_init_t *const init = &hash->init;
-  jhash_data_t *data = (jhash_data_t *)calloc(
-      1, sizeof(jhash_data_t) + lookup->size);
+  jhash_data_t *data =
+      (jhash_data_t *)calloc(1, sizeof(jhash_data_t) + lookup->size);
   if (!data)
     return jerr_out_of_memory;
   data->hashcode = lookup->hashcode;
