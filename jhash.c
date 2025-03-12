@@ -13,6 +13,7 @@
 #include "jlist.h"
 #include "jmem.h"
 #include <stdlib.h> /* TODO replace */
+#include <stddef.h>
 
 #define JHASH_PRIMES                                                           \
   JHASH_PRIME(53)                                                              \

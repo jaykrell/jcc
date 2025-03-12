@@ -176,7 +176,7 @@ void csv_indexer_t::index_file(const char *file_path) {
   }
 
   std::sort(lines.begin(), lines.end());
-  qsort(csv_indexing_line_compare_v
+  //qsort(csv_indexing_line_compare_v
 
   csv_indexing_line_t* maxelem = (csv_indexing_line_t*)max_element(&lines.front(), &lines.back(), sizeof(*maxelem), line_less_by_field_size);
   index_header.max_field_count = maxelem->fields2.size(&maxelem->fields2);
