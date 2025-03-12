@@ -12,6 +12,14 @@ struct jstdio_t {
 	void (*fclose)(jstdio_t* self, FILE* file);
 };
 
-extern const jstdio_t jstdio_default;
+#if __cplusplus
+extern "C" {
+#endif
+
+extern jstdio_t jstdio_default;
+
+#if __cplusplus
+}
+#endif
 
 #endif

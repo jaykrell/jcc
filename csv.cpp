@@ -65,18 +65,24 @@ void indexer_t::index_file(const char *file_path) {
   persistant_index_t index_header{};
   index_header.version[0] = 1;
   std::string index_file_path = std::string(file_path) + ".index";
-  read_entire_file(file_path, contents);
+  read_entire_file_t file = {0};
+  file.file_path = file_path;
+  file.malloc = &jmalloc_default;
+  file.stdio = &jstdio_default;
+  this->contents = file.contents;
+
+  read_entire_file(&file);
 
   /* Split each line rapidly and hand off line parsing to line workers. */
   int64_t line_start = 0;
   int64_t line_size = 0;
 
-  for (int64_t file_position = 0; file_position < contents.size();
+  for (int64_t file_position = 0; file_position < file.size;
        ++file_position) {
-    char ch = contents[file_position];
+    char ch = file.contents[file_position];
     if (ch == '\r' || ch == '\n') {
-      file_position += (ch == '\r' && (file_position + 1) < contents.size() &&
-                        contents[file_position + 1] == '\n');
+      file_position += (ch == '\r' && (file_position + 1) < file.size &&
+                        file.contents[file_position + 1] == '\n');
 
       index_header.max_line_contents_size =
           std::max(index_header.max_line_contents_size, line_size);
@@ -169,9 +175,9 @@ void indexer_t::index_file(const char *file_path) {
 
   *reinterpret_cast<persistant_index_t *>(&index_contents[0]) = index_header;
 
-  FILE *file = fopen(index_file_path.c_str(), "wb");
-  fwrite(&index_contents[0], 1, index_contents.size(), file);
-  fclose(file);
+  FILE *file_w = fopen(index_file_path.c_str(), "wb");
+  fwrite(&index_contents[0], 1, index_contents.size(), file_w);
+  fclose(file_w);
 }
 
 } // namespace csv

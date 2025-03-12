@@ -19,7 +19,7 @@ void jstdio_fclose(jstdio_t* self, FILE* file)
 	fclose(file);
 }
 
-extern const jstdio_t jstdio_default = {
+extern jstdio_t jstdio_default = {
 	jstdio_fopen,
 	jstdio_fread,
 	jstdio_fclose,

@@ -84,7 +84,7 @@ struct persistant_index_line_t {
 struct indexer_t {
   std::vector<indexing_line_t> lines{};
   std::mutex mutex{};
-  std::vector<char> contents{};
+  char* contents{};
   int64_t queue_size{};
   std::condition_variable_any condition{};
   void index_file(const char *file_path);

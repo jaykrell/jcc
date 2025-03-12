@@ -12,6 +12,14 @@ struct jmalloc_t {
 	void (*free)(jmalloc_t* self, void*);
 };
 
+#if __cplusplus
+extern "C" {
+#endif
+
 extern jmalloc_t jmalloc_default;
+
+#if __cplusplus
+}
+#endif
 
 #endif

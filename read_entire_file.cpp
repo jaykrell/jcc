@@ -1,6 +1,4 @@
 #include "read_entire_file.h"
-#include <stdio.h>
-#include <vector>
 
 void read_entire_file(read_entire_file_t* self) {
   size_t capacity = 0x10000;
