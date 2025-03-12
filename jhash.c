@@ -47,12 +47,11 @@ static uint64_t jhash_mod(uint64_t a, uint64_t b) {
   }
 }
 
-typedef struct jhash_keyvalue_t {
-  jlist_t list; /* list of jhash_keyvalue_t for hash collision */
+typedef struct jhash_data_t {
+  jlist_t list; /* list of jhash_data_t for hash collision */
   jhashcode_t hashcode;
-  size_t key_size;
-  size_t value_size;
-} jhash_keyvalue_t;
+  size_t size;
+} jhash_data_t;
 
 int jhash_new(jhash_init_t *init, jhash_t **hash) {
   *hash = (jhash_t *)calloc(1, sizeof(jhash_t));
@@ -62,24 +61,23 @@ int jhash_new(jhash_init_t *init, jhash_t **hash) {
   return 0;
 }
 
-/* Delete a hashtable partially, having reused the keyvalue pairs
+/* Delete a hashtable partially, having reused the data pairs
 during rehash. That is delete the toplevel buckets.
 */
 void jhash_delete_shallow(jhash_t *hash) {
-  /* TODO keyvalue pairs moved to new table in rehash */
+  /* TODO data pairs moved to new table in rehash */
 }
 
 /* Delete an entire hashtable. */
 void jhash_delete(jhash_t *hash) { /* TODO */ }
 
-/* Lookup a key in a hashtable. */
+/* Lookup data in a hashtable. */
 int jhash_lookup(jhash_t *hash, jhash_lookup_t *lookup) {
   jhash_init_t *const init = &hash->init;
   jlist_t *bucket = {0};
   jlist_t *element = {0};
-  jhash_keyvalue_t *keyvalue = {0};
-  jvoidp key = lookup->key;
-  jhashcode_t const hashcode = init->hash(init->context, key);
+  jhash_data_t *data = {0};
+  jhashcode_t const hashcode = init->hash(init->context, lookup->data);
 
   lookup->hashcode = hashcode;
   if (hash->bucket_count) {
@@ -87,11 +85,10 @@ int jhash_lookup(jhash_t *hash, jhash_lookup_t *lookup) {
     element = bucket->flink;
     lookup->hashcode = hashcode;
     while (element && element != bucket) {
-      keyvalue = JBASE_OF(jhash_keyvalue_t, list, element);
-      if (hashcode == keyvalue->hashcode &&
-          0 == init->compare(init->context, keyvalue + 1, key)) {
-        lookup->key = (1 + keyvalue);
-        lookup->value = keyvalue->key_size + (jcharp)lookup->key;
+      data = JBASE_OF(jhash_data_t, list, element);
+      if (hashcode == data->hashcode &&
+          0 == init->compare(init->context, data + 1, lookup->data)) {
+        lookup->data = (1 + data);
         lookup->element = element;
         return 0;
       }
@@ -123,12 +120,11 @@ static int jhash_new_buckets(jhash_t *hash, size_t bucket_count) {
 }
 
 int jhash_enum(jhash_enum_t *e) {
-  jhash_keyvalue_t *keyvalue;
+  jhash_data_t *data;
   if (e->element && (e->element = e->element->flink) != e->list) {
   ret:
-    keyvalue = JBASE_OF(jhash_keyvalue_t, list, e->element);
-    e->key = (keyvalue + 1);
-    e->value = keyvalue->key_size + (jcharp)e->key;
+    data = JBASE_OF(jhash_data_t, list, e->element);
+    e->data = (data + 1);
     return 1;
   }
   for (; e->bucket_index < e->hash->bucket_count; ++(e->bucket_index)) {
@@ -161,40 +157,37 @@ fail:
 #endif
 
 /* TODO: useful for reuse during rehash */
-static int jhash_insert_keyvalue(jhash_t *hash, jhash_lookup_t *lookup,
-                                 jhash_keyvalue_t *keyvalue) {
+static int jhash_insert_data(jhash_t *hash, jhash_lookup_t *lookup,
+                                 jhash_data_t *data) {
   jlist_append(&hash->buckets[lookup->hashcode % hash->bucket_count],
-               &keyvalue->list);
+               &data->list);
   ++(hash->element_count);
   return 0;
 }
 
-/* Insert a key+value into hashtable, having already called lookup to hash it.
+/* Insert data into hashtable, having already called lookup to hash it.
  */
 int jhash_insert(jhash_t *hash, jhash_lookup_t *lookup) {
   int err = {0};
   jhash_init_t *const init = &hash->init;
-  jhash_keyvalue_t *keyvalue = (jhash_keyvalue_t *)calloc(
-      1, sizeof(jhash_keyvalue_t) + lookup->key_size + lookup->value_size);
-  if (!keyvalue)
+  jhash_data_t *data = (jhash_data_t *)calloc(
+      1, sizeof(jhash_data_t) + lookup->size);
+  if (!data)
     return jerr_out_of_memory;
-  keyvalue->hashcode = lookup->hashcode;
-  init->copy_key(init->context, (keyvalue + 1), lookup->key);
-  init->copy_value(init->context, lookup->key_size + (jcharp)(keyvalue + 1),
-                   lookup->value);
-  keyvalue->key_size = lookup->key_size;
-  keyvalue->value_size = lookup->value_size;
+  data->hashcode = lookup->hashcode;
+  init->copy(init->context, (data + 1), lookup->data);
+  data->size = lookup->size;
 
   if (err = jhash_new_buckets(
           hash, jhash_decide_bucket_count(2 * (hash->element_count + 1)))) {
-    free(keyvalue);
+    free(data);
     return err;
   }
 
-  return jhash_insert_keyvalue(hash, lookup, keyvalue);
+  return jhash_insert_data(hash, lookup, data);
 }
 
-/* Remove a key from a hashtable, having already looked it up. */
+/* Remove data from a hashtable, having already looked it up. */
 int jhash_remove_after_lookup(jhash_t *hash, jhash_lookup_t *lookup) {
   jlist_t *element = lookup->element;
   if (element) {
@@ -205,7 +198,7 @@ int jhash_remove_after_lookup(jhash_t *hash, jhash_lookup_t *lookup) {
   return 0;
 }
 
-/* Lookup and remove a key from a hashtable. */
+/* Lookup and remove data from a hashtable. */
 int jhash_lookup_and_remove(jhash_t *hash, jhash_lookup_t *lookup) {
   int err = jhash_lookup(hash, lookup);
   return (err ? err : jhash_remove_after_lookup(hash, lookup));
