@@ -4,7 +4,6 @@
    And port to C.
 */
 
-#if _WIN32
 #define NOMINMAX
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma warning(disable : 4018) // unsigned/signed mismatch
@@ -16,7 +15,10 @@
 #include <string.h>
 #include <string>
 #include <thread>
-#include <windows.h> // TODO: C++20 std::thread and portable mmap
+
+#if !_MSC_VER && !defined(__cdecl)
+#define __cdecl
+#endif
 
 int64_t round_up(int64_t a, int64_t b) {
   int64_t mod = (a % b);
@@ -224,20 +226,12 @@ void csv_indexer_t::index_file(const char *file_path) {
   fclose(file_w);
 }
 
-#endif
-
 int main(int /*argc*/, char **argv) {
-#if _WIN32
   if (strcmp(argv[1], "index") == 0) {
     csv_indexer_t().index_file(argv[2]);
   }
-#endif
 }
-
-#if _WIN32
 
 #include "jvec_deps.h"
 #define T csv_indexing_field_t
 #include "jvec.c"
-
-#endif
