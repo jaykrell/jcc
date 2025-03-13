@@ -43,6 +43,7 @@ jerr JPASTE(jvec, _pop_back)(jvec *);
 jerr JPASTE(jvec, _push_back)(jvec *, T *, jssize_t);
 jerr JPASTE(jvec, _resize)(jvec *, jssize_t);
 jssize_t JPASTE(jvec, _size)(jvec *);
+jerr JPASTE(jvec, _insert)(jvec *, T*, T*, T*);
 
 jvec_iter JPASTE(jvec_iter_type_, T) = {
     JPASTE(jvec_iter_type, _add_int),  JPASTE(jvec_iter_type, _cmp),
@@ -54,8 +55,7 @@ jvec_iter JPASTE(jvec_iter_type_, T) = {
 jvec JPASTE(jvec_type_, T) = {
     JPASTE(jvec, _begin),    JPASTE(jvec, _capacity),  JPASTE(jvec, _end),
     JPASTE(jvec, _pop_back), JPASTE(jvec, _push_back), JPASTE(jvec, _resize),
-    JPASTE(jvec, _size),
-
+    JPASTE(jvec, _size), JPASTE(jvec, _insert),
 };
 
 int JPASTE(jvec_iter_type, _cmp)(jvec_iter ai, jvec_iter aj) {
@@ -170,6 +170,20 @@ jerr JPASTE(jvec, _resize)(jvec *v, jssize_t new_size) {
   v->end = begin + new_size;
   if (telem)
     telem->init(begin + size, new_size - size);
+  return 0;
+}
+
+jerr JPASTE(jvec, _insert)(jvec *v, T* i, T* b, T *e) {
+  jerr err = {0};
+  jssize_t n = e - b;
+  jssize_t ii = i - v->begin;
+
+  err = v->resize(v, v->size(v) + n);
+  if (err < 0)
+    return err;
+  n *= sizeof(T);
+  memmove(v->begin + ii + n, v->begin + ii, n);
+  memmove(v->begin + ii, b, n);
   return 0;
 }
 

@@ -71,7 +71,8 @@ struct jvec_iter {
                                             vector, growing it if needed */    \
   jerr (*resize)(jvec *, jssize_t); /* change the logical size of the vector,  \
                                     smaller, larger, or unchanged */           \
-  jssize_t (*size)(jvec *);         /* get the logical size of the vector */
+  jssize_t (*size)(jvec *);         /* get the logical size of the vector */   \
+  jerr (*insert)(jvec *, T*, T*, T*);
 
 struct jvec {
   JVEC_TYPE
