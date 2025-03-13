@@ -121,7 +121,7 @@ int __cdecl csv_indexing_line_compare_v(void const *a, void const *b) {
                                    (csv_indexing_line_t *)b);
 }
 
-void csv_indexer_t::index_file(const char *file_path) {
+void csv_indexer_t::index_file(char *file_path) {
 
   int64_t file_position = {0};
   csv_persistant_index_t index_header={0};
@@ -192,6 +192,10 @@ void csv_indexer_t::index_file(const char *file_path) {
   index_header.offset_to_path = index_contents.size();
   index_contents.insert(index_contents.end(), file_path,
                         file_path + strlen(file_path) + 1);
+
+  index_contents2.insert(&index_contents2, index_contents2.end, file_path,
+                        file_path + strlen(file_path) + 1);
+
 
   auto put_int = [&](int64_t a, int size) {
     int64_t offset = index_contents.size();

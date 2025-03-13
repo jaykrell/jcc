@@ -99,7 +99,7 @@ typedef struct csv_indexer_t {
   std::vector<csv_indexing_line_t> lines{};
   jvec_csv_indexing_line_t lines2{};
   char *contents{};
-  void index_file(const char *file_path);
+  void index_file(char *file_path);
 } csv_indexer_t;
 
 #endif
