@@ -196,7 +196,6 @@ void csv_indexer_t::index_file(char *file_path) {
   index_contents2.insert(&index_contents2, index_contents2.end, file_path,
                         file_path + strlen(file_path) + 1);
 
-
   auto put_int = [&](int64_t a, int size) {
     int64_t offset = index_contents.size();
     index_contents.resize(offset + 8);
