@@ -57,6 +57,7 @@ OBJS=\
  jlist.$O \
  jvec.$O \
  jstr.$O \
+ jthread.$O \
  camd64.$O \
  carm64.$O \
  ccheck.$O \
