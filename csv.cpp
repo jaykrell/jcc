@@ -174,7 +174,8 @@ void csv_indexer_t::index_file(const char *file_path) {
     condition.wait(mutex, [&] { return queue_size == 0; });
   }
 
-  qsort(&lines.front(), lines.size(), sizeof(csv_indexing_line_t), csv_indexing_line_compare_v);
+  qsort(&lines.front(), lines.size(), sizeof(csv_indexing_line_t),
+        csv_indexing_line_compare_v);
 
   csv_indexing_line_t *maxelem = (csv_indexing_line_t *)max_element(
       &lines.front(), &lines.back(), sizeof(*maxelem), line_less_by_field_size);
