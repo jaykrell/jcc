@@ -1,25 +1,31 @@
 /* Test Win32/pthread portability layer. */
 
 #include "jthread.h"
-/*
-void jlock_w(jrwlock_t*);
-void jlock_r(jrwlock_t*);
-void jlock(jlock_t*);
+#include <stdio.h>
 
-void junlock_w(jrwlock_t*);
-void junlock_r(jrwlock_t*);
-void junlock(jlock_t*);
+#pragma warning(disable:4100) /* unused parameter */
 
-void jcondvar_sleep(jcondvar_t* condvar, jlock_t* lock);
-void jcondvar_wake1(jcondvar_t* condvar);
-void jcondvar_wake_all(jcondvar_t* condvar);
-*/
+static jcondvar_t condvar = JCONDVAR_INIT;
+static jlock_t lock = JLOCK_INIT;
+static jrwlock_t rwlock = JRWLOCK_INIT;
+int cond;
+
+static int thread1(void* p)
+{
+	printf("thread1\n");
+
+	jlock(&lock);
+	jcondvar_wake_all(&condvar);
+	jcondvar_wake1(&condvar);
+	cond = 1;
+	junlock(&lock);
+
+	return 2;
+}
 
 int main()
 {
-	jcondvar_t convar = JCONDVAR_INIT;
-	jlock_t lock = JLOCK_INIT;
-	jrwlock_t rwlock = JRWLOCK_INIT;
+	jthread_handle_t thread1_handle = {0};
 
 	jlock(&lock);
 	junlock(&lock);
@@ -29,8 +35,15 @@ int main()
 
 	jlock_r(&rwlock);
 	junlock_r(&rwlock);
-	
-	jcondvar_wake1(&convar);
-	jcondvar_wake_all(&convar);
-//	jcondvar_sleep(&convar, &lock);
+
+	jthread_create(thread1, 0, &thread1_handle);
+
+	while (!cond)
+	{
+		jlock(&lock);
+		jcondvar_sleep(&condvar, &lock);
+		junlock(&lock);
+	}
+
+	printf("thread_wait:%d\n", jthread_wait(thread1_handle));
 }
