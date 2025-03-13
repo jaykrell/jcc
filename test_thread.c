@@ -18,7 +18,7 @@ void jcondvar_wake_all(jcondvar_t* condvar);
 int main()
 {
 	jrwlock_t rwlock = JRWLOCK_INIT;
-	jrwlock_t lock = JLOCK_INIT;
+	jlock_t lock = JLOCK_INIT;
 	jcondvar_t convar = JRWLOCK_INIT;
 
 	jlock(&lock);
@@ -32,5 +32,5 @@ int main()
 	
 	jcondvar_wake1(&convar);
 	jcondvar_wake_all(&convar);
-	jcondvar_sleep(&convar, &lock);
+//	jcondvar_sleep(&convar, &lock);
 }

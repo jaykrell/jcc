@@ -2,7 +2,6 @@
 
 #include "jthread.h"
 #include <stdint.h>
-
 #if _WIN32
 #include "windows.h"
 #endif

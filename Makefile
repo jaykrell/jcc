@@ -99,27 +99,7 @@ win=win$(EXE)
 
 all:
 
-#all: $(win) \
-#	test_vec$(EXE) \
-#	test_list$(EXE) \
-#	test_hash$(EXE) \
-#	csv$(EXE) \
-#	csv_random_write$(EXE) \
-
-config:
-	.\config.cmd
-
 check:
-
-run: $(win)
-	.\$(win) hello.wasm
-
-debug: $(win)
-!if $(AMD64)
-	\bin\amd64\cdb .\$(win) hello.wasm
-!elseif $(386)
-	\bin\x86\cdb .\$(win) hello.wasm
-!endif
 
 !else
 else
@@ -176,6 +156,7 @@ endif
 all: test_vec$(EXE) \
 	test_list$(EXE) \
 	test_hash$(EXE) \
+	test_thread$(EXE) \
 	csv$(EXE) \
 	csv_random_write$(EXE) \
 
