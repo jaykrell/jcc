@@ -1,21 +1,41 @@
 /* Win32/pthread portability layer. */
 
 #include "jthread.h"
+#include <stdint.h>
 
 #if _WIN32
 #include "windows.h"
-jrwlock_t jrwlock_init;
-jlock_t jlock_init;
-jcondvar_t jcondvar_init;
-#else
-#include <pthread.h>
 #endif
+
+int jthread_create(thread_entry_t thread_entry, void* thread_arg, jthread_handle_t* thread_handle)
+{
+#if _WIN32
+	return (*thread_handle = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)thread_entry, thread_arg, 0, 0)) ? 0 : -1;
+#else
+	return pthread_create(thread_handle, 0, (void* (*)(void*))thread_entry, thread_arg);
+#endif
+}
+
+int jthread_wait(jthread_handle_t thread_handle)
+{
+#if _WIN32
+	unsigned long exit_code = 0;
+	WaitForSingleObject(thread_handle, INFINITE);
+	GetExitCodeThread(thread_handle, &exit_code);
+	return (int)exit_code;
+#else
+	void* value = 0;
+	pthread_join(thread_handle, &value);
+	return (int)(intptr_t)value;
+#endif
+}
 
 void jlock(jlock_t* lock)
 {
 #if _WIN32
 	AcquireSRWLockExclusive((PSRWLOCK)lock);
 #else
+	pthread_mutex_lock(lock);
 #endif
 }
 
@@ -78,7 +98,7 @@ void jcondvar_wake1(jcondvar_t* condvar)
 #if _WIN32
 	WakeConditionVariable((PCONDITION_VARIABLE)condvar);
 #else
-	pthread_cond_signal(convar);
+	pthread_cond_signal(condvar);
 #endif
 }
 

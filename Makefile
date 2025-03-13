@@ -201,6 +201,10 @@ test_hash$(EXE): $(OBJS)
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_hash.c $(OBJS) $(CLINK_FLAGS)
 
+test_thread$(EXE): $(OBJS)
+	@-$(RM_F) $(@R).pdb $(@R).ilk
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_thread.c $(OBJS) $(CLINK_FLAGS)
+
 csv$(EXE): $(OBJS)
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) csv.cpp $(OBJS) $(CLINK_FLAGS)
@@ -220,6 +224,7 @@ clean:
 	$(RM_F) test1 test_vec test_list test_hash test1.exe test_vec.exe test_list.exe test_hash.exe
 	$(RM_F) test1.$(O) test1.pdb typedenum.cpp typedenum.$(O) winamd64$(EXE) winamd64.pdb
 	$(RM_F) mscver.cpp typedenum.cpp *.o *.$(O) w3rt.o w3rt.$(O) mac win32 win32$(EXE) win64 win64$(EXE) win win$(EXE) cyg cyg$(EXE) *.ilk lin win$(EXE) winarm$(EXE) winx86$(EXE) winamd64$(EXE)
+	$(RM_F) test_thread test_thread$(EXE)
 	$(RM_F) $(win) mscver.cpp typedenum.cpp *.o *.$(O) config.cpp config.mk w3rt.o w3rt.$(O) w3.$(O) *.ilk win32 win32$(EXE) win64 win64$(EXE) win win$(EXE) winarm$(EXE) winx86$(EXE) winamd64$(EXE) *.pdb lin *.i
 
 realclean: clean
