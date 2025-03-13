@@ -47,6 +47,9 @@ struct csv_indexing_line_t {
   static unsigned long static_work(void *p);
 };
 
+#define T csv_indexing_line_t
+#include "jvec.h"
+
 int csv_indexing_line_compare_v(void *a, void *b);
 int csv_indexing_line_compare(csv_indexing_line_t *a, csv_indexing_line_t *b);
 
@@ -94,6 +97,7 @@ typedef struct csv_persistant_index_line_t {
 
 typedef struct csv_indexer_t {
   std::vector<csv_indexing_line_t> lines{};
+  jvec_csv_indexing_line_t lines2{};
   char *contents{};
   void index_file(const char *file_path);
 } csv_indexer_t;

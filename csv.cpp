@@ -15,6 +15,7 @@
 #include <string.h>
 #include <string>
 #include <thread>
+#include "jvec.h"
 
 #if !_MSC_VER && !defined(__cdecl)
 #define __cdecl
@@ -63,6 +64,7 @@ void csv_indexing_line_t::work() {
   }
 
   indexer->lines.emplace_back(*this);
+  indexer->lines2.push_back(&indexer->lines2, this, 1);
 }
 
 unsigned long csv_indexing_line_t::static_work(void *p) {
@@ -121,7 +123,8 @@ int __cdecl csv_indexing_line_compare_v(void const *a, void const *b) {
 
 void csv_indexer_t::index_file(const char *file_path) {
 
-  csv_persistant_index_t index_header{};
+  int64_t file_position = {0};
+  csv_persistant_index_t index_header={0};
   index_header.version[0] = 1;
   std::string index_file_path = std::string(file_path) + ".index";
 
@@ -136,7 +139,7 @@ void csv_indexer_t::index_file(const char *file_path) {
   int64_t line_start = 0;
   int64_t line_size = 0;
 
-  for (int64_t file_position = 0; file_position < file.size; ++file_position) {
+  for (file_position = 0; file_position < file.size; ++file_position) {
     char ch = file.contents[file_position];
     if (ch == '\r' || ch == '\n') {
       file_position += (ch == '\r' && (file_position + 1) < file.size &&
@@ -181,6 +184,10 @@ void csv_indexer_t::index_file(const char *file_path) {
   std::vector<char> index_contents;
   index_contents.resize(sizeof(index_header));
 
+  jvec_char index_contents2;
+  jvec_char_init(&index_contents2);
+  index_contents2.resize(&index_contents2, sizeof(index_header));
+
   index_header.path_size = strlen(file_path);
   index_header.offset_to_path = index_contents.size();
   index_contents.insert(index_contents.end(), file_path,
@@ -218,8 +225,7 @@ void csv_indexer_t::index_file(const char *file_path) {
 
   index_header.total_size = index_contents.size();
 
-  *reinterpret_cast<csv_persistant_index_t *>(&index_contents[0]) =
-      index_header;
+  *(csv_persistant_index_t *)(&index_contents[0]) = index_header;
 
   FILE *file_w = fopen(index_file_path.c_str(), "wb");
   fwrite(&index_contents[0], 1, index_contents.size(), file_w);
@@ -234,4 +240,6 @@ int main(int /*argc*/, char **argv) {
 
 #include "jvec_deps.h"
 #define T csv_indexing_field_t
+#include "jvec.c"
+#define T csv_indexing_line_t
 #include "jvec.c"
