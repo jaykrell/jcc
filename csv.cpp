@@ -117,7 +117,7 @@ int csv_indexing_line_compare(csv_indexing_line_t *a, csv_indexing_line_t *b) {
   return 0;
 }
 
-int csv_indexing_line_compare_v(void *a, void *b) {
+int __cdecl csv_indexing_line_compare_v(void const *a, void const *b) {
   return csv_indexing_line_compare((csv_indexing_line_t *)a,
                                    (csv_indexing_line_t *)b);
 }
@@ -174,8 +174,7 @@ void csv_indexer_t::index_file(const char *file_path) {
     condition.wait(mutex, [&] { return queue_size == 0; });
   }
 
-  std::sort(lines.begin(), lines.end());
-  // qsort(csv_indexing_line_compare_v
+  qsort(&lines.front(), lines.size(), sizeof(csv_indexing_line_t), csv_indexing_line_compare_v);
 
   csv_indexing_line_t *maxelem = (csv_indexing_line_t *)max_element(
       &lines.front(), &lines.back(), sizeof(*maxelem), line_less_by_field_size);
