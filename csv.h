@@ -5,10 +5,7 @@
 
 #pragma warning(disable : 4201) // anonymous
 
-#include <condition_variable>
-#include <shared_mutex>
 #include <stdint.h>
-#include <thread>
 #include <vector>
 
 #include "jvec.h"
@@ -97,10 +94,7 @@ typedef struct csv_persistant_index_line_t {
 
 typedef struct csv_indexer_t {
   std::vector<csv_indexing_line_t> lines{};
-  std::mutex mutex{};
   char *contents{};
-  int64_t queue_size{};
-  std::condition_variable_any condition{};
   void index_file(const char *file_path);
 } csv_indexer_t;
 

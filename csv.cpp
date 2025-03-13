@@ -60,12 +60,7 @@ void csv_indexing_line_t::work() {
     }
   }
 
-  // Indexing each line will finish unordered.
-  // Queue the data to master to sort and write.
-  std::unique_lock<std::mutex> lock(indexer->mutex);
   indexer->lines.emplace_back(*this);
-  --(indexer->queue_size);
-  indexer->condition.notify_one();
 }
 
 unsigned long csv_indexing_line_t::static_work(void *p) {
@@ -151,27 +146,17 @@ void csv_indexer_t::index_file(const char *file_path) {
       index_header.max_line_contents_offset =
           JMAX(index_header.max_line_contents_offset, file_position);
 
-      auto work =
-          std::make_unique<csv_indexing_line_t>(this, line_start, line_size);
+      csv_indexing_line_t indexing_line(this, line_start, line_size);
 
-      csv_indexing_line_init(work.get());
+      csv_indexing_line_init(&indexing_line);
 
-      {
-        std::unique_lock<std::mutex> lock(mutex);
-        QueueUserWorkItem(&csv_indexing_line_t::static_work, work.get(), 0);
-        work.release();
-        ++queue_size;
-      }
+	  indexing_line.work();
+
       line_start = file_position + 1;
       line_size = 0;
       continue;
     }
     ++line_size;
-  }
-
-  {
-    std::unique_lock<std::mutex> lock(mutex);
-    condition.wait(mutex, [&] { return queue_size == 0; });
   }
 
   qsort(&lines.front(), lines.size(), sizeof(csv_indexing_line_t),
