@@ -8,12 +8,12 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma warning(disable : 4018) // unsigned/signed mismatch
 #include "csv.h"
+#include "jbool.h"
 #include "jmax.h"
 #include "read_entire_file.h"
 #include <stdio.h>
 #include <string.h>
 #include <thread>
-#include "jbool.h"
 
 #if !_MSC_VER && !defined(__cdecl)
 #define __cdecl
@@ -115,10 +115,10 @@ int __cdecl csv_indexing_line_compare_v(void const *a, void const *b) {
                                    (csv_indexing_line_t *)b);
 }
 
-void csv_index_file(csv_indexer_t* self, char *file_path) {
+void csv_index_file(csv_indexer_t *self, char *file_path) {
 
   int64_t file_position = {0};
-  csv_persistant_index_t index_header={0};
+  csv_persistant_index_t index_header = {0};
   index_header.version[0] = 1;
 
   JVEC(char) index_file_path = {0};
@@ -151,7 +151,7 @@ void csv_index_file(csv_indexer_t* self, char *file_path) {
 
       csv_indexing_line_t indexing_line(self, line_start, line_size);
 
-	  indexing_line.work();
+      indexing_line.work();
 
       line_start = file_position + 1;
       line_size = 0;
@@ -164,18 +164,19 @@ void csv_index_file(csv_indexer_t* self, char *file_path) {
         csv_indexing_line_compare_v);
 
   csv_indexing_line_t *maxelem = (csv_indexing_line_t *)max_element(
-      self->lines.data, self->lines.size, sizeof(*maxelem), line_less_by_field_size);
+      self->lines.data, self->lines.size, sizeof(*maxelem),
+      line_less_by_field_size);
 
   index_header.max_field_count = maxelem->fields.size;
 
-  maxelem = (csv_indexing_line_t *)max_element(self->lines.data, self->lines.size,
-                                               sizeof(*maxelem),
-                                               line_less_by_max_field_size);
+  maxelem = (csv_indexing_line_t *)max_element(
+      self->lines.data, self->lines.size, sizeof(*maxelem),
+      line_less_by_max_field_size);
   index_header.max_field_size = maxelem->max_field_size;
 
-  maxelem = (csv_indexing_line_t *)max_element(self->lines.data, self->lines.size,
-                                               sizeof(*maxelem),
-                                               line_less_by_max_field_offset);
+  maxelem = (csv_indexing_line_t *)max_element(
+      self->lines.data, self->lines.size, sizeof(*maxelem),
+      line_less_by_max_field_offset);
   index_header.max_field_offset = maxelem->max_field_offset;
 
   JVEC(char) index_contents = {0};
@@ -183,7 +184,8 @@ void csv_index_file(csv_indexer_t* self, char *file_path) {
 
   index_header.path_size = strlen(file_path);
   index_header.offset_to_path = index_contents.size;
-  JVEC_INSERT(&index_contents, JVEC_END(&index_contents), file_path, strlen(file_path) + 1);
+  JVEC_INSERT(&index_contents, JVEC_END(&index_contents), file_path,
+              strlen(file_path) + 1);
 
   auto put_int = [&](int64_t a, int size) {
     int64_t offset = index_contents.size;
@@ -197,9 +199,8 @@ void csv_index_file(csv_indexer_t* self, char *file_path) {
 
   size_t line_iter;
 
-  for (line_iter = 0; line_iter < self->lines.size; ++line_iter)
-  {
-    csv_indexing_line_t* line = &self->lines.data[line_iter];
+  for (line_iter = 0; line_iter < self->lines.size; ++line_iter) {
+    csv_indexing_line_t *line = &self->lines.data[line_iter];
     JVEC_RESIZE(&index_contents, round_up(index_contents.size, 8));
 
     int8_t const field_count_size = bytes_for_value(line->fields.size);
@@ -214,19 +215,18 @@ void csv_index_file(csv_indexer_t* self, char *file_path) {
 
     size_t field_iter = {0};
 
-    for (field_iter = 0; field_iter < line->fields.size; ++field_iter)
-	{
-		csv_indexing_field_t* field = &line->fields.data[field_iter];
-		field->offset;
-		field->size;
-	}
-/*
-    for (auto &field : line.fields)
-      put_int(field.offset, field_offset_size);
+    for (field_iter = 0; field_iter < line->fields.size; ++field_iter) {
+      csv_indexing_field_t *field = &line->fields.data[field_iter];
+      field->offset;
+      field->size;
+    }
+    /*
+        for (auto &field : line.fields)
+          put_int(field.offset, field_offset_size);
 
-    for (auto &field : line.fields)
-      put_int(field.size, field_size_size);
-*/
+        for (auto &field : line.fields)
+          put_int(field.size, field_size_size);
+    */
   }
   index_header.total_size = index_contents.size;
 
@@ -239,7 +239,7 @@ void csv_index_file(csv_indexer_t* self, char *file_path) {
 
 int main(int /*argc*/, char **argv) {
   if (strcmp(argv[1], "index") == 0) {
-	  csv_indexer_t indexer = {0};
+    csv_indexer_t indexer = {0};
     csv_index_file(&indexer, argv[2]);
   }
 }

@@ -93,7 +93,7 @@ struct jvec_void {
   void *cap;       /* the allocated end+1 of the vector */
 };
 
-#define JVEC_SIZE(v)           ((v)->begin - (v)->end)
+#define JVEC_SIZE(v) ((v)->begin - (v)->end)
 #define JVEC_PUSHBACK(v, elem) (v)->fn.push_back((v), &elem)
 #endif
 

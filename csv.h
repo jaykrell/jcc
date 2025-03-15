@@ -5,8 +5,8 @@
 
 #pragma warning(disable : 4201) // anonymous
 
-#include <stdint.h>
 #include "jvec.h"
+#include <stdint.h>
 
 struct csv_indexer_t;
 union csv_persistant_index_t;
@@ -32,7 +32,7 @@ struct csv_indexing_line_t {
   int64_t line_size{};
   int64_t max_field_offset{};
   int64_t max_field_size{};
-  JVEC(csv_indexing_field_t) fields{};
+  JVEC(csv_indexing_field_t) fields {};
 
   void work();
 };

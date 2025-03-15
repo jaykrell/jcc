@@ -1,10 +1,9 @@
 /* test_vec.c */
 
 #pragma warning(disable : 4100) /* unused parameter */
+#include "jsize.h"
 #include "jvec.h"
 #include <assert.h>
-#include <stdio.h>
-#include "jsize.h"
 #include <stdio.h>
 
 /*************************************************************************************************/
@@ -12,7 +11,7 @@
 int main(void) {
   JVEC(double) vd = {0};
   JVEC(int) vi = {0};
-  int* vii = {0};
+  int *vii = {0};
   int a = 1;
   double b = 1;
   size_t size = {0};
