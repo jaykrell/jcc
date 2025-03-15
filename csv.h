@@ -91,8 +91,7 @@ typedef struct csv_persistant_index_line_t {
 } csv_persistant_index_line_t;
 
 typedef struct csv_indexer_t {
-  std::vector<csv_indexing_line_t> lines{};
-  jvec_csv_indexing_line_t lines2{};
+  jvec_csv_indexing_line_t lines{};
   char *contents{};
   void index_file(char *file_path);
 } csv_indexer_t;
