@@ -41,7 +41,6 @@ struct csv_indexing_line_t {
   jvec_csv_indexing_field_t fields2{};
 
   void work();
-  static unsigned long static_work(void *p);
 };
 
 #define T csv_indexing_line_t

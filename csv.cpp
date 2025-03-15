@@ -86,7 +86,7 @@ void *max_element(void *begin, void *end, size_t size,
 bool line_less_by_field_size(void *va, void *vb) {
   csv_indexing_line_t *a = (csv_indexing_line_t *)va;
   csv_indexing_line_t *b = (csv_indexing_line_t *)vb;
-  return a->fields.size() < b->fields.size();
+  return a->fields2.size(&a->fields2) < b->fields2.size(&b->fields2);
 }
 
 bool line_less_by_max_field_size(void *va, void *vb) {
