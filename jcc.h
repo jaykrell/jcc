@@ -11,7 +11,7 @@
 #include "jmap.h"
 #include "jstr.h"
 #include "jtype.h"
-#include "jvec.h"
+#include "jvec1.h"
 
 /*struct jmap { };*/
 /*struct jhash { };*/

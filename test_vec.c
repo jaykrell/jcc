@@ -1,7 +1,7 @@
 /* test_vec.c */
 
 #pragma warning(disable : 4100) /* unused parameter */
-#include "jvec.h"
+#include "jvec1.h"
 #include <assert.h>
 #include <stdio.h>
 

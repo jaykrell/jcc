@@ -15,7 +15,7 @@
 #include <string.h>
 #include <string>
 #include <thread>
-#include "jvec.h"
+#include "jvec1.c"
 
 #if !_MSC_VER && !defined(__cdecl)
 #define __cdecl

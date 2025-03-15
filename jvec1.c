@@ -10,13 +10,13 @@
 #include "jvec_deps.h"
 
 #define T char
-#include "jvec.c"
+#include "jvec1.c"
 
 #define T int
-#include "jvec.c"
+#include "jvec1.c"
 
 #define T double
-#include "jvec.c"
+#include "jvec1.c"
 
 #else
 

@@ -1,7 +1,7 @@
 /* A string is like a vector and probably is not worth having. */
 #include "jstr.h"
 #include "jbase_of.h"
-#include "jvec.h"
+#include "jvec1.h"
 #include <stdlib.h>
 
 typedef struct jstr_internal {

@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <vector>
 
-#include "jvec.h"
+#include "jvec1.h"
 
 struct csv_indexer_t;
 union csv_persistant_index_t;
@@ -25,7 +25,7 @@ typedef struct csv_indexing_line_t csv_indexing_line_t;
 /* temporary in memory form while indexing */
 
 #define T csv_indexing_field_t
-#include "jvec.h"
+#include "jvec1.h"
 
 struct csv_indexing_line_t {
 
@@ -43,7 +43,7 @@ struct csv_indexing_line_t {
 };
 
 #define T csv_indexing_line_t
-#include "jvec.h"
+#include "jvec1.h"
 
 int csv_indexing_line_compare_v(void *a, void *b);
 int csv_indexing_line_compare(csv_indexing_line_t *a, csv_indexing_line_t *b);

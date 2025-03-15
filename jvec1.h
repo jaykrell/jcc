@@ -12,13 +12,13 @@
 #define JVEC_H 1
 
 #define T char
-#include "jvec.h"
+#include "jvec1.h"
 
 #define T int
-#include "jvec.h"
+#include "jvec1.h"
 
 #define T double
-#include "jvec.h"
+#include "jvec1.h"
 
 #endif
 

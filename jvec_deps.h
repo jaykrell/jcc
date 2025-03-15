@@ -4,6 +4,6 @@
 #include "jmax.h"
 #include "jpaste.h"
 #include "jssize.h"
-#include "jvec.h"
+#include "jvec1.h"
 #include <stdlib.h>
 #include <string.h>
