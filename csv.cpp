@@ -210,7 +210,7 @@ void csv_indexer_t::index_file(char *file_path) {
     put_int(field_offset_size, 1);
     put_int(field_size_size, 1);
 
-    put_int(line.fields.size(), field_count_size);
+    put_int(line.fields2.size(&line.fields2), field_count_size);
 
     for (auto &field : line.fields)
       put_int(field.offset, field_offset_size);
