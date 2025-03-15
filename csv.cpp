@@ -157,7 +157,7 @@ void csv_indexer_t::index_file(char *file_path) {
     ++line_size;
   }
 
-  qsort(&lines.front(), lines.size(), sizeof(csv_indexing_line_t),
+  qsort(lines2.begin, lines2.size(&lines2), sizeof(csv_indexing_line_t),
         csv_indexing_line_compare_v);
 
   csv_indexing_line_t *maxelem = (csv_indexing_line_t *)max_element(
@@ -212,13 +212,15 @@ void csv_indexer_t::index_file(char *file_path) {
 
     put_int(line.fields2.size(&line.fields2), field_count_size);
 
+	csv_indexing_field_t* field = {0};
+/*
     for (auto &field : line.fields)
       put_int(field.offset, field_offset_size);
 
     for (auto &field : line.fields)
       put_int(field.size, field_size_size);
+*/
   }
-
   index_header.total_size = index_contents.size();
 
   *(csv_persistant_index_t *)(&index_contents[0]) = index_header;
