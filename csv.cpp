@@ -199,20 +199,31 @@ void csv_indexer_t::index_file(char *file_path) {
   index_contents.resize(round_up(index_contents.size(), 8), 0);
   index_header.offset_to_lines = index_contents.size();
 
-  for (auto &line : lines) {
+  jvec_csv_indexing_line_t_iter line_iter = {0};
+
+  for (line_iter = lines2.beginiter(&lines2); line_iter.cmp(line_iter, lines2.enditer(&lines2)); line_iter = line_iter.inc(line_iter))
+  {
+    csv_indexing_line_t* line = line_iter.p;
     index_contents.resize(round_up(index_contents.size(), 8), 0);
 
-    int8_t const field_count_size = bytes_for_value(line.fields2.size(&line.fields2));
-    int8_t const field_offset_size = bytes_for_value(line.max_field_offset);
-    int8_t const field_size_size = bytes_for_value(line.max_field_size);
+    int8_t const field_count_size = bytes_for_value(line->fields2.size(&line->fields2));
+    int8_t const field_offset_size = bytes_for_value(line->max_field_offset);
+    int8_t const field_size_size = bytes_for_value(line->max_field_size);
 
     put_int(field_count_size, 1);
     put_int(field_offset_size, 1);
     put_int(field_size_size, 1);
 
-    put_int(line.fields2.size(&line.fields2), field_count_size);
+    put_int(line->fields2.size(&line->fields2), field_count_size);
 
-	csv_indexing_field_t* field = {0};
+    jvec_csv_indexing_field_t_iter field_iter = {0};
+
+    for (field_iter = line->fields2.beginiter(&line->fields2); field_iter.cmp(field_iter, line->fields2.enditer(&line->fields2)); field_iter = field_iter.inc(field_iter))
+	{
+		csv_indexing_field_t* field = field_iter.p;
+		field->offset;
+		field->size;
+	}
 /*
     for (auto &field : line.fields)
       put_int(field.offset, field_offset_size);

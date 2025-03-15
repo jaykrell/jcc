@@ -56,8 +56,7 @@ int main(void) {
   for (i = 0; i < size; ++i)
     printf("%d ", vi.begin[i]);
 
-  for (vii = vi.beginiter(&vi); vii.cmp(vii, vi.enditer(&vi));
-       vii = vii.inc(vii))
+  for (vii = vi.beginiter(&vi); vii.cmp(vii, vi.enditer(&vi)); vii = vii.inc(vii))
     printf("%d ", *vii.get(vii));
 
   vd.push_back(&vd, &b, 1);
