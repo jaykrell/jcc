@@ -12,7 +12,6 @@
 #include "read_entire_file.h"
 #include <stdio.h>
 #include <string.h>
-#include <string>
 #include <thread>
 #include "jbool.h"
 
@@ -37,10 +36,6 @@ int8_t bytes_for_value(int64_t a) {
 }
 
 int8_t bits_for_value(int64_t a) { return bytes_for_value(a) * 8; }
-
-void csv_indexing_line_init(csv_indexing_line_t *self) {
-	self;
-}
 
 void csv_indexing_line_t::work() {
   int64_t field_size{};
@@ -125,7 +120,11 @@ void csv_index_file(csv_indexer_t* self, char *file_path) {
   int64_t file_position = {0};
   csv_persistant_index_t index_header={0};
   index_header.version[0] = 1;
-  std::string index_file_path = std::string(file_path) + ".index";
+
+  JVEC(char) index_file_path = {0};
+
+  JVEC_APPEND(&index_file_path, file_path, strlen(file_path));
+  JVEC_APPEND(&index_file_path, ".index", sizeof(".index"));
 
   read_entire_file_t file = {0};
   file.file_path = file_path;
@@ -151,8 +150,6 @@ void csv_index_file(csv_indexer_t* self, char *file_path) {
           JMAX(index_header.max_line_contents_offset, file_position);
 
       csv_indexing_line_t indexing_line(self, line_start, line_size);
-
-      csv_indexing_line_init(&indexing_line);
 
 	  indexing_line.work();
 
@@ -235,7 +232,7 @@ void csv_index_file(csv_indexer_t* self, char *file_path) {
 
   *(csv_persistant_index_t *)(&index_contents.data[0]) = index_header;
 
-  FILE *file_w = fopen(index_file_path.c_str(), "wb");
+  FILE *file_w = fopen(index_file_path.data, "wb");
   fwrite(&index_contents.data[0], 1, index_contents.size, file_w);
   fclose(file_w);
 }

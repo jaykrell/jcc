@@ -40,8 +40,6 @@ struct csv_indexing_line_t {
 int csv_indexing_line_compare_v(void *a, void *b);
 int csv_indexing_line_compare(csv_indexing_line_t *a, csv_indexing_line_t *b);
 
-void csv_indexing_line_init(csv_indexing_line_t *self);
-
 typedef union csv_persistant_index_t {
   struct {
     int8_t version[8];
@@ -83,9 +81,8 @@ typedef struct csv_persistant_index_line_t {
 } csv_persistant_index_line_t;
 
 typedef struct csv_indexer_t {
-  JVEC(csv_indexing_line_t) lines{};
-  char *contents{};
-  void index_file(char *file_path);
+  JVEC(csv_indexing_line_t) lines;
+  char *contents;
 } csv_indexer_t;
 
 #endif
