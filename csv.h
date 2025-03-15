@@ -6,7 +6,6 @@
 #pragma warning(disable : 4201) // anonymous
 
 #include <stdint.h>
-#include <vector>
 #include "jvec.h"
 
 struct csv_indexer_t;
