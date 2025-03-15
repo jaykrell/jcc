@@ -15,6 +15,7 @@
 #include <string.h>
 #include <string>
 #include <thread>
+#include "jbool.h"
 
 #if !_MSC_VER && !defined(__cdecl)
 #define __cdecl
@@ -66,7 +67,7 @@ void csv_indexing_line_t::work() {
 
 /* like std::max_element */
 void *max_element(void *begin, size_t count, size_t size,
-                  bool (*less)(void *a, void *b)) {
+                  jbool (*less)(void *a, void *b)) {
   char *cbegin = (char *)begin;
   char *cend = cbegin + count * size;
   char *m = cbegin;
@@ -80,7 +81,7 @@ void *max_element(void *begin, size_t count, size_t size,
   return iter;
 }
 
-bool line_less_by_field_size(void *va, void *vb)
+jbool line_less_by_field_size(void *va, void *vb)
 /* Compare two lines by the number of fields they have. */
 {
   csv_indexing_line_t *a = (csv_indexing_line_t *)va;
@@ -88,7 +89,7 @@ bool line_less_by_field_size(void *va, void *vb)
   return a->fields.size < b->fields.size;
 }
 
-bool line_less_by_max_field_size(void *va, void *vb)
+jbool line_less_by_max_field_size(void *va, void *vb)
 /* Compare two lines by their maximum field size. */
 {
   csv_indexing_line_t *a = (csv_indexing_line_t *)va;
@@ -96,7 +97,7 @@ bool line_less_by_max_field_size(void *va, void *vb)
   return a->max_field_size < b->max_field_size;
 }
 
-bool line_less_by_max_field_offset(void *va, void *vb)
+jbool line_less_by_max_field_offset(void *va, void *vb)
 /* Compare two lines by their maximum field offset.
 For example max_field_size + max_field_offset is buffer size to hold a line,
 though it is an exaggeration and could better stated.
