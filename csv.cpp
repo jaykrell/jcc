@@ -67,13 +67,6 @@ void csv_indexing_line_t::work() {
   indexer->lines2.push_back(&indexer->lines2, this, 1);
 }
 
-unsigned long csv_indexing_line_t::static_work(void *p) {
-  csv_indexing_line_t *self = static_cast<csv_indexing_line_t *>(p);
-  self->work();
-  delete self;
-  return 0;
-}
-
 /* like std::max_element */
 void *max_element(void *begin, void *end, size_t size,
                   bool (*less)(void *a, void *b)) {
