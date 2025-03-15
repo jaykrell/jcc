@@ -84,8 +84,18 @@ struct jvec {
   T *cap;       /* the allocated end+1 of the vector */
 };
 
+#if 0
+struct jvec_void {
+  void *fn;
+  void *telem; /* the type of the vector elements */
+  void *begin;     /* the start of the vector */
+  void *end;       /* the logical end+1 of the vector */
+  void *cap;       /* the allocated end+1 of the vector */
+};
+
 #define JVEC_SIZE(v)           ((v)->begin - (v)->end)
 #define JVEC_PUSHBACK(v, elem) (v)->fn.push_back((v), &elem)
+#endif
 
 void jvec_init(jvec *v);
 
