@@ -32,9 +32,6 @@ struct csv_indexing_line_t {
   csv_indexing_line_t(csv_indexer_t *a, int64_t b, int64_t c)
       : indexer(a), line_offset(b), line_size(c) {}
 
-  bool operator<(const csv_indexing_line_t &other) const {
-    return line_offset < other.line_offset;
-  }
   csv_indexer_t *indexer{};
   int64_t line_offset{};
   int64_t line_size{};
