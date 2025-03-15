@@ -29,6 +29,8 @@ extern "C" {
 #endif
 
 #define jvec JPASTE(jvec_, T)
+#define jvec_fn JPASTE(jvec_fn_, T)
+
 #define jvec_type JPASTE3(jvec_, T, _type)
 #define jvec_iter JPASTE3(jvec_, T, _iter)
 #define jvec_iter_type JPASTE3(jvec_, T, _iter_type)
@@ -81,6 +83,9 @@ struct jvec {
   T *end;       /* the logical end+1 of the vector */
   T *cap;       /* the allocated end+1 of the vector */
 };
+
+#define JVEC_SIZE(v)           ((v)->begin - (v)->end)
+#define JVEC_PUSHBACK(v, elem) (v)->fn.push_back((v), &elem)
 
 void jvec_init(jvec *v);
 
