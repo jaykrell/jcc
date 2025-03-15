@@ -37,8 +37,7 @@ struct csv_indexing_line_t {
   int64_t line_size{};
   int64_t max_field_offset{};
   int64_t max_field_size{};
-  std::vector<csv_indexing_field_t> fields{};
-  jvec_csv_indexing_field_t fields2{};
+  jvec_csv_indexing_field_t fields{};
 
   void work();
 };
