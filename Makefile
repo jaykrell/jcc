@@ -56,6 +56,7 @@ OBJS=\
  jhash.$O \
  jlist.$O \
  jvec1.$O \
+ jvec.$O \
  jstr.$O \
  jthread.$O \
  camd64.$O \
@@ -153,7 +154,7 @@ test:
 endif
 !endif :
 
-all: test_vec$(EXE) \
+all: test_vec1$(EXE) test_vec$(EXE) \
 	test_list$(EXE) \
 	test_hash$(EXE) \
 	test_thread$(EXE) \
@@ -169,6 +170,10 @@ all: test_vec$(EXE) \
 $(win): $(OBJS)
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) cmain.c $(CLINK_FLAGS)
+
+test_vec1$(EXE): $(OBJS)
+	@-$(RM_F) $(@R).pdb $(@R).ilk
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_vec1.c $(OBJS) $(CLINK_FLAGS)
 
 test_vec$(EXE): $(OBJS)
 	@-$(RM_F) $(@R).pdb $(@R).ilk
@@ -201,7 +206,7 @@ clean:
 	$(RM_F) camd64.$(O) carm64.$(O) ccheck.$(O) ccpe.$(O) celf.$(O) clex.$(O)
 	$(RM_F) cmacho.$(O) cmain.$(O) config.cpp config.mk config.$(O)
 	$(RM_F) copt.$(O) cparse.$(O) cpe.$(O) cpre.$(O) cx86.$(O) jerr.$(O)
-	$(RM_F) jhash.$(O) jlist.$(O) jpe.c jpe.h jstr.$(O) jvec1.$(O) mscver.cpp
+	$(RM_F) jhash.$(O) jlist.$(O) jpe.c jpe.h jstr.$(O) jvec1.$(O)  jvec.$(O) mscver.cpp
 	$(RM_F) test1 test_vec test_list test_hash test1.exe test_vec.exe test_list.exe test_hash.exe
 	$(RM_F) test1.$(O) test1.pdb typedenum.cpp typedenum.$(O) winamd64$(EXE) winamd64.pdb
 	$(RM_F) mscver.cpp typedenum.cpp *.o *.$(O) w3rt.o w3rt.$(O) mac win32 win32$(EXE) win64 win64$(EXE) win win$(EXE) cyg cyg$(EXE) *.ilk lin win$(EXE) winarm$(EXE) winx86$(EXE) winamd64$(EXE)

@@ -8,8 +8,8 @@
 
 #ifndef T
 
-#ifndef JVEC_H
-#define JVEC_H 1
+#ifndef JVEC1_H
+#define JVEC1_H 1
 
 #define T char
 #include "jvec1.h"

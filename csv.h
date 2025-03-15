@@ -7,8 +7,7 @@
 
 #include <stdint.h>
 #include <vector>
-
-#include "jvec1.h"
+#include "jvec.h"
 
 struct csv_indexer_t;
 union csv_persistant_index_t;
@@ -24,9 +23,6 @@ typedef struct csv_indexing_line_t csv_indexing_line_t;
 
 /* temporary in memory form while indexing */
 
-#define T csv_indexing_field_t
-#include "jvec1.h"
-
 struct csv_indexing_line_t {
 
   csv_indexing_line_t(csv_indexer_t *a, int64_t b, int64_t c)
@@ -37,13 +33,10 @@ struct csv_indexing_line_t {
   int64_t line_size{};
   int64_t max_field_offset{};
   int64_t max_field_size{};
-  jvec_csv_indexing_field_t fields{};
+  JVEC(csv_indexing_field_t) fields{};
 
   void work();
 };
-
-#define T csv_indexing_line_t
-#include "jvec1.h"
 
 int csv_indexing_line_compare_v(void *a, void *b);
 int csv_indexing_line_compare(csv_indexing_line_t *a, csv_indexing_line_t *b);
@@ -91,7 +84,7 @@ typedef struct csv_persistant_index_line_t {
 } csv_persistant_index_line_t;
 
 typedef struct csv_indexer_t {
-  jvec_csv_indexing_line_t lines{};
+  JVEC(csv_indexing_line_t) lines{};
   char *contents{};
   void index_file(char *file_path);
 } csv_indexer_t;

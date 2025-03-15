@@ -1,16 +1,18 @@
 /* test_vec.c */
 
 #pragma warning(disable : 4100) /* unused parameter */
-#include "jvec1.h"
+#include "jvec.h"
 #include <assert.h>
+#include <stdio.h>
+#include "jsize.h"
 #include <stdio.h>
 
 /*************************************************************************************************/
 
 int main(void) {
-  jvec_double vd = {0};
-  jvec_int vi = {0};
-  jvec_int_iter vii = {0};
+  JVEC(double) vd = {0};
+  JVEC(int) vi = {0};
+  int* vii = {0};
   int a = 1;
   double b = 1;
   size_t size = {0};
@@ -18,49 +20,46 @@ int main(void) {
 
   /* test vector */
 
-  jvec_int_init(&vi);
-  jvec_double_init(&vd);
-
-  size = vi.size(&vi);
-  printf("%" JLONG_PRI "d\n", size);
-  vi.push_back(&vi, &a, 1);
-  size = vi.size(&vi);
-  printf("%" JLONG_PRI "d\n", size);
+  size = vi.size;
+  printf("%" JSIZE_PRI "d\n", size);
+  JVEC_PUSH_BACK(&vi, &a);
+  size = vi.size;
+  printf("%" JSIZE_PRI "d\n", size);
   ++a;
-  vi.push_back(&vi, &a, 1);
-  vi.push_back(&vi, &a, 1);
-  vi.push_back(&vi, &a, 1);
+  JVEC_PUSH_BACK(&vi, &a);
+  JVEC_PUSH_BACK(&vi, &a);
+  JVEC_PUSH_BACK(&vi, &a);
   a *= 2;
-  vi.push_back(&vi, &a, 1);
-  vi.push_back(&vi, &a, 1);
-  vi.push_back(&vi, &a, 1);
+  JVEC_PUSH_BACK(&vi, &a);
+  JVEC_PUSH_BACK(&vi, &a);
+  JVEC_PUSH_BACK(&vi, &a);
   ++a;
-  vi.push_back(&vi, &a, 1);
-  vi.push_back(&vi, &a, 1);
+  JVEC_PUSH_BACK(&vi, &a);
+  JVEC_PUSH_BACK(&vi, &a);
   a *= 3;
-  vi.push_back(&vi, &a, 1);
-  vi.push_back(&vi, &a, 1);
-  vi.push_back(&vi, &a, 1);
+  JVEC_PUSH_BACK(&vi, &a);
+  JVEC_PUSH_BACK(&vi, &a);
+  JVEC_PUSH_BACK(&vi, &a);
   ++a;
-  vi.push_back(&vi, &a, 1);
-  vi.push_back(&vi, &a, 1);
+  JVEC_PUSH_BACK(&vi, &a);
+  JVEC_PUSH_BACK(&vi, &a);
   a *= 4;
-  vi.push_back(&vi, &a, 1);
-  vi.push_back(&vi, &a, 1);
+  JVEC_PUSH_BACK(&vi, &a);
+  JVEC_PUSH_BACK(&vi, &a);
   ++a;
-  vi.push_back(&vi, &a, 1);
-  vi.push_back(&vi, &a, 1);
-  printf("cap: %" JLONG_PRI "d\n", size = vi.capacity(&vi));
-  printf("size: %" JLONG_PRI "d\n", size = vi.size(&vi));
+  JVEC_PUSH_BACK(&vi, &a);
+  JVEC_PUSH_BACK(&vi, &a);
+  printf("cap: %" JSIZE_PRI "d\n", size = vi.capacity);
+  printf("size: %" JSIZE_PRI "d\n", size = vi.size);
 
   for (i = 0; i < size; ++i)
-    printf("%d ", vi.begin[i]);
+    printf("%d ", vi.data[i]);
 
-  for (vii = vi.beginiter(&vi); vii.cmp(vii, vi.enditer(&vi)); vii = vii.inc(vii))
-    printf("%d ", *vii.get(vii));
+  for (vii = vi.data; vii != (vi.data + vi.size); ++vii)
+    printf("%d ", *vii);
 
-  vd.push_back(&vd, &b, 1);
-  size = vd.size(&vd);
+  JVEC_PUSH_BACK(&vd, &b);
+  size = vd.size;
   for (i = 0; i < size; ++i)
-    printf("%f ", vd.begin[i]);
+    printf("%f ", vd.data[i]);
 }
