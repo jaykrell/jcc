@@ -82,19 +82,28 @@ void *max_element(void *begin, void *end, size_t size,
   return iter;
 }
 
-bool line_less_by_field_size(void *va, void *vb) {
+bool line_less_by_field_size(void *va, void *vb)
+/* Compare two lines by the number of fields they have. */
+{
   csv_indexing_line_t *a = (csv_indexing_line_t *)va;
   csv_indexing_line_t *b = (csv_indexing_line_t *)vb;
   return a->fields.size(&a->fields) < b->fields.size(&b->fields);
 }
 
-bool line_less_by_max_field_size(void *va, void *vb) {
+bool line_less_by_max_field_size(void *va, void *vb)
+/* Compare two lines by their maximum field size. */
+{
   csv_indexing_line_t *a = (csv_indexing_line_t *)va;
   csv_indexing_line_t *b = (csv_indexing_line_t *)vb;
   return a->max_field_size < b->max_field_size;
 }
 
-bool line_less_by_max_field_offset(void *va, void *vb) {
+bool line_less_by_max_field_offset(void *va, void *vb)
+/* Compare two lines by their maximum field offset.
+For example max_field_size + max_field_offset is buffer size to hold a line,
+though it is an exaggeration and could better stated.
+*/
+{
   csv_indexing_line_t *a = (csv_indexing_line_t *)va;
   csv_indexing_line_t *b = (csv_indexing_line_t *)vb;
   return a->max_field_offset < b->max_field_offset;
@@ -115,6 +124,7 @@ int __cdecl csv_indexing_line_compare_v(void const *a, void const *b) {
 
 void csv_indexer_t::index_file(char *file_path) {
 
+  csv_indexer_t* self = this;
   int64_t file_position = {0};
   csv_persistant_index_t index_header={0};
   index_header.version[0] = 1;
@@ -125,7 +135,7 @@ void csv_indexer_t::index_file(char *file_path) {
   file.malloc = &jmalloc_default;
   file.stdio = &jstdio_default;
   read_entire_file(&file);
-  this->contents = file.contents;
+  self->contents = file.contents;
 
   /* Split each line rapidly and hand off line parsing to line workers. */
   int64_t line_start = 0;
@@ -156,7 +166,7 @@ void csv_indexer_t::index_file(char *file_path) {
     ++line_size;
   }
 
-  qsort(lines2.begin, lines2.size(&lines2), sizeof(csv_indexing_line_t),
+  qsort(self->lines2.begin, lines2.size(&lines2), sizeof(csv_indexing_line_t),
         csv_indexing_line_compare_v);
 
   csv_indexing_line_t *maxelem = (csv_indexing_line_t *)max_element(
