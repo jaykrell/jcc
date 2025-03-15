@@ -202,7 +202,7 @@ void csv_indexer_t::index_file(char *file_path) {
   for (auto &line : lines) {
     index_contents.resize(round_up(index_contents.size(), 8), 0);
 
-    int8_t const field_count_size = bytes_for_value(line.fields.size());
+    int8_t const field_count_size = bytes_for_value(line.fields2.size(&line.fields2));
     int8_t const field_offset_size = bytes_for_value(line.max_field_offset);
     int8_t const field_size_size = bytes_for_value(line.max_field_size);
 
