@@ -141,7 +141,9 @@ int jos_get_file_size(int file_handle, int64_t *file_size)
   return 0;
 }
 
-int jos_mmap(int file_handle, int64_t size, int read, void **q) {
+int jos_mmap(int file_handle, int64_t size, int read, void **q)
+/* mmap a file for read or read/write */
+{
   void *p;
 #if _WIN32
   int err = 0;
@@ -177,15 +179,21 @@ int jos_mmap(int file_handle, int64_t size, int read, void **q) {
 // int jos_read(int file_handle, void* buffer, size_t bytes, size_t *actual);
 // int jos_write(int file_handle, void* buffer, size_t bytes, size_t *actual);
 
-int jos_mmap_read(int file_handle, int64_t size, void **q) {
+int jos_mmap_read(int file_handle, int64_t size, void **q)
+/* mmap a file for read */
+{
   return jos_mmap(file_handle, size, 1, q);
 }
 
-int jos_mmap_write(int file_handle, int64_t size, void **q) {
-  return jos_mmap(file_handle, size, 0, q);
+int jos_mmap_write(int file_handle, int64_t size, void **q)
+/* mmap a file for read/write */
+{
+	return jos_mmap(file_handle, size, 0, q);
 }
 
-int jos_munmap(void *p, size_t size) {
+int jos_munmap(void *p, size_t size) 
+/* munmap a file */
+{
   if (!p)
     return 0;
 #if _WIN32
