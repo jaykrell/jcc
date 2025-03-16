@@ -2,7 +2,6 @@
 
 #pragma warning(disable : 4100) /* unused parameter */
 #include "jhash.h"
-#include "jvoidp.h"
 #include <assert.h>
 #include <stdio.h>
 
@@ -12,11 +11,11 @@ typedef struct int_int {
   int key, value;
 } int_int;
 
-static jhashcode_t hash(jvoidp context, jvoidp data) {
+static jhashcode_t hash(void* context, void* data) {
   return ((int_int *)data)->value;
 }
 
-static int compare(jvoidp context, jvoidp data1, jvoidp data2) {
+static int compare(void* context, void* data1, void* data2) {
   int a = ((int_int *)data1)->value;
   int b = ((int_int *)data2)->value;
   if (a < b)
@@ -26,7 +25,7 @@ static int compare(jvoidp context, jvoidp data1, jvoidp data2) {
   return 0;
 }
 
-static int copy(jvoidp context, jvoidp data1, jvoidp data2) {
+static int copy(void* context, void* data1, void* data2) {
   *(int_int *)data1 = *(int_int *)data2;
   return 0;
 }

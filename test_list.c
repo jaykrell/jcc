@@ -4,7 +4,6 @@
 #include "jbase_of.h"
 #include "jlist.h"
 #include "jmem.h"
-#include "jvoidp.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -14,12 +13,12 @@ typedef struct jlist_int_t {
   jlist_t list;
 } jlist_int_t;
 
-uint64_t list_enumerate_test1(jvoidp context, jvoidp element) {
+uint64_t list_enumerate_test1(void* context, void* element) {
   printf("list_enumerate_test1: %d\n", (int)((jlist_int_t *)element)->value);
   return 1;
 }
 
-uint64_t list_enumerate_test2(jvoidp context, jvoidp element) {
+uint64_t list_enumerate_test2(void* context, void* element) {
   printf("list_enumerate_test2: %d\n",
          (int)JBASE_OF(jlist_int_t, list, element)->value);
   return 1;

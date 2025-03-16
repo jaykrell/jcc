@@ -10,8 +10,6 @@
 
 #include "jhashcode.h"
 #include "jlist.h"
-#include "juint.h"
-#include "jvoidp.h"
 #include <stddef.h>
 #include <stdint.h>
 
@@ -24,11 +22,11 @@ typedef struct jhash_keyvalue_t jhash_keyvalue_t;
 
 /* TODO: is this jtype? */
 struct jhash_init_t {
-  jvoidp context;
-  jhashcode_t (*hash)(jvoidp context, jvoidp data);
-  int (*compare)(jvoidp context, jvoidp a, jvoidp b);
-  int (*copy_uninit)(jvoidp context, jvoidp to, jvoidp from);
-  int (*copy_over)(jvoidp context, jvoidp to, jvoidp from);
+  void* context;
+  jhashcode_t (*hash)(void* context, void* data);
+  int (*compare)(void* context, void* a, void* b);
+  int (*copy_uninit)(void* context, void* to, void* from);
+  int (*copy_over)(void* context, void* to, void* from);
 };
 
 struct jhash_t {
@@ -47,8 +45,8 @@ typedef struct jhash_lookup_t {
   unlikely the same, since hash table can copy in the data.
   i.e. This is an interior pointer into the table.
   */
-  jvoidp data;
-  jlong size; /* for insert */
+  void* data;
+  int64_t size; /* for insert */
 
   /* internal
   If key is not found, this helps insert.

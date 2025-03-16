@@ -1,6 +1,4 @@
 #include "jlist.h"
-#include "jcharp.h"
-#include "jvoidp.h"
 /* Intrusive circular doubly linked lists.
    Based on NT and EFI LIST_ENTRY.
 */
@@ -35,8 +33,8 @@ void jlist_prepend(jlist_t *list, jlist_t *element) {
 }
 
 /* Count the elements in the list. This is slow. Use with caution. */
-jlong jlist_size(jlist_t *list) {
-  jlong size = 0;
+int64_t jlist_size(jlist_t *list) {
+  int64_t size = 0;
   if (list) {
     jlist_t *element = list->flink;
     while (element && element != list) {
@@ -70,13 +68,13 @@ jlist_t *jlist_remove_last(jlist_t *list) {
 }
 
 uint64_t jlist_iterate(jlist_t *list,
-                       uint64_t (*callback)(jvoidp context, jvoidp element),
-                       jvoidp context, jlong offset) {
+                       uint64_t (*callback)(void* context, void* element),
+                       void* context, int64_t offset) {
   uint64_t overall_result = 0;
   uint64_t result = 0;
   jlist_t *element = list->flink;
   while (element && element != list) {
-    result = callback(context, ((jcharp)element) - offset);
+    result = callback(context, ((char*)element) - offset);
     overall_result += result;
     element = element->flink;
     if (!result)

@@ -7,7 +7,6 @@
  */
 #include "jhash.h"
 #include "jbase_of.h"
-#include "jcharp.h"
 #include "jcount.h"
 #include "jerr.h"
 #include "jlist.h"
@@ -85,7 +84,7 @@ int jhash_lookup(jhash_t *hash, jhash_lookup_t *lookup) {
     element = bucket->flink;
     lookup->hashcode = hashcode;
     while (element && element != bucket) {
-      data = JBASE_OF(jhash_data_t, list, element);
+      data = JBASE(jhash_data_t, list, element);
       if (hashcode == data->hashcode &&
           0 == init->compare(init->context, data + 1, lookup->data)) {
         lookup->data = (1 + data);
@@ -124,7 +123,7 @@ int jhash_enum(jhash_enum_t *e) {
   if (e->element) {
     if ((e->element = e->element->flink) != e->list) {
     ret:
-      data = JBASE_OF(jhash_data_t, list, e->element);
+      data = JBASE(jhash_data_t, list, e->element);
       e->data = (data + 1);
       return 1;
     } else {

@@ -10,8 +10,8 @@ typedef struct jrbtree_entry jrbtree_entry;
 typedef struct jrbtree jrbtree;
 
 struct jrbtree_entry {
-  jvoidp key;
-  jvoidp value;
+  void* key;
+  void* value;
 };
 
 struct jrbtree {

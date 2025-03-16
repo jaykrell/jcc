@@ -1,16 +1,15 @@
 #ifndef JFILE_H
 #define JFILE_H 1
 
-#include "jvoidp.h"
 #include <stddef.h>
 
 typedef struct jfile_t jfile_t;
 
 struct jfile_t {
   int (*get_size)(size_t *size);
-  int (*read)(jfile_t *self, size_t offset, jvoidp buf, size_t requested,
+  int (*read)(jfile_t *self, size_t offset, void* buf, size_t requested,
               size_t *actual);
-  int (*write)(jfile_t *self, size_t offset, jvoidp buf, size_t requested,
+  int (*write)(jfile_t *self, size_t offset, void* buf, size_t requested,
                size_t *actual);
   int (*close)(jfile_t *self);
 };
