@@ -1,4 +1,9 @@
-/* jvec is like std::vector */
+/* jvec1 is like std::vector */
+
+/* This is probably too onerous to use, and too slow,
+   and not worth the linguistic "trick" to "member functions".
+   consider jvec.c instead.
+*/
 
 #ifndef JVEC_H
 #define JVEC_H 1

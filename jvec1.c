@@ -1,6 +1,11 @@
 /* jcc, jlib, etc. by Jay Krell */
 
-/* jvec is like std::vector */
+/* jvec1 is like std::vector */
+
+/* This is probably too onerous to use, and too slow,
+   and not worth the linguistic "trick" to "member functions".
+   consider jvec.c instead.
+*/
 
 /* TODO: Remove the len parameter from push_back? */
 /* TODO: vptr instead of vtable? */
