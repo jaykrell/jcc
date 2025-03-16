@@ -13,9 +13,9 @@
 #include "read_entire_file.h"
 #include <stdio.h>
 #include <string.h>
-#include <thread>
 #include "jvec.h"
 #include "jmem.h"
+#include <stdlib.h> /* TODO: replace qsort */
 
 #if !_MSC_VER && !defined(__cdecl)
 #define __cdecl
@@ -41,18 +41,19 @@ int8_t bytes_for_value(int64_t a) {
 
 int8_t bits_for_value(int64_t a) { return bytes_for_value(a) * 8; }
 
-void csv_indexing_line_t::work() {
-  int64_t field_size{};
-  int64_t field_offset{};
-  for (int64_t i = 0; i < line_size; ++i) {
-    if (indexer->contents[i + line_offset] == ',') {
+void csv_indexing_line_work(csv_indexing_line_t* self) {
+  int64_t field_size = 0;
+  int64_t field_offset = 0;
+  int64_t i = 0;
+  for (i = 0; i < self->line_size; ++i) {
+    if (self->indexer->contents[i + self->line_offset] == ',') {
 
       csv_indexing_field_t indexing_field = {field_offset, field_size};
 
-      JVEC_PUSH_BACK(&this->fields, &indexing_field);
+      JVEC_PUSH_BACK(&self->fields, &indexing_field);
 
-      max_field_offset = JMAX(max_field_offset, field_offset);
-      max_field_size = JMAX(max_field_size, field_size);
+      self->max_field_offset = JMAX(self->max_field_offset, field_offset);
+      self->max_field_size = JMAX(self->max_field_size, field_size);
       field_offset = i + 1;
       field_size = 0;
     } else {
@@ -60,7 +61,7 @@ void csv_indexing_line_t::work() {
     }
   }
 
-  JVEC_PUSH_BACK(&indexer->lines, this);
+  JVEC_PUSH_BACK(&self->indexer->lines, self);
 }
 
 /* like std::max_element */
@@ -174,9 +175,9 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
       index_header.max_line_contents_offset =
           JMAX(index_header.max_line_contents_offset, file_position);
 
-      csv_indexing_line_t indexing_line(self, line_start, line_size);
+      csv_indexing_line_t indexing_line = {self, line_start, line_size};
 
-      indexing_line.work();
+      csv_indexing_line_work(&indexing_line);
 
       line_start = file_position + 1;
       line_size = 0;
@@ -250,7 +251,9 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
   fclose(file_w);
 }
 
-int main(int /*argc*/, char **argv) {
+#pragma warning(disable:4100) /* unused parameter */
+
+int main(int argc, char **argv) {
   if (strcmp(argv[1], "index") == 0) {
     csv_indexer_t indexer = {0};
     csv_index_file(&indexer, argv[2]);

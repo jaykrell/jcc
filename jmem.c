@@ -3,10 +3,12 @@
  * mem_dup
  */
 
-#include "jcharp.h"
-#include "jssize.h"
+#include <string.h>
+#include "jmem.h"
 
-void *jmem_intern(jcharp p, jssize n) { return 0; }
+#pragma warning(disable:4100) /* unused parameter */
+
+void *jmem_intern(char* p, size_t n) { return 0; }
 
 void jmemset0(void* p, size_t n)
 {

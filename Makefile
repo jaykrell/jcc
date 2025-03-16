@@ -194,7 +194,7 @@ test_thread$(EXE): $(OBJS)
 
 csv$(EXE): $(OBJS)
 	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) csv.cpp $(OBJS) $(CLINK_FLAGS)
+	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) csv.c $(OBJS) $(CLINK_FLAGS)
 
 csv_random_write$(EXE): $(OBJS)
 	@-$(RM_F) $(@R).pdb $(@R).ilk

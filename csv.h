@@ -8,9 +8,9 @@
 #include "jvec.h"
 #include <stdint.h>
 
-struct csv_indexer_t;
-union csv_persistant_index_t;
-struct csv_persistant_index_line_t;
+typedef struct csv_indexer_t csv_indexer_t;
+typedef union csv_persistant_index_t csv_persistant_index_t;
+typedef struct csv_persistant_index_line_t csv_persistant_index_line_t;
 
 // temporary in memory form while indexing
 typedef struct csv_indexing_field_t {
@@ -22,20 +22,16 @@ typedef struct csv_indexing_line_t csv_indexing_line_t;
 
 /* temporary in memory form while indexing */
 
-struct csv_indexing_line_t {
+typedef JVEC(csv_indexing_field_t) jvec_csv_indexing_field_t;
 
-  csv_indexing_line_t(csv_indexer_t *a, int64_t b, int64_t c)
-      : indexer(a), line_offset(b), line_size(c) {}
-
-  csv_indexer_t *indexer{};
-  int64_t line_offset{};
-  int64_t line_size{};
-  int64_t max_field_offset{};
-  int64_t max_field_size{};
-  JVEC(csv_indexing_field_t) fields {};
-
-  void work();
-};
+typedef struct csv_indexing_line_t {
+  csv_indexer_t *indexer;
+  int64_t line_offset;
+  int64_t line_size;
+  int64_t max_field_offset;
+  int64_t max_field_size;
+  jvec_csv_indexing_field_t fields;
+} csv_indexing_line_t;
 
 int csv_indexing_line_compare_v(void *a, void *b);
 int csv_indexing_line_compare(csv_indexing_line_t *a, csv_indexing_line_t *b);
