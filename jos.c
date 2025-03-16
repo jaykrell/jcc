@@ -3,8 +3,15 @@
 #if _WIN32
 #include "windows.h"
 #else
+#include "sys/types.h"
+#include "sys/stat.h"
+#include "fcntl.h"
 #include "unistd.h"
+#include "sys/mman.h"
+#include <errno.h>
 #endif
+
+#pragma warning(disable:4100) /* unused parameter */
 
 /* TODO: Test on old Windows, and possibly improve the code there. */
 #if _WIN32
@@ -27,13 +34,17 @@ Public functions are: jos_open_file_read and jos_open_file_write.
 */
 {
 #if _WIN32
-	HANDLE f = CreateFileA(file_path, GENERIC_READ | (read ? 0 : GENERIC_WRITE), read ? FILE_SHARE_READ : 0, 0, read ? OPEN_EXISTING : OPEN_ALWAYS, 0, 0);
+	HANDLE f = CreateFileA(file_path, GENERIC_READ | (read ? 0 : GENERIC_WRITE), FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, read ? OPEN_EXISTING : OPEN_ALWAYS, 0, 0);
 	if (f == INVALID_HANDLE_VALUE) {
 		*file_handle = -1;
 		return GetLastError();
 	}
 #else
-	int f = open(file_path, O_CLOEXEC | O_CLOFORK | (read ? O_RDONLY : (O_RDWR | O_CREAT)), 0);
+	int f = open(file_path, O_CLOEXEC
+#ifdef O_CLOFORK
+		| O_CLOFORK
+#endif
+		| (read ? O_RDONLY : (O_RDWR | O_CREAT)), 0);
 	if (f < 0) {
 		*file_handle = -1;
 		return errno;
@@ -65,7 +76,7 @@ Return the handle through an out parameter and return 0 for success, else error.
 	return jos_open_file(file_path, 0, file_handle);
 }
 
-int jos_close_file(int file_handle)
+void jos_close_file(int file_handle)
 /* Close a file.
 */
 {
@@ -117,7 +128,7 @@ int jos_get_file_size(int file_handle, int64_t* file_size)
 	*file_size = li.QuadPart;
 #else
 	struct stat st={0};
-	if (fstat(file_handle, st))
+	if (fstat(file_handle, &st))
 		return errno;
 	*file_size = st.st_size;
 #endif
@@ -141,13 +152,16 @@ int jos_mmap(int file_handle, int64_t size, int read, void** q)
 	CloseHandle(fileMapping);
 	return err;
 #else
-	p = mmap(0, file_handle, size, read ? PROT_READ : PROT_WRITE, 0, 0);
-	if (!p)
+	p = mmap(0/*addr*/, file_handle, size, read ? PROT_READ : PROT_WRITE, read ? 0 : MAP_SHARED, 0/*offset*/);
+	if (p == MAP_FAILED)
 		return errno;
 	*q = p;
 #endif
 	return 0;
 }
+
+//int jos_read(int file_handle, void* buffer, size_t bytes, size_t *actual);
+//int jos_write(int file_handle, void* buffer, size_t bytes, size_t *actual);
 
 int jos_mmap_read(int file_handle, int64_t size, void** q)
 {
@@ -159,11 +173,15 @@ int jos_mmap_write(int file_handle, int64_t size, void** q)
 	return jos_mmap(file_handle, size, 0, q);
 }
 
-void jos_munmap(void* p)
+int jos_munmap(void* p, size_t size)
 {
+	if (!p) return 0;
 #if _WIN32
-	if (p) UnmapViewOfFile(p);
+	UNREFERENCED_PARAMETER(size);
+	if (!UnmapViewOfFile(p))
+		return GetLastError();
 #else
-	if (p) munmap(p);
+	if (!munmap(p, size)) return errno;
 #endif
+	return 0;
 }

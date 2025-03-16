@@ -1,10 +1,11 @@
 /* jcc, jlib, etc. by Jay Krell */
 /* jvec is like std::vector */
 
-#include "jvec.h"
-#include "jmax.h"
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include "jvec.h"
+#include "jmax.h"
 
 int jvec_resize(jvec_generic *v, size_t new_size, size_t element_size) {
   size_t capacity;
@@ -12,8 +13,8 @@ int jvec_resize(jvec_generic *v, size_t new_size, size_t element_size) {
   char *new_data;
   size_t size;
 
-  size = v->size;
-  capacity = v->capacity;
+  size_t size = v->size;
+  size_t capacity = v->capacity;
 
   if (new_size > capacity) {
     new_capacity = JMAX(new_size, capacity * 2);
@@ -28,13 +29,13 @@ int jvec_resize(jvec_generic *v, size_t new_size, size_t element_size) {
   return 0;
 }
 
-int jvec_insert(jvec_generic *v, void *before, void *begin, size_t count,
+xint jvec_insert(jvec_generic *v, void * const before, void * const begin, size_t count,
                 size_t element_size) {
   int err;
   size_t before_offset;
   size_t new_size;
 
-  before_offset = ((char *)before - v->data);
+  before_offset = ((char const*)before - v->data);
   new_size = v->size + count;
 
   err = jvec_resize(v, new_size, element_size);
@@ -46,7 +47,7 @@ int jvec_insert(jvec_generic *v, void *before, void *begin, size_t count,
   return 0;
 }
 
-int jvec_push_back(jvec_generic *v, void *element, size_t element_size) {
+int jvec_push_back(jvec_generic *v, void * const element, size_t element_size) {
   int err;
   size_t size;
 

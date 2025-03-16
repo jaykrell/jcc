@@ -12,7 +12,7 @@ int main() {
 
   for (i = 0; i < imax; ++i) {
     jmax = rand() % 0x1000;
-    for (int j = 0; j < jmax; ++j) {
+    for (j = 0; j < jmax; ++j) {
       printf("%d", (int)rand());
       if (j + 1 != jmax)
         printf(",");

@@ -22,9 +22,9 @@ extern "C" {
 
 typedef JVEC(char) jvec_generic;
 
-int jvec_push_back(jvec_generic *, void *element, size_t element_size);
+int jvec_push_back(jvec_generic *, void const *element, size_t element_size);
 int jvec_resize(jvec_generic *, size_t count, size_t element_size);
-int jvec_insert(jvec_generic *, void *before, void *begin, size_t count,
+int jvec_insert(jvec_generic *, void const *before, void const *begin, size_t count,
                 size_t element_size);
 
 #define JVEC_RESIZE(v, size)                                                   \

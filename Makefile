@@ -159,6 +159,7 @@ endif
 all: test_vec1$(EXE) test_vec$(EXE) \
 	test_list$(EXE) \
 	test_hash$(EXE) \
+	test_os$(EXE) \
 	test_thread$(EXE) \
 	csv$(EXE) \
 	csv_random_write$(EXE) \
@@ -172,6 +173,10 @@ all: test_vec1$(EXE) test_vec$(EXE) \
 $(win): $(OBJS)
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) cmain.c $(CLINK_FLAGS)
+
+test_os$(EXE): $(OBJS)
+	@-$(RM_F) $(@R).pdb $(@R).ilk
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_os.c $(OBJS) $(CLINK_FLAGS)
 
 test_vec1$(EXE): $(OBJS)
 	@-$(RM_F) $(@R).pdb $(@R).ilk
