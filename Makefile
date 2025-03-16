@@ -35,6 +35,7 @@ O=o
 EXE=
 CXX=g++
 
+CFLAGS=-g
 CLINK_FLAGS=-o $@
 
 endif
@@ -174,35 +175,35 @@ $(win): $(OBJS)
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) cmain.c $(CLINK_FLAGS)
 
-test_os$(EXE): $(OBJS)
+test_os$(EXE): $(OBJS) test_os.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_os.c $(OBJS) $(CLINK_FLAGS)
 
-test_vec1$(EXE): $(OBJS)
+test_vec1$(EXE): $(OBJS) test_vec1.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_vec1.c $(OBJS) $(CLINK_FLAGS)
 
-test_vec$(EXE): $(OBJS)
+test_vec$(EXE): $(OBJS) test_vec.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_vec.c $(OBJS) $(CLINK_FLAGS)
 
-test_list$(EXE): $(OBJS)
+test_list$(EXE): $(OBJS) test_list.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_list.c $(OBJS) $(CLINK_FLAGS)
 
-test_hash$(EXE): $(OBJS)
+test_hash$(EXE): $(OBJS) test_hash.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_hash.c $(OBJS) $(CLINK_FLAGS)
 
-test_thread$(EXE): $(OBJS)
+test_thread$(EXE): $(OBJS) test_thread.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_thread.c $(OBJS) $(CLINK_FLAGS)
 
-csv$(EXE): $(OBJS)
+csv$(EXE): $(OBJS) csv.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) csv.c $(OBJS) $(CLINK_FLAGS)
 
-csv_random_write$(EXE): $(OBJS)
+csv_random_write$(EXE): $(OBJS) csv_random_write.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) csv_random_write.c $(OBJS) $(CLINK_FLAGS)
 

@@ -152,7 +152,7 @@ int jos_mmap(int file_handle, int64_t size, int read, void** q)
 	CloseHandle(fileMapping);
 	return err;
 #else
-	p = mmap(0/*addr*/, file_handle, size, read ? PROT_READ : PROT_WRITE, read ? 0 : MAP_SHARED, 0/*offset*/);
+	p = mmap(0/*addr*/, file_handle, size, PROT_READ | (read ? 0 : PROT_WRITE), read ? 0 : MAP_SHARED, 0/*offset*/);
 	if (p == MAP_FAILED)
 		return errno;
 	*q = p;

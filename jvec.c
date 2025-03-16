@@ -8,11 +8,8 @@
 #include "jmax.h"
 
 int jvec_resize(jvec_generic *v, size_t new_size, size_t element_size) {
-  size_t capacity;
   size_t new_capacity;
   char *new_data;
-  size_t size;
-
   size_t size = v->size;
   size_t capacity = v->capacity;
 
@@ -29,7 +26,7 @@ int jvec_resize(jvec_generic *v, size_t new_size, size_t element_size) {
   return 0;
 }
 
-xint jvec_insert(jvec_generic *v, void * const before, void * const begin, size_t count,
+int jvec_insert(jvec_generic *v, void const * before, void const * begin, size_t count,
                 size_t element_size) {
   int err;
   size_t before_offset;
@@ -47,7 +44,7 @@ xint jvec_insert(jvec_generic *v, void * const before, void * const begin, size_
   return 0;
 }
 
-int jvec_push_back(jvec_generic *v, void * const element, size_t element_size) {
+int jvec_push_back(jvec_generic *v, void const * element, size_t element_size) {
   int err;
   size_t size;
 
