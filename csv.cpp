@@ -140,6 +140,10 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
   int64_t file_position;
   jvec_char_t index_file_path;
   csv_persistant_index_t index_header;
+  FILE *file_w = 0;
+  int64_t line_start = 0;
+  int64_t line_size = 0;
+  size_t line_iter = 0;
 
   JMEMSET0_VALUE(file_position);
   JMEMSET0_VALUE(index_file_path);
@@ -157,8 +161,6 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
   self->contents = file.contents;
 
   /* Split each line rapidly and hand off line parsing to line workers. */
-  int64_t line_start = 0;
-  int64_t line_size = 0;
 
   for (file_position = 0; file_position < file.size; ++file_position) {
     char ch = file.contents[file_position];
@@ -213,8 +215,6 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
   JVEC_RESIZE(&index_contents, round_up(index_contents.size, 8));
   index_header.offset_to_lines = index_contents.size;
 
-  size_t line_iter;
-
   for (line_iter = 0; line_iter < self->lines.size; ++line_iter) {
     csv_indexing_line_t *line = &self->lines.data[line_iter];
     JVEC_RESIZE(&index_contents, round_up(index_contents.size, 8));
@@ -245,7 +245,7 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
 
   *(csv_persistant_index_t *)(&index_contents.data[0]) = index_header;
 
-  FILE *file_w = fopen(index_file_path.data, "wb");
+  file_w = fopen(index_file_path.data, "wb");
   fwrite(&index_contents.data[0], 1, index_contents.size, file_w);
   fclose(file_w);
 }
