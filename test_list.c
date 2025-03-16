@@ -70,7 +70,7 @@ int main(void) {
   }
 
   {
-    JMEM_ZERO(&l1, sizeof(l1));
+    JMEMSET0_VALUE(l1);
     assert(0 == jlist_size(&l1));
     jlist_prepend(&l1, &li1.list);
     assert(1 == jlist_size(&l1));

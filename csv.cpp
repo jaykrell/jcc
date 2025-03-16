@@ -14,10 +14,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <thread>
+#include "jvec.h"
+#include "jmem.h"
 
 #if !_MSC_VER && !defined(__cdecl)
 #define __cdecl
 #endif
+
+typedef JVEC(char) jvec_char_t;
 
 int64_t round_up(int64_t a, int64_t b) {
   int64_t mod = (a % b);
@@ -115,14 +119,33 @@ int __cdecl csv_indexing_line_compare_v(void const *a, void const *b) {
                                    (csv_indexing_line_t *)b);
 }
 
+static int csv_index_write_int(
+					jvec_char_t* index_contents,
+					int64_t a,
+					int size) {
+	int err;
+	int64_t offset;
+
+  JMEMSET0_VALUE(err);
+  JMEMSET0_VALUE(offset);
+
+	offset = index_contents->size;
+	if ((err = JVEC_RESIZE(index_contents, offset + 8))) return err;
+	*(int64_t *)(&index_contents->data[offset]) = a;
+	return JVEC_RESIZE(index_contents, offset + size);
+};
+
 void csv_index_file(csv_indexer_t *self, char *file_path) {
 
-  int64_t file_position = {0};
-  csv_persistant_index_t index_header = {0};
+  int64_t file_position;
+  jvec_char_t index_file_path;
+  csv_persistant_index_t index_header;
+
+  JMEMSET0_VALUE(file_position);
+  JMEMSET0_VALUE(index_file_path);
+  JMEMSET0_VALUE(index_header);
+
   index_header.version[0] = 1;
-
-  JVEC(char) index_file_path = {0};
-
   JVEC_APPEND(&index_file_path, file_path, strlen(file_path));
   JVEC_APPEND(&index_file_path, ".index", sizeof(".index"));
 
@@ -179,20 +202,13 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
       line_less_by_max_field_offset);
   index_header.max_field_offset = maxelem->max_field_offset;
 
-  JVEC(char) index_contents = {0};
+  jvec_char_t index_contents = {0};
   JVEC_RESIZE(&index_contents, sizeof(index_header));
 
   index_header.path_size = strlen(file_path);
   index_header.offset_to_path = index_contents.size;
   JVEC_INSERT(&index_contents, JVEC_END(&index_contents), file_path,
               strlen(file_path) + 1);
-
-  auto put_int = [&](int64_t a, int size) {
-    int64_t offset = index_contents.size;
-    JVEC_RESIZE(&index_contents, offset + 8);
-    *reinterpret_cast<int64_t *>(&index_contents.data[offset]) = a;
-    JVEC_RESIZE(&index_contents, offset + size);
-  };
 
   JVEC_RESIZE(&index_contents, round_up(index_contents.size, 8));
   index_header.offset_to_lines = index_contents.size;
@@ -207,26 +223,23 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
     int8_t const field_offset_size = bytes_for_value(line->max_field_offset);
     int8_t const field_size_size = bytes_for_value(line->max_field_size);
 
-    put_int(field_count_size, 1);
-    put_int(field_offset_size, 1);
-    put_int(field_size_size, 1);
+    csv_index_write_int(&index_contents, field_count_size, 1);
+    csv_index_write_int(&index_contents, field_offset_size, 1);
+    csv_index_write_int(&index_contents, field_size_size, 1);
 
-    put_int(line->fields.size, field_count_size);
+    csv_index_write_int(&index_contents, line->fields.size, field_count_size);
 
     size_t field_iter = {0};
 
     for (field_iter = 0; field_iter < line->fields.size; ++field_iter) {
       csv_indexing_field_t *field = &line->fields.data[field_iter];
-      field->offset;
-      field->size;
+	  csv_index_write_int(&index_contents, field->offset, field_offset_size);
     }
-    /*
-        for (auto &field : line.fields)
-          put_int(field.offset, field_offset_size);
 
-        for (auto &field : line.fields)
-          put_int(field.size, field_size_size);
-    */
+    for (field_iter = 0; field_iter < line->fields.size; ++field_iter) {
+      csv_indexing_field_t *field = &line->fields.data[field_iter];
+	  csv_index_write_int(&index_contents, field->size, field_size_size);
+    }
   }
   index_header.total_size = index_contents.size;
 

@@ -55,10 +55,11 @@ OBJS=\
  jerr.$O \
  jhash.$O \
  jlist.$O \
- jvec1.$O \
- jvec.$O \
+ jmem.$O \
  jstr.$O \
  jthread.$O \
+ jvec1.$O \
+ jvec.$O \
  camd64.$O \
  carm64.$O \
  ccheck.$O \
