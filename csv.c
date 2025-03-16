@@ -10,12 +10,12 @@
 #include "csv.h"
 #include "jbool.h"
 #include "jmax.h"
+#include "jmem.h"
+#include "jvec.h"
 #include "read_entire_file.h"
 #include <stdio.h>
-#include <string.h>
-#include "jvec.h"
-#include "jmem.h"
 #include <stdlib.h> /* TODO: replace qsort */
+#include <string.h>
 
 #if !_MSC_VER && !defined(__cdecl)
 #define __cdecl
@@ -41,7 +41,7 @@ int8_t bytes_for_value(int64_t a) {
 
 int8_t bits_for_value(int64_t a) { return bytes_for_value(a) * 8; }
 
-void csv_indexing_line_work(csv_indexing_line_t* self) {
+void csv_indexing_line_work(csv_indexing_line_t *self) {
   int64_t field_size = 0;
   int64_t field_offset = 0;
   int64_t i = 0;
@@ -120,20 +120,19 @@ int __cdecl csv_indexing_line_compare_v(void const *a, void const *b) {
                                    (csv_indexing_line_t *)b);
 }
 
-static int csv_index_write_int(
-					jvec_char_t* index_contents,
-					int64_t a,
-					int size) {
-	int err;
-	int64_t offset;
+static int csv_index_write_int(jvec_char_t *index_contents, int64_t a,
+                               int size) {
+  int err;
+  int64_t offset;
 
   JMEMSET0_VALUE(err);
   JMEMSET0_VALUE(offset);
 
-	offset = index_contents->size;
-	if ((err = JVEC_RESIZE(index_contents, offset + 8))) return err;
-	*(int64_t *)(&index_contents->data[offset]) = a;
-	return JVEC_RESIZE(index_contents, offset + size);
+  offset = index_contents->size;
+  if ((err = JVEC_RESIZE(index_contents, offset + 8)))
+    return err;
+  *(int64_t *)(&index_contents->data[offset]) = a;
+  return JVEC_RESIZE(index_contents, offset + size);
 };
 
 void csv_index_file(csv_indexer_t *self, char *file_path) {
@@ -234,12 +233,12 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
 
     for (field_iter = 0; field_iter < line->fields.size; ++field_iter) {
       csv_indexing_field_t *field = &line->fields.data[field_iter];
-	  csv_index_write_int(&index_contents, field->offset, field_offset_size);
+      csv_index_write_int(&index_contents, field->offset, field_offset_size);
     }
 
     for (field_iter = 0; field_iter < line->fields.size; ++field_iter) {
       csv_indexing_field_t *field = &line->fields.data[field_iter];
-	  csv_index_write_int(&index_contents, field->size, field_size_size);
+      csv_index_write_int(&index_contents, field->size, field_size_size);
     }
   }
   index_header.total_size = index_contents.size;
@@ -251,7 +250,7 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
   fclose(file_w);
 }
 
-#pragma warning(disable:4100) /* unused parameter */
+#pragma warning(disable : 4100) /* unused parameter */
 
 int main(int argc, char **argv) {
   if (strcmp(argv[1], "index") == 0) {

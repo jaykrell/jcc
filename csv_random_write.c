@@ -4,7 +4,7 @@
 
 #include <time.h>
 int main() {
-	int i, j, imax, jmax;
+  int i, j, imax, jmax;
 
   srand((int)time(0));
 

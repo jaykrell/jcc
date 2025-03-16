@@ -14,10 +14,10 @@ extern "C" {
 #endif
 
 // memoize arbitrary data
-//void *jmem_intern(void* pointer, size_t n);
+// void *jmem_intern(void* pointer, size_t n);
 
 /* memset(p, 0, n) */
-void jmemset0(void* p, size_t n);
+void jmemset0(void *p, size_t n);
 
 /* memset0 a pointer */
 #define JMEMSET0_POINTER(pointer) (jmemset0(pointer, sizeof(*(pointer))))
