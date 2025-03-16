@@ -198,7 +198,7 @@ csv$(EXE): $(OBJS)
 
 csv_random_write$(EXE): $(OBJS)
 	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CC) $(CFLAGS) $(Wall) $(Qspectre) csv_random_write.cpp $(OBJS) $(CLINK_FLAGS)
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) csv_random_write.c $(OBJS) $(CLINK_FLAGS)
 
 clean:
 	$(RM_F) *.h.gch
