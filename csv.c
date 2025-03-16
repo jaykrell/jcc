@@ -1,8 +1,4 @@
 /* comma separated value text file handling */
-/* TODO:
-   There are mistakes here, it will be rewritten.
-   And port to C.
-*/
 
 #define NOMINMAX
 #define _CRT_SECURE_NO_WARNINGS 1
