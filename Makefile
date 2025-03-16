@@ -56,6 +56,7 @@ OBJS=\
  jhash.$O \
  jlist.$O \
  jmem.$O \
+ jos.$O \
  jstr.$O \
  jthread.$O \
  jvec1.$O \

@@ -7,100 +7,163 @@
 #endif
 
 /* TODO: Test on old Windows, and possibly improve the code there. */
-#define jVistaOrNewer 1
+#if _WIN32
+jbool jos_vista_or_newer = 1;
+#endif
 
-static int jos_open_file(const char* file_path, int read, int* file_handle)
+void jos_set_vista_or_newer(jbool value)
 {
 #if _WIN32
-	HANDLE f;
-	f = CreateFileA(file_path, GENERIC_READ | (read ? 0 : GENERIC_WRITE), read ? FILE_SHARE_READ : 0, 0, read ? OPEN_EXISTING : OPEN_ALWAYS, 0, 0);
-	if (h == INVALID_HANDLE_VALUE) {
+	jos_vista_or_newer = value;
+#endif
+}
+
+int jos_open_file(const char* file_path, int read, int* file_handle)
+/* open a file using relatively low level operating system functionality.
+Implemented is provided for Win32 and Posix (missing environments include NT kernel and EFI).
+File can be opened for read or write.
+This is an internal function.
+Public functions are: jos_open_file_read and jos_open_file_write.
+*/
+{
+#if _WIN32
+	HANDLE f = CreateFileA(file_path, GENERIC_READ | (read ? 0 : GENERIC_WRITE), read ? FILE_SHARE_READ : 0, 0, read ? OPEN_EXISTING : OPEN_ALWAYS, 0, 0);
+	if (f == INVALID_HANDLE_VALUE) {
 		*file_handle = -1;
 		return GetLastError();
 	}
 #else
-	int f;
-	f = open(file_path, read ? 0 : 0); /* todo */
+	int f = open(file_path, O_CLOEXEC | O_CLOFORK | (read ? O_RDONLY : (O_RDWR | O_CREAT)), 0);
 	if (f < 0) {
 		*file_handle = -1;
 		return errno;
 	}
 #endif
-	/* Windows handles are actually only 29 or 30 bits depending on how you count. */
+	/* Windows handles are actually only 29 or 30 bits depending on how you count.
+	Handles are interchangable between 32bit and 64 processes.
+	The lower 2 bits are reserved for user
+	kernel handles have upper bit set
+	user mode handlers have upper bit clear
+	*/
 	*file_handle = (int)(intptr_t)f;
 	return 0;
 }
 
 int jos_open_file_read(const char* file_path, int* file_handle)
+/* open a file using relatively low level operating system functionality. For read.
+Return the handle through an out parameter and return 0 for success, else error.
+*/
 {
 	return jos_open_file(file_path, 1, file_handle);
 }
 
 int jos_open_file_write(const char* file_path, int* file_handle)
+/* open a file using relatively low level operating system functionality. For write.
+Return the handle through an out parameter and return 0 for success, else error.
+*/
 {
 	return jos_open_file(file_path, 0, file_handle);
 }
 
 int jos_close_file(int file_handle)
+/* Close a file.
+*/
 {
 #if _WIN32
-	CloseHandle((HANDLE)(intptr_t)file_handle);
+	HANDLE hfile = (HANDLE)(intptr_t)file_handle;
+	CloseHandle(hfile);
 #else
 	close(file_handle);
 #endif
 }
 
 int jos_set_file_size(int file_handle, int64_t file_size)
+/* Set the size of an open file.
+*/
 {
 #if _WIN32
 	LARGE_INTEGER li;
-	DWORD result;
-	if (jVistaOrNewer)
+	int err;
+	HANDLE hfile = (HANDLE)(intptr_t)file_handle;
+	if (jos_vista_or_newer)
 	{
-		return SetFileInformationByHandle(file_handle, FileEndOfFileInfo, &file_size, sizeof(file_size)) ? 0 : GetLastError();
+		return SetFileInformationByHandle(hfile, FileEndOfFileInfo, &file_size, sizeof(file_size)) ? 0 : GetLastError();
 	}
 	li.QuadPart = file_size - 1;
-	result = SetFilePointer(file_handle, li.LowPart, &li.HighPart, 0);
-	if (result == INVALID_SET_FILE_POINTER && GetLastError())
-		return GetLastError();
-	return SetEndOfFile(file_handle) ? 0 : GetLastError();
+	li.LowPart = SetFilePointer(hfile, li.LowPart, &li.HighPart, 0);
+	if (li.LowPart == INVALID_SET_FILE_POINTER)
+	{
+		err = GetLastError();
+		if (err) return err;
+	}
+	return SetEndOfFile(hfile) ? 0 : GetLastError();
 #else
 	return ftruncate(file_handle, file_size) ? errno : 0;
 #endif
 }
 
 int jos_get_file_size(int file_handle, int64_t* file_size)
+/* Get the size of an open file.
+*/
 {
 #if _WIN32
 	LARGE_INTEGER li;
-	BY_HANDLE_FILE_INFORMATION info;
-	JMEMSET0_VALUE(info);
-	if (!GetFileInformationByHandle(file_handle, &info))
+	BY_HANDLE_FILE_INFORMATION info={0};
+	HANDLE hfile = (HANDLE)(intptr_t)file_handle;
+	if (!GetFileInformationByHandle(hfile, &info))
 		return GetLastError();
 	li.HighPart = info.nFileSizeHigh;
 	li.LowPart = info.nFileSizeLow;
 	*file_size = li.QuadPart;
-	return 0;
 #else
+	struct stat st={0};
+	if (fstat(file_handle, st))
+		return errno;
+	*file_size = st.st_size;
 #endif
+	return 0;
 }
 
-int jos_mmap(int file_handle, int64_t size, int read)
+int jos_mmap(int file_handle, int64_t size, int read, void** q)
+{
+	void* p;
+#if _WIN32
+	int err = 0;
+	HANDLE hfile = (HANDLE)(intptr_t)file_handle;
+	LARGE_INTEGER li={0};;
+	HANDLE fileMapping={0};;
+	li.QuadPart = size;
+	fileMapping = CreateFileMappingA(hfile, 0, read ? PAGE_READONLY : PAGE_READWRITE, li.HighPart, li.LowPart, 0);
+	if (!fileMapping) return GetLastError();
+	p = MapViewOfFile(fileMapping, FILE_MAP_READ | (read ? 0 : FILE_MAP_WRITE), 0, 0, size);
+	if (p) *q = p;
+	else err = GetLastError();
+	CloseHandle(fileMapping);
+	return err;
+#else
+	p = mmap(0, file_handle, size, read ? PROT_READ : PROT_WRITE, 0, 0);
+	if (!p)
+		return errno;
+	*q = p;
+#endif
+	return 0;
+}
+
+int jos_mmap_read(int file_handle, int64_t size, void** q)
+{
+	return jos_mmap(file_handle, size, 1, q);
+}
+
+int jos_mmap_write(int file_handle, int64_t size, void** q)
+{
+	return jos_mmap(file_handle, size, 0, q);
+}
+
+void jos_munmap(void* p)
 {
 #if _WIN32
-	HANDLE fileMappingObject;
-	CreateFileMapping(file_handle, 0, 0);
+	if (p) UnmapViewOfFile(p);
 #else
-	mmap(0, file_handle, size);
+	if (p) munmap(p);
 #endif
-}
-
-int jos_mmap_read(int file_handle, int64_t size)
-{
-	return jos_mmap_read(file_handle, size, 1);
-}
-
-int jos_mmap_write(int file_handle, int64_t size)
-{
-	return jos_mmap_read(file_handle, size, 0);
 }

@@ -1,4 +1,6 @@
-/* Win32/pthread portability layer. */
+/* Win32/pthread portability layer.
+On Windows this requires Vista or newer. TODO?
+*/
 
 #include "jthread.h"
 #include <stdint.h>
