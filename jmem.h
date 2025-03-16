@@ -25,9 +25,6 @@ void jmemset0(void* p, size_t n);
 /* memset0 a value. */
 #define JMEMSET0_VALUE(value) JMEMSET0_POINTER(&(value))
 
-#define JMEM_ZERO(pointer, n) (memset((pointer), 0, (n)))
-#define JMEM_ZERO(pointer, n) (memset((pointer), 0, (n)))
-
 #if __cplusplus
 }
 #endif
