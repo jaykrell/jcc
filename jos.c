@@ -26,10 +26,9 @@ void jos_set_vista_or_newer(jbool value) {
 
 int jos_open_file(const char *file_path, int read, int *file_handle)
 /* open a file using relatively low level operating system functionality.
-Implemented is provided for Win32 and Posix (missing environments include NT
-kernel and EFI). File can be opened for read or write. This is an internal
-function. Public functions are: jos_open_file_read and jos_open_file_write.
-*/
+ * Implemented is provided for Win32 and Posix (missing environments include NT
+ * kernel and EFI). File can be opened for read or write. This is an internal
+ * function. Public functions are: jos_open_file_read and jos_open_file_write. */
 {
 #if _WIN32
   HANDLE f = CreateFileA(file_path, GENERIC_READ | (read ? 0 : GENERIC_WRITE),
@@ -53,36 +52,32 @@ function. Public functions are: jos_open_file_read and jos_open_file_write.
   }
 #endif
   /* Windows handles are actually only 29 or 30 bits depending on how you count.
-  Handles are interchangable between 32bit and 64 processes.
-  The lower 2 bits are reserved for user
-  kernel handles have upper bit set
-  user mode handlers have upper bit clear
-  */
+   * Handles are interchangable between 32bit and 64 processes.
+   * The lower 2 bits are reserved for user
+   * kernel handles have upper bit set
+  user mode handlers have upper bit clear */
   *file_handle = (int)(intptr_t)f;
   return 0;
 }
 
 int jos_open_file_read(const char *file_path, int *file_handle)
 /* open a file using relatively low level operating system functionality. For
-read. Return the handle through an out parameter and return 0 for success, else
-error.
-*/
+ * read. Return the handle through an out parameter and return 0 for success, else
+ * error. */
 {
   return jos_open_file(file_path, 1, file_handle);
 }
 
 int jos_open_file_write(const char *file_path, int *file_handle)
 /* open a file using relatively low level operating system functionality. For
-write. Return the handle through an out parameter and return 0 for success, else
-error.
-*/
+ * write. Return the handle through an out parameter and return 0 for success, else
+ * error. */
 {
   return jos_open_file(file_path, 0, file_handle);
 }
 
 void jos_close_file(int file_handle)
-/* Close a file.
- */
+/* Close a file. */
 {
 #if _WIN32
   HANDLE hfile = (HANDLE)(intptr_t)file_handle;
@@ -93,8 +88,7 @@ void jos_close_file(int file_handle)
 }
 
 int jos_set_file_size(int file_handle, int64_t file_size)
-/* Set the size of an open file.
- */
+/* Set the size of an open file. */
 {
 #if _WIN32
   LARGE_INTEGER li;
@@ -120,8 +114,7 @@ int jos_set_file_size(int file_handle, int64_t file_size)
 }
 
 int jos_get_file_size(int file_handle, int64_t *file_size)
-/* Get the size of an open file.
- */
+/* Get the size of an open file. */
 {
 #if _WIN32
   LARGE_INTEGER li;
@@ -148,10 +141,8 @@ int jos_mmap(int file_handle, int64_t size, int read, void **q)
 #if _WIN32
   int err = 0;
   HANDLE hfile = (HANDLE)(intptr_t)file_handle;
-  LARGE_INTEGER li = {0};
-  ;
-  HANDLE fileMapping = {0};
-  ;
+  LARGE_INTEGER li;
+  HANDLE fileMapping;
   li.QuadPart = size;
   fileMapping =
       CreateFileMappingA(hfile, 0, read ? PAGE_READONLY : PAGE_READWRITE,
@@ -165,7 +156,6 @@ int jos_mmap(int file_handle, int64_t size, int read, void **q)
   else
     err = GetLastError();
   CloseHandle(fileMapping);
-  return err;
 #else
   p = mmap(0 /*addr*/, size, PROT_READ | (read ? 0 : PROT_WRITE),
            read ? MAP_PRIVATE : MAP_SHARED, file_handle, 0 /*offset*/);
@@ -176,8 +166,8 @@ int jos_mmap(int file_handle, int64_t size, int read, void **q)
   return 0;
 }
 
-// int jos_read(int file_handle, void* buffer, size_t bytes, size_t *actual);
-// int jos_write(int file_handle, void* buffer, size_t bytes, size_t *actual);
+/* int jos_read(int file_handle, void* buffer, size_t bytes, size_t *actual);
+ * int jos_write(int file_handle, void* buffer, size_t bytes, size_t *actual); */
 
 int jos_mmap_read(int file_handle, int64_t size, void **q)
 /* mmap a file for read */

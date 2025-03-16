@@ -9,9 +9,9 @@ ifdef MAKEDIR:
 !ifdef MAKEDIR
 
 # Microsoft nmake on Windows. Visual C++.
-CFLAGS=-MD -Gy -Z7 -EHsc -W4 -EHsc
-CPPFLAGS=-MD -Gy -Z7 -EHsc -std:c++20 -W4 -EHsc
-CXXFLAGS=-MD -Gy -Z7 -EHsc -std:c++20 -W4 -EHsc
+CFLAGS=-MD -Gy -Z7 -EHsc -W4 -EHsc -WX
+CPPFLAGS=-MD -Gy -Z7 -EHsc -std:c++20 -W4 -EHsc -WX
+CXXFLAGS=-MD -Gy -Z7 -EHsc -std:c++20 -W4 -EHsc -WX
 CXX=cl
 
 RM = del 2>nul
