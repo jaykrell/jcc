@@ -18,7 +18,7 @@ int main(void) {
   int f2 = 0;
   char *p = 0;
   int err = 0;
-  int read = 1;
+  int64_t file_size = 0;
 
   FILE *f1 = fopen("1", "wb");
   fwrite("1", 1, 1, f1);
@@ -29,6 +29,30 @@ int main(void) {
     printf("%d %d\n", f2, err);
   assert(!err);
   assert(f2);
+
+  err = jos_get_file_size(f2, &file_size);
+  assert(!err);
+  assert(file_size == 1);
+
+  jos_close_file(f2);
+  err = jos_open_file_read("1", &f2);
+  if (err)
+    printf("%d %d\n", f2, err);
+  assert(!err);
+  assert(f2);
+
+  err = jos_open_file_write("1", &f2);
+  if (err)
+    printf("%d %d\n", f2, err);
+  assert(!err);
+  assert(f2);
+
+  err = jos_set_file_size(f2, 2);
+  assert(!err);
+
+  err = jos_get_file_size(f2, &file_size);
+  assert(!err);
+  assert(file_size == 2);
 
   p = 0;
   err = jos_mmap_read(f2, 1, (void **)&p);
