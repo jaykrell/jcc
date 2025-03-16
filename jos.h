@@ -1,3 +1,7 @@
+/* Jay operating system layer.
+ * Open a file, get its size, etc.
+ * Implemented for Win32 and Posix.
+ * Threads are in jthread.h */
 #ifndef JOS_H
 #define JOS_H 1
 

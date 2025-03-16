@@ -1,7 +1,5 @@
 /* Win32/pthread portability layer.
-On Windows this requires Vista or newer. TODO?
-*/
-
+ * On Windows this requires Vista or newer. TODO? */
 #include "jthread.h"
 #include <stdint.h>
 #if _WIN32
