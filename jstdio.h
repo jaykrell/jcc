@@ -1,5 +1,5 @@
-#ifndef JSTDIO_T_H
-#define JSTDIO_T_H 1
+#ifndef JSTDIO_H
+#define JSTDIO_H 1
 
 #include <stdio.h>
 
