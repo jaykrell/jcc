@@ -13,19 +13,19 @@ int main(void) {
   jvec_int_iter vii = {0};
   int a = 1;
   double b = 1;
-  size_t size = {0};
-  size_t i = {0};
+  long size = {0};
+  int i = {0};
 
   /* test vector */
 
   jvec_int_init(&vi);
   jvec_double_init(&vd);
 
-  size = vi.size(&vi);
-  printf("%" JLONG_PRI "d\n", size);
+  size = (long)vi.size(&vi);
+  printf("%ld\n", size);
   vi.push_back(&vi, &a, 1);
-  size = vi.size(&vi);
-  printf("%" JLONG_PRI "d\n", size);
+  size = (long)vi.size(&vi);
+  printf("%ld\n", size);
   ++a;
   vi.push_back(&vi, &a, 1);
   vi.push_back(&vi, &a, 1);
@@ -50,8 +50,8 @@ int main(void) {
   ++a;
   vi.push_back(&vi, &a, 1);
   vi.push_back(&vi, &a, 1);
-  printf("cap: %" JLONG_PRI "d\n", size = vi.capacity(&vi));
-  printf("size: %" JLONG_PRI "d\n", size = vi.size(&vi));
+  printf("cap: %ld\n", size = (long)vi.capacity(&vi));
+  printf("size: %ld\n", size = (long)vi.size(&vi));
 
   for (i = 0; i < size; ++i)
     printf("%d ", vi.begin[i]);
@@ -61,7 +61,7 @@ int main(void) {
     printf("%d ", *vii.get(vii));
 
   vd.push_back(&vd, &b, 1);
-  size = vd.size(&vd);
+  size = (long)vd.size(&vd);
   for (i = 0; i < size; ++i)
     printf("%f ", vd.begin[i]);
 }
