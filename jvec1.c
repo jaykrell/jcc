@@ -32,22 +32,22 @@
 #define jvec_init JPASTE3(jvec_, T, _init)
 
 /* jvec_iter */
-jvec_iter JPASTE(jvec_iter_type, _add_int)(jvec_iter ai, jssize_t i);
+jvec_iter JPASTE(jvec_iter_type, _add_int)(jvec_iter ai, ssize_t i);
 int JPASTE(jvec_iter_type, _cmp)(jvec_iter ai, jvec_iter aj);
 jvec_iter JPASTE(jvec_iter_type, _dec)(jvec_iter ai);
 T *JPASTE(jvec_iter_type, _get)(jvec_iter ai);
 jvec_iter JPASTE(jvec_iter_type, _inc)(jvec_iter ai);
-jvec_iter JPASTE(jvec_iter_type, _sub_int)(jvec_iter ai, jssize_t i);
-jssize_t JPASTE(jvec_iter_type, _sub_iter)(jvec_iter ai, jvec_iter aj);
+jvec_iter JPASTE(jvec_iter_type, _sub_int)(jvec_iter ai, ssize_t i);
+ssize_t JPASTE(jvec_iter_type, _sub_iter)(jvec_iter ai, jvec_iter aj);
 
 /* jvec */
 jvec_iter JPASTE(jvec, _begin)(jvec *);
-jssize_t JPASTE(jvec, _capacity)(jvec *);
+ssize_t JPASTE(jvec, _capacity)(jvec *);
 jvec_iter JPASTE(jvec, _end)(jvec *);
 jerr JPASTE(jvec, _pop_back)(jvec *);
-jerr JPASTE(jvec, _push_back)(jvec *, T *, jssize_t);
-jerr JPASTE(jvec, _resize)(jvec *, jssize_t);
-jssize_t JPASTE(jvec, _size)(jvec *);
+jerr JPASTE(jvec, _push_back)(jvec *, T *, ssize_t);
+jerr JPASTE(jvec, _resize)(jvec *, ssize_t);
+ssize_t JPASTE(jvec, _size)(jvec *);
 jerr JPASTE(jvec, _insert)(jvec *, T *, T *, T *);
 
 jvec_iter JPASTE(jvec_iter_type_, T) = {
@@ -79,17 +79,17 @@ jvec_iter JPASTE(jvec_iter_type, _dec)(jvec_iter ai) {
   return ai;
 }
 
-jvec_iter JPASTE(jvec_iter_type, _add_int)(jvec_iter ai, jssize_t i) {
+jvec_iter JPASTE(jvec_iter_type, _add_int)(jvec_iter ai, ssize_t i) {
   ai.p += i;
   return ai;
 }
 
-jvec_iter JPASTE(jvec_iter_type, _sub_int)(jvec_iter ai, jssize_t i) {
+jvec_iter JPASTE(jvec_iter_type, _sub_int)(jvec_iter ai, ssize_t i) {
   ai.p -= i;
   return ai;
 }
 
-jssize_t JPASTE(jvec_iter_type, _sub_iter)(jvec_iter ai, jvec_iter aj) {
+ssize_t JPASTE(jvec_iter_type, _sub_iter)(jvec_iter ai, jvec_iter aj) {
   return (ai.p - aj.p);
 }
 
@@ -107,13 +107,13 @@ jvec_iter JPASTE(jvec, _end)(jvec *v) {
   return i;
 }
 
-jssize_t JPASTE(jvec, _size)(jvec *v) { return (v->end - v->begin); }
+ssize_t JPASTE(jvec, _size)(jvec *v) { return (v->end - v->begin); }
 
-jssize_t JPASTE(jvec, _capacity)(jvec *v) { return (v->cap - v->begin); }
+ssize_t JPASTE(jvec, _capacity)(jvec *v) { return (v->cap - v->begin); }
 
-jerr JPASTE(jvec, _push_back)(jvec *v, T *e, jssize_t n) {
+jerr JPASTE(jvec, _push_back)(jvec *v, T *e, ssize_t n) {
   jerr err = {0};
-  jssize_t size = {0};
+  ssize_t size = {0};
   jtype *telem = {0};
 
   telem = v->telem;
@@ -129,7 +129,7 @@ jerr JPASTE(jvec, _push_back)(jvec *v, T *e, jssize_t n) {
 }
 
 jerr JPASTE(jvec, _pop_back)(jvec *v) {
-  jssize_t size = {0};
+  ssize_t size = {0};
 
   size = v->size(v);
   if (size == 0)
@@ -138,12 +138,12 @@ jerr JPASTE(jvec, _pop_back)(jvec *v) {
   return 0;
 }
 
-jerr JPASTE(jvec, _resize)(jvec *v, jssize_t new_size) {
+jerr JPASTE(jvec, _resize)(jvec *v, ssize_t new_size) {
   jtype *telem = {0};
-  jssize_t size = {0};
+  ssize_t size = {0};
   T *begin = {0};
-  jssize_t cap = {0};
-  jssize_t new_cap = {0};
+  ssize_t cap = {0};
+  ssize_t new_cap = {0};
 
   telem = v->telem;
   size = v->size(v);
@@ -151,7 +151,7 @@ jerr JPASTE(jvec, _resize)(jvec *v, jssize_t new_size) {
   if (size == new_size)
     return 0;
   if (new_size < size) {
-    jssize_t to_cleanup = (size - new_size);
+    ssize_t to_cleanup = (size - new_size);
     if (telem)
       telem->cleanup(v->end - to_cleanup, to_cleanup);
     v->end -= to_cleanup;
@@ -180,8 +180,8 @@ jerr JPASTE(jvec, _resize)(jvec *v, jssize_t new_size) {
 
 jerr JPASTE(jvec, _insert)(jvec *v, T *i, T *b, T *e) {
   jerr err = {0};
-  jssize_t n = e - b;
-  jssize_t ii = i - v->begin;
+  ssize_t n = e - b;
+  ssize_t ii = i - v->begin;
 
   err = v->resize(v, v->size(v) + n);
   if (err < 0)
