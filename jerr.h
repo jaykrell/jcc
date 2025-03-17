@@ -3,8 +3,6 @@
 
 #if 0
 
-#include "jcharp.h"
-
 struct JErrType; typedef struct JErrType JErrType;
 struct JErr;     typedef struct JErr JErr, jerr;
 
@@ -14,8 +12,8 @@ struct JJErrType {
 
 struct JErr {
     int i;
-    jcharp str;
-    jcharp strdetail[2];
+    char* str;
+    char* strdetail[2];
     jssize idetail[2]; /* e.g. invalid parameter index */
 };
 

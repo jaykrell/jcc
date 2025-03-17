@@ -3,7 +3,5 @@
 
 #include "jbool.h"
 #include "jpaste.h"
-#include "julong.h"
-#include "jvoidp.h"
 
 #endif

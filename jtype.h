@@ -13,18 +13,18 @@ struct jtype {
   char *type_name; /* not object name */
   jbool is_fixed_size;
   jbool pad[7];
-  ptrdiff_t fixed_size;
-  void (*init)(void *, ptrdiff_t);
-  void (*cleanup)(void *, ptrdiff_t);
+  ssize_t fixed_size;
+  void (*init)(void *, ssize_t);
+  void (*cleanup)(void *, ssize_t);
   jerr (*copy)(void *, void **);
   jerr (*copy_to)(void *, void *);
-  jerr (*move)(void *, void *, jssize_t);
-  ptrdiff_t (*valid)(void *);
+  jerr (*move)(void *, void *, ssize_t);
+  ssize_t (*valid)(void *);
   void (*begin)(void *, void **);
   void (*end)(void *, void **);
   void (*inc_in_place)(void *);
   void (*dec_in_place)(void *);
-  ptrdiff_t (*size)(void *);
+  ssize_t (*size)(void *);
   void (*dump)(void *);
 };
 
