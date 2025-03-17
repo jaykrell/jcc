@@ -9,6 +9,10 @@
 #include "jbool.h"
 #include <stdint.h>
 
+#if __cplusplus
+extern "C" {
+#endif
+
 typedef struct jlist_t jlist_t;
 
 struct jlist_t {
@@ -50,4 +54,7 @@ offset, or 0.
 uint64_t jlist_iterate(jlist_t *list,
                        uint64_t (*callback)(void *context, void *element),
                        void *context, int64_t offset);
+#if __cplusplus
+} /* extern "C" */
+#endif
 #endif

@@ -13,6 +13,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#if __cplusplus
+extern "C" {
+#endif
+
 typedef struct jhash_t jhash_t;
 typedef struct jhash_init_t jhash_init_t;
 typedef struct jhash_keyvalue_t jhash_keyvalue_t;
@@ -83,4 +87,7 @@ int jhash_lookup_and_remove(jhash_t *hash, jhash_lookup_t *lookup);
 int jhash_remove_after_lookup(jhash_t *hash, jhash_lookup_t *lookup);
 int jhash_enum(jhash_enum_t *e);
 
+#if __cplusplus
+} /* extern "C" */
+#endif
 #endif
