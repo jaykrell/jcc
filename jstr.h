@@ -14,11 +14,11 @@ extern jtype jtype_string;
 /* runtime type */
 typedef struct jstr {
   jtype *type;
-  jlong len;
+  ptrdiff_t len;
   char *chars;
 } jstr;
 
 jstr *jstr_new(void);
-jerr jstr_append(jstr *str, const char *s, jlong len);
+jerr jstr_append(jstr *str, const char *s, ptrdiff_t len);
 
 #endif
