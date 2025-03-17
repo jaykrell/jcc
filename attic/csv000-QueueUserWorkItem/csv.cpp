@@ -1,3 +1,5 @@
+/* C++ but do not pollute Github repository summary with C++ from the attack.*/
+
 /* comma separated value text file handling */
 /* TODO:
    There are mistakes here, it will be rewritten.
