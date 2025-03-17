@@ -2,10 +2,6 @@
 #define JCC_H 1
 
 // #include "jbool.h"
-// #include "jlong.h"
-// #include "julong.h"
-// #include "jvoidp.h"
-// #include "jcharp.h"
 // #include "jpaste.h"
 
 #include "jmap.h"
@@ -93,8 +89,8 @@ struct cmember {
 typedef struct cfile cfile;
 struct cfile {
   jstr *path;
-  jlong size;
-  jlong position;
+  int64_t size;
+  int64_t position;
   cfile *stack;
 };
 
@@ -200,8 +196,8 @@ typedef struct cMember cMember;
 struct cMember {
   ctype *type;
   char *name;
-  jlong bit_offset;
-  jlong byte_offset;
+  int64_t bit_offset;
+  int64_t byte_offset;
   cMember *next;
 };
 
@@ -212,7 +208,7 @@ struct cAggregate {
   jbool is_union;
   jbool is_struct;
   jbool pad[6];
-  jlong n;
+  int64_t n;
   cMember *members;
 };
 
