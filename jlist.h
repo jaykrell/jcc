@@ -8,7 +8,6 @@
 
 #include "jbool.h"
 #include <stdint.h>
-#include <stdint.h>
 
 typedef struct jlist_t jlist_t;
 
@@ -49,6 +48,6 @@ Callback can want the list entry or the base, passing the correct
 offset, or 0.
 */
 uint64_t jlist_iterate(jlist_t *list,
-                       uint64_t (*callback)(void* context, void* element),
-                       void* context, int64_t offset);
+                       uint64_t (*callback)(void *context, void *element),
+                       void *context, int64_t offset);
 #endif

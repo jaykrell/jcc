@@ -13,7 +13,7 @@ int jvec_resize(jvec_generic *v, size_t new_size, size_t element_size) {
 
   if (new_size > capacity) {
     size_t new_capacity = JMAX(new_size, capacity * 2);
-    char* new_data = (char *)realloc(v->data, new_capacity * element_size);
+    char *new_data = (char *)realloc(v->data, new_capacity * element_size);
     if (!new_data)
       return -1;
     memset(new_data + size * element_size, 0, element_size);

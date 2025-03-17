@@ -22,11 +22,11 @@ typedef struct jhash_keyvalue_t jhash_keyvalue_t;
 
 /* TODO: is this jtype? */
 struct jhash_init_t {
-  void* context;
-  jhashcode_t (*hash)(void* context, void* data);
-  int (*compare)(void* context, void* a, void* b);
-  int (*copy_uninit)(void* context, void* to, void* from);
-  int (*copy_over)(void* context, void* to, void* from);
+  void *context;
+  jhashcode_t (*hash)(void *context, void *data);
+  int (*compare)(void *context, void *a, void *b);
+  int (*copy_uninit)(void *context, void *to, void *from);
+  int (*copy_over)(void *context, void *to, void *from);
 };
 
 struct jhash_t {
@@ -45,7 +45,7 @@ typedef struct jhash_lookup_t {
   unlikely the same, since hash table can copy in the data.
   i.e. This is an interior pointer into the table.
   */
-  void* data;
+  void *data;
   int64_t size; /* for insert */
 
   /* internal

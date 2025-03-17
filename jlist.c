@@ -68,13 +68,13 @@ jlist_t *jlist_remove_last(jlist_t *list) {
 }
 
 uint64_t jlist_iterate(jlist_t *list,
-                       uint64_t (*callback)(void* context, void* element),
-                       void* context, int64_t offset) {
+                       uint64_t (*callback)(void *context, void *element),
+                       void *context, int64_t offset) {
   uint64_t overall_result = 0;
   uint64_t result = 0;
   jlist_t *element = list->flink;
   while (element && element != list) {
-    result = callback(context, ((char*)element) - offset);
+    result = callback(context, ((char *)element) - offset);
     overall_result += result;
     element = element->flink;
     if (!result)

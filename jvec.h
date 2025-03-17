@@ -9,15 +9,16 @@
 extern "C" {
 #endif
 
-/* In order to be idiomatic to user, size and capacity are in elements, not bytes
- * users rarely/never use capacity, but they will use and this is consistent
- * between them. We may come to regret this, i.e. avoid multiplication or division
- * in the library and stick division by constant in user. */
-#define JVEC(T)         \
-  struct {              \
-    T *data;            \
-    size_t size;        \
-    size_t capacity;    \
+/* In order to be idiomatic to user, size and capacity are in elements, not
+ * bytes users rarely/never use capacity, but they will use and this is
+ * consistent between them. We may come to regret this, i.e. avoid
+ * multiplication or division in the library and stick division by constant in
+ * user. */
+#define JVEC(T)                                                                \
+  struct {                                                                     \
+    T *data;                                                                   \
+    size_t size;                                                               \
+    size_t capacity;                                                           \
   }
 
 typedef JVEC(char) jvec_generic;

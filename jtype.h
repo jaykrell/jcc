@@ -14,18 +14,18 @@ struct jtype {
   jbool is_fixed_size;
   jbool pad[7];
   jlong fixed_size;
-  void (*init)(void*, jlong);
-  void (*cleanup)(void*, jlong);
-  jerr (*copy)(void*, void* *);
-  jerr (*copy_to)(void*, void*);
-  jerr (*move)(void*, void*, jssize_t);
-  jlong (*valid)(void*);
-  void (*begin)(void*, void* *);
-  void (*end)(void*, void* *);
-  void (*inc_in_place)(void*);
-  void (*dec_in_place)(void*);
-  jlong (*size)(void*);
-  void (*dump)(void*);
+  void (*init)(void *, jlong);
+  void (*cleanup)(void *, jlong);
+  jerr (*copy)(void *, void **);
+  jerr (*copy_to)(void *, void *);
+  jerr (*move)(void *, void *, jssize_t);
+  jlong (*valid)(void *);
+  void (*begin)(void *, void **);
+  void (*end)(void *, void **);
+  void (*inc_in_place)(void *);
+  void (*dec_in_place)(void *);
+  jlong (*size)(void *);
+  void (*dump)(void *);
 };
 
 #endif
