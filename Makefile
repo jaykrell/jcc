@@ -162,7 +162,7 @@ all: test_vec1$(EXE) test_vec$(EXE) \
 	test_hash$(EXE) \
 	test_os$(EXE) \
 	test_thread$(EXE) \
-	csv$(EXE) \
+	csv1$(EXE) \
 	csv_random_write$(EXE) \
 
 # TODO clang cross
@@ -199,9 +199,9 @@ test_thread$(EXE): $(OBJS) test_thread.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_thread.c $(OBJS) $(CLINK_FLAGS)
 
-csv$(EXE): $(OBJS) csv.c
+csv1$(EXE): $(OBJS) csv1.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) csv.c $(OBJS) $(CLINK_FLAGS)
+	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) csv1.c $(OBJS) $(CLINK_FLAGS)
 
 csv_random_write$(EXE): $(OBJS) csv_random_write.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
@@ -210,6 +210,7 @@ csv_random_write$(EXE): $(OBJS) csv_random_write.c
 clean:
 	$(RM_F) *.h.gch
 	$(RM_F) 1 2 genprimes 1.exe 2.exe genprimes.exe
+	$(RM_F) csv1 csv1.exe
 	$(RM_F) csv csv_random_write csv.exe csv_random_write.exe
 	$(RM_F) camd64.$(O) carm64.$(O) ccheck.$(O) ccpe.$(O) celf.$(O) clex.$(O)
 	$(RM_F) cmacho.$(O) cmain.$(O) config.cpp config.mk config.$(O)

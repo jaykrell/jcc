@@ -3,11 +3,11 @@
 
 // #include "jbool.h"
 // #include "jpaste.h"
-#include <stdint.h>
 #include "jmap.h"
 #include "jstr.h"
 #include "jtype.h"
 #include "jvec1.h"
+#include <stdint.h>
 
 /*struct jmap { };*/
 /*struct jhash { };*/
