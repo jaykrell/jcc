@@ -18,7 +18,7 @@
  *  - unsigned numbers <  0x8000000000000000 are nine bytes
  *  - unsigned numbers >= 0x8000000000000000 are ten bytes
  */
-  
+
 #include "jvarint.h"
 
 /* sign bit of byte is second high-order bit (0x40) */
@@ -63,7 +63,7 @@ void jvarint_encode_unsigned(uint64_t value, jvarint_encode_t *args) {
 int jvarint_decode_adapt_buffer_to_function_pointer(void *void_context) {
   jvarint_decode_t *args = (jvarint_decode_t *)void_context;
   if (args->index >= args->buffer_size)
-	  return -1;
+    return -1;
   return args->buffer[args->index++];
 }
 
@@ -75,7 +75,7 @@ void jvarint_decode_unsigned(jvarint_decode_t *args) {
   if (args->buffer) {
     args->read_byte = jvarint_decode_adapt_buffer_to_function_pointer;
     args->read_byte_context = args;
-	args->index = 0;
+    args->index = 0;
   }
 
   do {

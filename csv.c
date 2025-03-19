@@ -61,34 +61,35 @@ int csv_index_file(char *file_path) {
     if (ch == EOF)
       break;
 
-	if (ch == '"') {
-		ch = fgetc(file_r);
-		if (in_quotes && ch == '"')
-		{
-			in_quotes = false;
-			goto increment_field_size;
-		}
-	}
+    if (ch == '"') {
+      ch = fgetc(file_r);
+      if (in_quotes && ch == '"') {
+        in_quotes = false;
+        goto increment_field_size;
+      }
+    }
 
     if (ch == '\n') {
-		/* Write how many fields line has. */
+      /* Write how many fields line has. */
       size = jvarint_encode(fields.size, &encode);
-      if (encode.bytes_required != fwrite(encode.buffer, 1, encode.bytes_required, file_w))
+      if (encode.bytes_required !=
+          fwrite(encode.buffer, 1, encode.bytes_required, file_w))
         goto error;
-		/* Write size of each field. */
+      /* Write size of each field. */
       for (i = 0; i < fields.size; ++i) {
         size = jvarint_encode(fields.data[i].size, &encode);
-        if (encode.bytes_required != fwrite(encode.buffer, 1, encode.bytes_required, file_w))
+        if (encode.bytes_required !=
+            fwrite(encode.buffer, 1, encode.bytes_required, file_w))
           goto error;
       }
       fields.size = 0;
     } else if (ch == ',') {
-end_of_field:
+    end_of_field:
       if (err = JVEC_PUSH_BACK(&fields, &field))
         goto exit;
       field.size = 0;
     } else {
-increment_field_size:
+    increment_field_size:
       ++field.size;
     }
   }
