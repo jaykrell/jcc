@@ -6,6 +6,7 @@
 #include "csv.h"
 #include "jmax.h"
 #include "jmem.h"
+#include "jvarint.h"
 #include "jvec.h"
 #include <stdio.h>
 #include <string.h>
@@ -15,48 +16,6 @@
 #endif
 
 typedef JVEC(char) jvec_char_t;
-
-int encode_varint64(int64_t value, uint8_t buf[])
-/* based on wikipedia */
-{
-  unsigned const size = 64;
-  int64_t more = 0x80;
-  int i = 0;
-  int64_t const negative = (value < 0);
-  int64_t const sign_extend = (negative ? (~!negative << (size - 7)) : 0);
-  while (more) {
-    uint8_t byte = (0x7f & value);
-    value = ((value >> 7) | sign_extend);
-    /* sign bit of byte is second high-order bit (0x40) */
-    more *= !((value == 0 && !(byte & 0x40)) || (value == -1 && (byte & 0x40)));
-    buf[i++] = (byte | more)
-  }
-  return i;
-}
-
-int decode_varint64(int (*read_byte)(void *), void *read_byte_context,
-                    int64_t *presult) {
-  /* TODO: What if shift goes beyond 64? */
-  int64_t result = 0;
-  int64_t const zero = 0;
-  unsigned shift = 0;
-  unsigned const size = 64;
-  int byte = 0;
-  do {
-    byte = read_byte(read_byte_context);
-    if (byte < 0)
-      return byte;
-    result |= (byte & 0x7F) << shift;
-    shift += 7;
-  } while (byte & 0x80);
-
-  /* sign bit of byte is second high order bit (0x40) */
-  if ((shift < size) && (byte & 0x40))
-    result |= (~zero << shift); /* sign extend */
-
-  *presult = result;
-  return 0; /* no error */
-}
 
 int csv_index_file(char *file_path) {
 
