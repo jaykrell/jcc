@@ -60,6 +60,7 @@ OBJS=\
  jos.$O \
  jstr.$O \
  jthread.$O \
+ jvarint.$O \
  jvec1.$O \
  jvec.$O \
  camd64.$O \
@@ -198,6 +199,10 @@ test_hash$(EXE): $(OBJS) test_hash.c
 test_thread$(EXE): $(OBJS) test_thread.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_thread.c $(OBJS) $(CLINK_FLAGS)
+
+test_varint$(EXE): $(OBJS) test_varint.c
+	@-$(RM_F) $(@R).pdb $(@R).ilk
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_varint.c $(OBJS) $(CLINK_FLAGS)
 
 csv1$(EXE): $(OBJS) csv1.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk

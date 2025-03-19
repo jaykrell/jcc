@@ -16,7 +16,7 @@ typedef struct jvarint_encode_t {
   union {
     uint64_t unsigned_value;
     int64_t signed_value;
-  } u;
+  };
   size_t size; /* bits */
   size_t is_signed;
   size_t bytes_required;
@@ -27,7 +27,7 @@ typedef struct jvarint_decode_t {
   union {
     int64_t signed_value;
     uint64_t unsigned_value;
-  } u;
+  };
   int (*read_byte)(void *);
   void *read_byte_context;
   uint8_t *buffer;
@@ -42,10 +42,14 @@ typedef struct jvarint_decode_t {
   int byte;
   unsigned shift;
   int pad;
+  size_t index;
 } jvarint_decode_t;
 
-void jvarint_encode(jvarint_encode_t *args);
-void jvarint_decode(jvarint_decode_t *args);
+void jvarint_encode_signed(int64_t, jvarint_encode_t *args);
+void jvarint_decode_signed(jvarint_decode_t *args);
+
+void jvarint_encode_unsigned(uint64_t, jvarint_encode_t *args);
+void jvarint_decode_unsigned(jvarint_decode_t *args);
 
 #if __cplusplus
 } /* extern C */

@@ -1,7 +1,7 @@
 /* comma separated value text file handling */
 
-#ifndef CVS_H
-#define CVS_H 1
+#ifndef CVS1_H
+#define CVS1_H 1
 
 #pragma warning(disable : 4201) // anonymous
 
