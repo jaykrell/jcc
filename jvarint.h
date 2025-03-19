@@ -18,7 +18,6 @@ typedef struct jvarint_encode_t {
     int64_t signed_value;
   };
   size_t size; /* bits */
-  size_t is_signed;
   size_t bytes_required;
   uint8_t buffer[16];
 } jvarint_encode_t;
@@ -28,10 +27,11 @@ typedef struct jvarint_decode_t {
     int64_t signed_value;
     uint64_t unsigned_value;
   };
+  size_t size; /* bits */
+  /* use should set read_byte or buffer */
   int (*read_byte)(void *);
   void *read_byte_context;
   uint8_t *buffer;
-  size_t size; /* bits */
   size_t buffer_size;
   size_t bytes_consumed;
   int err;
