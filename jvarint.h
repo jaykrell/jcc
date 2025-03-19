@@ -34,8 +34,6 @@ typedef struct jvarint_decode_t {
   size_t size; /* bits */
   size_t buffer_size;
   size_t bytes_consumed;
-  size_t is_signed;
-  size_t invalid;
   int err;
 
   /* private */
