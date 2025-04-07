@@ -22,18 +22,18 @@ typedef struct jos_file_open_t {
   /* const wchar_t* file_path_w; */
   int file_handle;
   int err;
-  int read : 1;
-  int write : 1;
+  unsigned read : 1;
+  unsigned write : 1;
 
   /* fancy */
-  int file_share_read : 1;
-  int file_share_write : 1;
-  int file_share_delete : 1;
-  int o_cloexec : 1;
-  int o_clofork : 1;
-  int o_rdonly : 1;
-  int o_rdwr : 1;
-  int o_creat : 1;
+  unsigned file_share_read : 1;
+  unsigned file_share_write : 1;
+  unsigned file_share_delete : 1;
+  unsigned o_cloexec : 1;
+  unsigned o_clofork : 1;
+  unsigned o_rdonly : 1;
+  unsigned o_rdwr : 1;
+  unsigned o_creat : 1;
 } jos_file_open_t;
 
 void jos_open_file(jos_file_open_t *args);
