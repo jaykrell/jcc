@@ -3,8 +3,8 @@
  * Implemented for Win32 and Posix.
  * Threads are in jthread.c */
 
-#include "jconfig.h"
 #include "jos.h"
+#include "jconfig.h"
 #if _WIN32
 #include "windows.h"
 #else

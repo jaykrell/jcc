@@ -59,9 +59,10 @@ int csv_index_file(char *file_path) {
 
   while (1) {
     char ch = fgetc(file_r);
-    /* TODO: Should only consume \r if next character is \n. */
     if (ch == '\r') {
       ch = fgetc(file_r);
+      if (ch != EOF && ch != '\n')
+        ungetc(ch, file_r);
     }
     if (ch == EOF)
       break;
