@@ -33,7 +33,7 @@ typedef struct csv_indexing_line_t {
   jvec_csv_indexing_field_t fields;
 } csv_indexing_line_t;
 
-int csv_indexing_line_compare_v(void *a, void *b);
+int csv_indexing_line_compare_v(void const *a, void const *b);
 int csv_indexing_line_compare(csv_indexing_line_t *a, csv_indexing_line_t *b);
 
 typedef union csv_persistant_index_t {
