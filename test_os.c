@@ -1,6 +1,8 @@
 /* test_os.c */
 
+#if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
+#endif
 #include "jos.h"
 #include <assert.h>
 #include <stdio.h>

@@ -2,14 +2,16 @@
 
 #define NOMINMAX 1
 #define _CRT_SECURE_NO_WARNINGS 1
+#if _MSC_VER
 #pragma warning(disable : 4018) // unsigned/signed mismatch
+#endif
 #include "csv.h"
 #include "jmax.h"
 #include "jmem.h"
 #include "jmisc.h"
 #include "jvarint.h"
 #include "jvec.h"
-#include <stdbool.h>
+#include "jbool.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -40,15 +42,14 @@ int csv_index_file(char *file_path) {
   FILE *file_r = 0;
   FILE *file_w = 0;
   jvarint_encode_t encode = {0};
-  bool start_of_line = true;
   int err = 0;
-  bool in_quotes = false;
+  jbool in_quotes = jfalse;
 
   encode.size = 64;
 
-  if (err = JVEC_APPEND(&index_file_path, file_path, strlen(file_path)))
+  if ((err = JVEC_APPEND(&index_file_path, file_path, strlen(file_path))))
     goto exit;
-  if (err = JVEC_APPEND(&index_file_path, ".index", sizeof(".index")))
+  if ((err = JVEC_APPEND(&index_file_path, ".index", sizeof(".index"))))
     goto exit;
 
   if (!(file_r = fopen(file_path, "rb")))
@@ -68,7 +69,7 @@ int csv_index_file(char *file_path) {
     if (ch == '"') {
       ch = fgetc(file_r);
       if (in_quotes && ch == '"') {
-        in_quotes = false;
+        in_quotes = jfalse;
         goto increment_field_size;
       }
     }
@@ -88,8 +89,7 @@ int csv_index_file(char *file_path) {
       }
       line.fields.size = 0;
     } else if (ch == ',') {
-    end_of_field:
-      if (err = JVEC_PUSH_BACK(&line.fields, &field))
+      if ((err = JVEC_PUSH_BACK(&line.fields, &field)))
         goto exit;
       field.size = 0;
     } else {
@@ -104,12 +104,16 @@ exit:
     fclose(file_r);
   if (file_w)
     fclose(file_w);
+  return err;
 }
 
+#if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
+#endif
 
 int main(int argc, char **argv) {
   if (strcmp(argv[1], "index") == 0) {
     csv_index_file(argv[2]);
   }
+  return 0;
 }

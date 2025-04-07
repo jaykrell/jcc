@@ -1,6 +1,8 @@
 /* test_list.c */
 
+#if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
+#endif
 #include "jbase_of.h"
 #include "jlist.h"
 #include "jmem.h"

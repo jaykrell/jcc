@@ -3,8 +3,9 @@
 #ifndef CVS1_H
 #define CVS1_H 1
 
-#pragma warning(disable : 4201) // anonymous
-
+#if _MSC_VER
+#pragma warning(disable : 4201) /* anonymous */
+#endif
 #include "jvec.h"
 #include <stdint.h>
 
@@ -12,7 +13,7 @@ typedef struct csv_indexer_t csv_indexer_t;
 typedef union csv_persistant_index_t csv_persistant_index_t;
 typedef struct csv_persistant_index_line_t csv_persistant_index_line_t;
 
-// temporary in memory form while indexing
+/* temporary in memory form while indexing */
 typedef struct csv_indexing_field_t {
   int64_t offset;
   int64_t size;

@@ -15,7 +15,9 @@
 #include <errno.h>
 #endif
 
+#if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
+#endif
 
 /* TODO: Test on old Windows, and possibly improve the code there. */
 #if _WIN32

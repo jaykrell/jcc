@@ -2,9 +2,9 @@
 
 #include "jthread.h"
 #include <stdio.h>
-
+#if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
-
+#endif
 static jcondvar_t condvar = JCONDVAR_INIT;
 static jlock_t lock = JLOCK_INIT;
 static jrwlock_t rwlock = JRWLOCK_INIT;

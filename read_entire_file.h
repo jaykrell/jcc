@@ -9,7 +9,7 @@ typedef struct read_entire_file_t {
   jmalloc_t *malloc;
   jstdio_t *stdio;
   char *contents;
-  size_t size;
+  int64_t size;
   int out_of_memory;
   int fopen_failed;
 } read_entire_file_t;

@@ -14,7 +14,9 @@
 #include <stddef.h>
 #include <stdlib.h> /* TODO replace */
 
+#if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
+#endif
 
 #define JHASH_PRIMES                                                           \
   JHASH_PRIME(53)                                                              \
@@ -34,7 +36,8 @@ static size_t jhash_primes[] = {
 };
 
 /* Mod is expensive. Mod by a constant is not. */
-static uint64_t jhash_mod(uint64_t a, uint64_t b) {
+/*static*/
+uint64_t jhash_mod(uint64_t a, uint64_t b) {
   switch (b) {
 #define JHASH_PRIME(x)                                                         \
   case x:                                                                      \

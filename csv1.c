@@ -2,7 +2,9 @@
 
 #define NOMINMAX
 #define _CRT_SECURE_NO_WARNINGS 1
-#pragma warning(disable : 4018) // unsigned/signed mismatch
+#if _MSC_VER
+#pragma warning(disable : 4018) /* unsigned/signed mismatch */
+#endif
 #include "csv1.h"
 #include "jbool.h"
 #include "jmax.h"
@@ -139,7 +141,7 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
   FILE *file_w = 0;
   int64_t line_start = 0;
   int64_t line_size = 0;
-  size_t line_iter = 0;
+  int64_t line_iter = 0;
 
   JMEMSET0_VALUE(file_position);
   JMEMSET0_VALUE(index_file_path);
@@ -246,7 +248,9 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
   fclose(file_w);
 }
 
+#if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
+#endif
 
 int main(int argc, char **argv) {
   if (strcmp(argv[1], "index") == 0) {

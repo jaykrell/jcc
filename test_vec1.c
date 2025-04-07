@@ -1,6 +1,8 @@
 /* test_vec.c */
 
+#if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
+#endif
 #include "jvec1.h"
 #include <assert.h>
 #include <stdio.h>

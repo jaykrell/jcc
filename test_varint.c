@@ -1,6 +1,8 @@
 /* test_varint.c */
 
+#if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
+#endif
 #include "jvarint.h"
 #include <assert.h>
 #include <limits.h>

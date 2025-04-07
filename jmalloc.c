@@ -1,7 +1,9 @@
 #include "jmalloc.h"
 #include <stdlib.h>
 
+#if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
+#endif
 
 void *jmalloc_malloc(jmalloc_t *self, size_t n) { return malloc(n); }
 
