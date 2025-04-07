@@ -44,7 +44,7 @@ int csv_index_file(char *file_path) {
 
   if (err = JVEC_APPEND(&index_file_path, file_path, strlen(file_path)))
     goto exit;
-  if (err = JVEC_APPEND(&index_file_path, ".index", sizeof(".index")))
+  if (err = JVEC_APPEND(&index_file_path, J_AND_SIZE(".index")))
     goto exit;
 
   if (!(file_r = fopen(file_path, "rb")))
