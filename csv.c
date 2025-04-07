@@ -6,8 +6,10 @@
 #include "csv.h"
 #include "jmax.h"
 #include "jmem.h"
+#include "jmisc.h"
 #include "jvarint.h"
 #include "jvec.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -38,13 +40,15 @@ int csv_index_file(char *file_path) {
   FILE *file_r = 0;
   FILE *file_w = 0;
   jvarint_encode_t encode = {0};
-  jbool start_of_line = true;
+  bool start_of_line = true;
+  int err = 0;
+  bool in_quotes = false;
 
   encode.size = 64;
 
   if (err = JVEC_APPEND(&index_file_path, file_path, strlen(file_path)))
     goto exit;
-  if (err = JVEC_APPEND(&index_file_path, J_AND_SIZE(".index")))
+  if (err = JVEC_APPEND(&index_file_path, ".index", sizeof(".index")))
     goto exit;
 
   if (!(file_r = fopen(file_path, "rb")))
@@ -71,21 +75,21 @@ int csv_index_file(char *file_path) {
 
     if (ch == '\n') {
       /* Write how many fields line has. */
-      size = jvarint_encode(fields.size, &encode);
+      jvarint_encode_unsigned(line.fields.size, &encode);
       if (encode.bytes_required !=
           fwrite(encode.buffer, 1, encode.bytes_required, file_w))
         goto error;
       /* Write size of each field. */
-      for (i = 0; i < fields.size; ++i) {
-        size = jvarint_encode(fields.data[i].size, &encode);
+      for (i = 0; i < line.fields.size; ++i) {
+        jvarint_encode_unsigned(line.fields.data[i].size, &encode);
         if (encode.bytes_required !=
             fwrite(encode.buffer, 1, encode.bytes_required, file_w))
           goto error;
       }
-      fields.size = 0;
+      line.fields.size = 0;
     } else if (ch == ',') {
     end_of_field:
-      if (err = JVEC_PUSH_BACK(&fields, &field))
+      if (err = JVEC_PUSH_BACK(&line.fields, &field))
         goto exit;
       field.size = 0;
     } else {
@@ -94,8 +98,12 @@ int csv_index_file(char *file_path) {
     }
   }
 
-  fclose(file_r);
-  fclose(file_w);
+error:
+exit:
+  if (file_r)
+    fclose(file_r);
+  if (file_w)
+    fclose(file_w);
 }
 
 #pragma warning(disable : 4100) /* unused parameter */
