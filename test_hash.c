@@ -103,4 +103,5 @@ int main(void) {
     for (; jhash_enum(&e);)
       printf("%d = %d\n", ((int_int *)e.data)->key, ((int_int *)e.data)->value);
   }
+  return 0;
 }

@@ -43,4 +43,5 @@ int main() {
   }
 
   printf("thread_wait:%d\n", jthread_wait(thread1_handle));
+  return 0;
 }

@@ -1,5 +1,7 @@
 /* Win32/pthread portability layer. */
 
+#include "jconfig.h"
+
 /* SRWLOCK and CONDITION_VARIABLE */
 
 #if _WIN32

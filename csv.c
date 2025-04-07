@@ -6,12 +6,12 @@
 #pragma warning(disable : 4018) // unsigned/signed mismatch
 #endif
 #include "csv.h"
+#include "jbool.h"
 #include "jmax.h"
 #include "jmem.h"
 #include "jmisc.h"
 #include "jvarint.h"
 #include "jvec.h"
-#include "jbool.h"
 #include <stdio.h>
 #include <string.h>
 

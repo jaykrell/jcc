@@ -3,6 +3,7 @@
 
 #include "jmalloc.h"
 #include "jstdio.h"
+#include <stdint.h>
 
 typedef struct read_entire_file_t {
   const char *file_path;

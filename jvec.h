@@ -17,16 +17,16 @@ extern "C" {
 #define JVEC(T)                                                                \
   struct {                                                                     \
     T *data;                                                                   \
-    size_t size;                                                               \
-    size_t capacity;                                                           \
+    ptrdiff_t size;                                                            \
+    ptrdiff_t capacity;                                                        \
   }
 
 typedef JVEC(char) jvec_generic;
 
-int jvec_push_back(jvec_generic *, void const *element, size_t element_size);
-int jvec_resize(jvec_generic *, size_t new_size, size_t element_size);
+int jvec_push_back(jvec_generic *, void const *element, ptrdiff_t element_size);
+int jvec_resize(jvec_generic *, ptrdiff_t new_size, ptrdiff_t element_size);
 int jvec_insert(jvec_generic *, void const *before, void const *begin,
-                size_t count, size_t element_size);
+                ptrdiff_t count, ptrdiff_t element_size);
 
 #define JVEC_RESIZE(v, size)                                                   \
   jvec_resize((jvec_generic *)(v), size, sizeof((v)->data[0]))

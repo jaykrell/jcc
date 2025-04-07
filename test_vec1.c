@@ -66,4 +66,5 @@ int main(void) {
   size = (long)vd.size(&vd);
   for (i = 0; i < size; ++i)
     printf("%f ", vd.begin[i]);
+  return 0;
 }

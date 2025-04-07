@@ -7,12 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-int jvec_resize(jvec_generic *v, size_t new_size, size_t element_size) {
-  size_t size = v->size;
-  size_t capacity = v->capacity;
+int jvec_resize(jvec_generic *v, ptrdiff_t new_size, ptrdiff_t element_size) {
+  ptrdiff_t size = v->size;
+  ptrdiff_t capacity = v->capacity;
 
   if (new_size > capacity) {
-    size_t new_capacity = JMAX(new_size, capacity * 2);
+    ptrdiff_t new_capacity = JMAX(new_size, capacity * 2);
     char *new_data = (char *)realloc(v->data, new_capacity * element_size);
     if (!new_data)
       return -1;
@@ -25,9 +25,9 @@ int jvec_resize(jvec_generic *v, size_t new_size, size_t element_size) {
 }
 
 int jvec_insert(jvec_generic *v, void const *before, void const *begin,
-                size_t count, size_t element_size) {
-  size_t before_offset = ((char const *)before - v->data);
-  size_t new_size = v->size + count;
+                ptrdiff_t count, ptrdiff_t element_size) {
+  ptrdiff_t before_offset = ((char const *)before - v->data);
+  ptrdiff_t new_size = v->size + count;
 
   int err = jvec_resize(v, new_size, element_size);
   if (err)
@@ -38,8 +38,9 @@ int jvec_insert(jvec_generic *v, void const *before, void const *begin,
   return 0;
 }
 
-int jvec_push_back(jvec_generic *v, void const *element, size_t element_size) {
-  size_t size = v->size;
+int jvec_push_back(jvec_generic *v, void const *element,
+                   ptrdiff_t element_size) {
+  ptrdiff_t size = v->size;
   int err = jvec_resize(v, size + 1, element_size);
   if (err)
     return err;

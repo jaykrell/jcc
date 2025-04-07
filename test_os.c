@@ -93,4 +93,5 @@ int main(void) {
   assert(p);
   assert(*p == '2');
   jos_munmap(p, 1);
+  return 0;
 }

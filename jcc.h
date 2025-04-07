@@ -1,8 +1,8 @@
 #ifndef JCC_H
 #define JCC_H 1
 
-// #include "jbool.h"
-// #include "jpaste.h"
+/* #include "jbool.h" */
+/* #include "jpaste.h" */
 #include "jmap.h"
 #include "jstr.h"
 #include "jtype.h"

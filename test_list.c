@@ -103,4 +103,5 @@ int main(void) {
     printf("%d\n", (int)JBASE_OF(jlist_int_t, list, l1.flink)->value);
     assert(3 == JBASE_OF(jlist_int_t, list, l1.flink)->value);
   }
+  return 0;
 }

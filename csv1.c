@@ -227,7 +227,7 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
 
     csv_index_write_int(&index_contents, line->fields.size, field_count_size);
 
-    size_t field_iter = {0};
+    ptrdiff_t field_iter = {0};
 
     for (field_iter = 0; field_iter < line->fields.size; ++field_iter) {
       csv_indexing_field_t *field = &line->fields.data[field_iter];

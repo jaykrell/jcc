@@ -63,4 +63,6 @@ int main(void) {
   size = vd.size;
   for (i = 0; i < size; ++i)
     printf("%f ", vd.data[i]);
+
+  return 0;
 }
