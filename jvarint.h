@@ -1,4 +1,5 @@
-#pragma once
+#ifndef JVARINT_H
+#define JVARINT_H 1
 
 #include <stddef.h>
 #include <stdint.h>
@@ -44,3 +45,5 @@ uint64_t jvarint_decode_unsigned(jvarint_decode_t *args);
 #if __cplusplus
 } /* extern C */
 #endif
+
+#endif /* JVARINT_H */
