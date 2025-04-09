@@ -141,7 +141,7 @@ wrong. */
             quoted = jtrue;
             goto handle_end_of_field;
           }
-          if (ch != EOF && ch != '\n' != ch != ',') {
+          if (ch != EOF && ch != '\n' && ch != ',') {
             fprintf(stderr, "ERROR: non-terminated CVS quote is %s.\n",
                     self->file_path);
           }
@@ -188,11 +188,11 @@ int csv_index_file(char *file_path) {
     goto exit;
 
   while (!self->done) {
-    if (err = csv_index_file_read_line(self))
+    if ((err = csv_index_file_read_line(self)))
       goto exit;
     if (self->done)
       break;
-    if (err = csv_index_file_write_line(self))
+    if ((err = csv_index_file_write_line(self)))
       goto exit;
   }
 
