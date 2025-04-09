@@ -37,6 +37,7 @@ typedef struct csv_index_file_t {
   FILE *file_r;
   FILE *file_w;
   line_t line;
+  char *file_path;
   jbool done;
 } csv_index_file_t;
 
@@ -86,19 +87,38 @@ and quotes surrounding a field count as length=0. However this is probably
 wrong. */
 {
   int err = 0;
+
+  /* Initially we are not within quotes. */
   jbool quoted = jfalse;
+
+  /* Initially we are at the start of a field, i.e. quote means quote. */
   jbool start_of_field = jtrue;
+
+  /* An initially size=0 field. */
   field_t field = {0};
+
+  /* Optimize setting of done in the loop. */
+  jbool set_done = jfalse;
+
+  /* Assume nothing is read and reading is all done. */
   self->done = jtrue;
+
+  /* Reset number of fields in line. */
   self->line.fields.size = 0;
 
   while (1) {
     int ch = get_char(self);
+
+    /* End file means end of reading this line, and the file, with possibly
+     * still this line to write. */
     if (ch == EOF)
-      return 0; /* not an error but this function is done */
+      return 0;
 
     /* There is at least an empty line, so processing should continue. */
-    self->done = jfalse;
+    if (!set_done) {
+      self->done = jfalse;
+      set_done = jtrue;
+    }
 
     if (ch == '\n')
       return 0;
@@ -108,6 +128,8 @@ wrong. */
       start_of_field = jfalse;
       if (ch == '"') {
         quoted = jtrue;
+        /* Opening quote does not contribute to field size. But it probably
+         * should to ease skipping. */
         continue;
       }
     } else {
@@ -118,7 +140,8 @@ wrong. */
           if (ch == '"')
             goto handle_end_of_field;
           if (ch != EOF && ch != '\n' != ch != ',') {
-            /* error */
+            fprintf(stderr, "ERROR: non-terminated CVS quote is %s.\n",
+                    self->file_path);
           }
         } else {
           goto handle_char_in_field;
@@ -151,6 +174,7 @@ int csv_index_file(char *file_path) {
   jvec_char_t index_file_path = {0};
   int err = 0;
 
+  self->file_path = file_path;
   if ((err = JVEC_APPEND(&index_file_path, file_path, strlen(file_path))))
     goto exit;
   if ((err = JVEC_APPEND(&index_file_path, ".index", sizeof(".index"))))
