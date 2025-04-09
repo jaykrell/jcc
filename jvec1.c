@@ -112,6 +112,7 @@ ssize_t JPASTE(jvec, _size)(jvec *v) { return (v->end - v->begin); }
 ssize_t JPASTE(jvec, _capacity)(jvec *v) { return (v->cap - v->begin); }
 
 jerr JPASTE(jvec, _push_back)(jvec *v, T *e, ssize_t n) {
+  T *new_elem;
   jerr err = {0};
   ssize_t size = {0};
   jtype *telem = {0};
@@ -121,7 +122,7 @@ jerr JPASTE(jvec, _push_back)(jvec *v, T *e, ssize_t n) {
   err = v->resize(v, size + n);
   if (err < 0)
     return err;
-  T *new_elem = v->begin + size;
+  new_elem = v->begin + size;
   if (telem)
     return telem->copy_to(e, new_elem);
   memmove(new_elem, e, sizeof(T) * n);

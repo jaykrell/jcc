@@ -50,7 +50,7 @@ typedef enum ceType {
   ceTypeUShort,
   ceTypeUInt,
   ceTypeULong,
-  ceTypeULongLong,
+  ceTypeULongLong
 
 } ceType;
 
@@ -105,14 +105,11 @@ typedef enum cpreDirective {
   cpreDirectiveElif,
   cpreDirectiveIfdef,
   cpreDirectiveIfndef,
-  cpreDirectiveEmpty,
+  cpreDirectiveEmpty
 } cpreDirective;
 
 /* C compiler preprocessor token enum */
-typedef enum cpreToken {
-  cpreTokenInvalid,
-  cpreTokenDirective,
-} cpreToken;
+typedef enum cpreToken { cpreTokenInvalid, cpreTokenDirective } cpreToken;
 
 /* C compiler token enum */
 typedef enum ceToken {
@@ -188,7 +185,7 @@ typedef enum ceToken {
   ceTokenEnum,
   ceTokenStruct,
   ceTokenUnion,
-  ceTokenTypedef,
+  ceTokenTypedef
 } ceToken;
 
 struct cMember;

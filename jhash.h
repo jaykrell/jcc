@@ -19,10 +19,6 @@ extern "C" {
 
 typedef struct jhash_t jhash_t;
 typedef struct jhash_init_t jhash_init_t;
-typedef struct jhash_keyvalue_t jhash_keyvalue_t;
-
-/* internal */
-typedef struct jhash_keyvalue_t jhash_keyvalue_t;
 
 /* TODO: is this jtype? */
 struct jhash_init_t {
@@ -39,7 +35,7 @@ struct jhash_t {
   /* private */
   jhash_init_t init;
   size_t bucket_count;
-  jlist_t *buckets; /* array[bucket_count] of lists of jhash_keyvalue_t */
+  jlist_t *buckets; /* array[bucket_count] of lists of jlist_t */
 };
 
 typedef struct jhash_lookup_t {

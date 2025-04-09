@@ -5,6 +5,8 @@
 #ifndef JOS_H
 #define JOS_H 1
 
+#define _GNU_SOURCE 1
+
 /* aka PAL platform adaption layer */
 
 #include "jbool.h"
@@ -47,7 +49,6 @@ int jos_read(int file_handle, void *buffer, size_t bytes, size_t *actual);
 int jos_write(int file_handle, void *buffer, size_t bytes, size_t *actual);
 
 int jos_set_file_size(int file_handle, int64_t file_size);
-;
 int jos_get_file_size(int file_handle, int64_t *file_size);
 
 int jos_mmap_read(int file_handle, int64_t size, void **q);

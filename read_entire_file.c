@@ -16,6 +16,7 @@ void read_entire_file(read_entire_file_t *self) {
     return;
   }
   while (1) {
+    void *new_contents;
     size_t bytes_to_read = (capacity - self->size);
     size_t bytes_read = stdio->fread(stdio, &self->contents[self->size], 1,
                                      bytes_to_read, file);
@@ -26,7 +27,7 @@ void read_entire_file(read_entire_file_t *self) {
       stdio->fclose(stdio, file);
       return;
     }
-    void *new_contents = malloc->realloc(malloc, self->contents, capacity *= 2);
+    new_contents = malloc->realloc(malloc, self->contents, capacity *= 2);
     if (!new_contents) {
       self->out_of_memory = 1;
       return;

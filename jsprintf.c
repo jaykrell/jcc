@@ -3,11 +3,13 @@
 /* How do I printf a size_t? */
 
 #include "juint.h"
+#include <assert.h>
 #include <limits.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 typedef char *PSTR;
-typedef unsigned juint;
 
 void (*fatal_error)(const char *);
 
@@ -20,10 +22,11 @@ void j_append_char(char c, PSTR *p, PSTR limit) {
 }
 
 void j_revstr(PSTR a, size_t len) {
+  size_t i = 0;
   if (len < 2)
     return;
   len -= 1;
-  size_t i = {0};
+  i = 0;
   while (i < len) {
     char temp = a[i];
     a[i] = a[len];
@@ -33,7 +36,7 @@ void j_revstr(PSTR a, size_t len) {
   }
 }
 
-static void j_uint64_to_hex_full(uint64_t a, PSTR buf)
+void j_uint64_to_hex_full(uint64_t a, PSTR buf)
 /* 16 characters always */
 {
   juint i = 0;

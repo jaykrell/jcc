@@ -14,8 +14,9 @@ void jlist_init_on_demand(jlist_t *list) {
 }
 
 static void jlist_graft(jlist_t *list, jlist_t *element, int append) {
+  jlist_t *insert = 0;
   jlist_init_on_demand(list);
-  jlist_t *insert = (append ? list->blink : list->flink);
+  insert = (append ? list->blink : list->flink);
   *(append ? &insert->flink : &insert->blink) = element;
   *(append ? &list->blink : &list->flink) = element;
   *(append ? &element->flink : &element->blink) = list;

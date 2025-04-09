@@ -12,6 +12,7 @@
 typedef struct csv_indexer_t csv_indexer_t;
 typedef union csv_persistant_index_t csv_persistant_index_t;
 typedef struct csv_persistant_index_line_t csv_persistant_index_line_t;
+typedef struct csv_indexing_line_t csv_indexing_line_t;
 
 /* temporary in memory form while indexing */
 typedef struct csv_indexing_field_t {
@@ -19,25 +20,23 @@ typedef struct csv_indexing_field_t {
   int64_t size;
 } csv_indexing_field_t;
 
-typedef struct csv_indexing_line_t csv_indexing_line_t;
-
 /* temporary in memory form while indexing */
 
 typedef JVEC(csv_indexing_field_t) jvec_csv_indexing_field_t;
 
-typedef struct csv_indexing_line_t {
+struct csv_indexing_line_t {
   csv_indexer_t *indexer;
   int64_t line_offset;
   int64_t line_size;
   int64_t max_field_offset;
   int64_t max_field_size;
   jvec_csv_indexing_field_t fields;
-} csv_indexing_line_t;
+};
 
 int csv_indexing_line_compare_v(void const *a, void const *b);
 int csv_indexing_line_compare(csv_indexing_line_t *a, csv_indexing_line_t *b);
 
-typedef union csv_persistant_index_t {
+union csv_persistant_index_t {
   struct {
     int8_t version[8];
     int8_t endian;
@@ -55,11 +54,11 @@ typedef union csv_persistant_index_t {
     int64_t path_size;
     int64_t offset_to_path;     /* 0 if not present */
     int64_t offset_to_contents; /* 0 if not present */
-  };
+  } s;
   uint8_t page[0x1000];
-} csv_persistant_index_t;
+};
 
-typedef struct csv_persistant_index_line_t {
+struct csv_persistant_index_line_t {
   /* Realistically there are only a few encodings and this could be
   an index into an array of them collected across all lines.
   Index 0 could be reserved for 64/64/64, then store one byte here
@@ -75,11 +74,11 @@ typedef struct csv_persistant_index_line_t {
           int<field_offset_size>_t field_offsets[field_count]; // from start of
      line int<field_size_size>_t   field_sizes[field_count];
   */
-} csv_persistant_index_line_t;
+};
 
-typedef struct csv_indexer_t {
+struct csv_indexer_t {
   JVEC(csv_indexing_line_t) lines;
   char *contents;
-} csv_indexer_t;
+};
 
 #endif

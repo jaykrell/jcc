@@ -111,9 +111,10 @@ static size_t jhash_decide_bucket_count(size_t element_count) {
 
 /* TODO: Rehash for high load. */
 static int jhash_new_buckets(jhash_t *hash, size_t bucket_count) {
+  jlist_t *buckets = 0;
   if (hash->buckets)
     return 0;
-  jlist_t *buckets = (jlist_t *)calloc(bucket_count, sizeof(jlist_t));
+  buckets = (jlist_t *)calloc(bucket_count, sizeof(jlist_t));
   if (!buckets)
     return jerr_out_of_memory;
   hash->buckets = buckets;
@@ -204,11 +205,12 @@ int jhash_lookup_and_insert_new(jhash_t *hash, jhash_lookup_t *lookup)
    Wierd to always error?
 */
 {
+  int err = 0;
   jhash_lookup_t existing = *lookup;
   if (!jhash_lookup(hash, &existing))
     return jerr_found;
   lookup->hashcode = existing.hashcode;
-  int err = jhash_insert_new_after_lookup(hash, lookup);
+  err = jhash_insert_new_after_lookup(hash, lookup);
   return err ? err : jerr_not_found;
 }
 
@@ -219,6 +221,7 @@ int jhash_lookup_and_insert_replace(jhash_t *hash, jhash_lookup_t *lookup)
    Wierd to always error?
 */
 {
+  int err = 0;
   jhash_lookup_t existing = *lookup;
   jhash_init_t *const init = &hash->init;
   jhash_lookup(hash, &existing);
@@ -228,7 +231,7 @@ int jhash_lookup_and_insert_replace(jhash_t *hash, jhash_lookup_t *lookup)
   }
   jhash_remove_after_lookup(hash, &existing);
   lookup->hashcode = existing.hashcode;
-  int err = jhash_insert_new_after_lookup(hash, lookup);
+  err = jhash_insert_new_after_lookup(hash, lookup);
   return err ? err : jerr_not_found;
 }
 

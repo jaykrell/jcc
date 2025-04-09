@@ -14,15 +14,9 @@ int main(void) {
 
   jvarint_encode_t encode = {0};
   jvarint_decode_t decode = {0};
-  int8_t signed8 = 0;
-  uint8_t unsigned8 = 0;
-  int16_t signed16 = 0;
-  uint16_t unsigned16 = 0;
-  int32_t signed32 = 0;
-  uint32_t unsigned32 = 0;
-  int64_t signed6 = 0;
-  uint64_t unsigned64 = 0;
   int64_t i = 0;
+  int64_t signed_value = {0};
+  uint64_t unsigned_value = {0};
 
   encode.bytes_required = 0;
   jvarint_encode_unsigned(0, &encode);
@@ -48,15 +42,16 @@ int main(void) {
     encode.bytes_required = 0;
     jvarint_encode_signed(i, &encode);
     decode.buffer_size = encode.bytes_required;
-    jvarint_decode_signed(&decode);
-    assert(decode.signed_value == i);
+    signed_value = jvarint_decode_signed(&decode);
+    assert(signed_value == i);
 
     if (i >= 0) {
       encode.bytes_required = 0;
       jvarint_encode_unsigned((uint64_t)i, &encode);
       decode.buffer_size = encode.bytes_required;
-      jvarint_decode_unsigned(&decode);
-      assert(decode.unsigned_value == i);
+      unsigned_value = jvarint_decode_unsigned(&decode);
+      assert(unsigned_value == i);
     }
   }
+  return 0;
 }
