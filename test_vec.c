@@ -64,5 +64,6 @@ int main(void) {
   for (i = 0; i < size; ++i)
     printf("%f ", vd.data[i]);
 
+  printf("\n");
   return 0;
 }
