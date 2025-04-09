@@ -135,7 +135,7 @@ wrong. */
     } else {
       /* Once quoting, quote means end of field or a quoted quote. */
       if (quoted) {
-        if (ch == '"') { /* end of field or quoted quote */
+        if (ch == '"') {
           ch = get_char(self);
           if (ch == '"')
             goto handle_end_of_field;
