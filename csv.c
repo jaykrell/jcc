@@ -22,11 +22,7 @@
 typedef JVEC(char) jvec_char_t;
 
 /* temporary in memory form; file form is varint64 */
-typedef struct field_t {
-  int64_t size;
-} field_t;
-
-typedef JVEC(field_t) jvec_field_t;
+typedef JVEC(int64_t) jvec_field_t;
 
 /* temporary in memory form; file form is varint64s */
 typedef struct line_t {
@@ -39,18 +35,24 @@ typedef struct csv_index_file_t {
   line_t line;
   char *file_path;
   jbool done;
+  int64_t field_size;
 } csv_index_file_t;
 
 static int get_char(csv_index_file_t *self)
 /* Get a character. This handles \r\n sequences returning them as \n.
-   And \r is returned as \n. */
+   And \r is returned as \n.
+   field size is tracked here. */
 {
   int ch = fgetc(self->file_r);
+  self->field_size += (ch != EOF);
   if (ch != '\r')
     return ch;
   ch = fgetc(self->file_r);
-  if (ch != EOF && ch != '\n')
+  if (ch != EOF && ch != '\n') {
     ungetc(ch, self->file_r);
+  } else {
+    self->field_size += 1;
+  }
   return '\n';
 }
 
@@ -60,8 +62,8 @@ TODO: What is a field length really, given quoting? */
 {
   jvarint_encode_t encode = {0};
   int err = 0;
-  encode.size = 64;
   int64_t i;
+  encode.size = 64;
 
   /* Write how many fields line has. */
   jvarint_encode_unsigned(self->line.fields.size, &encode);
@@ -70,7 +72,7 @@ TODO: What is a field length really, given quoting? */
     goto exit;
   /* Write size of each field. */
   for (i = 0; i < self->line.fields.size; ++i) {
-    jvarint_encode_unsigned(self->line.fields.data[i].size, &encode);
+    jvarint_encode_unsigned(self->line.fields.data[i], &encode);
     if (encode.bytes_required !=
         fwrite(encode.buffer, 1, encode.bytes_required, self->file_w))
       goto exit;
@@ -82,23 +84,16 @@ exit:
 
 static int csv_index_file_read_line(csv_index_file_t *self)
 /* Read a line, recording field lengths and number of fields.
-This handles quoting. Presently quoted quotes count as length=1,
-and quotes surrounding a field count as length=0. However this is probably
-wrong. */
+This handles quoting. For ease of later skipping fields,
+commas and quotes do contribute to field size. */
 {
   int err = 0;
 
   /* Initially we are not within quotes. */
   jbool quoted = jfalse;
 
-  /* Initially we are at the start of a field, i.e. quote means quote. */
-  jbool start_of_field = jtrue;
-
   /* An initially size=0 field. */
-  field_t field = {0};
-
-  /* Optimize setting of done in the loop. */
-  jbool set_done = jfalse;
+  self->field_size = 0;
 
   /* Assume nothing is read and reading is all done. */
   self->done = jtrue;
@@ -115,39 +110,28 @@ wrong. */
       return 0;
 
     /* There is at least an empty line, so processing should continue. */
-    if (!set_done) {
-      self->done = jfalse;
-      set_done = jtrue;
-    }
+    self->done = jfalse;
 
     if (ch == '\n')
       return 0;
 
     /* Fields can be quoted. Quotes are at the start of field. */
-    if (start_of_field) {
-      start_of_field = jfalse;
+    if (ch == '"' && self->field_size == 1) {
+      quoted = jtrue;
+      continue;
+    } else if (quoted && ch != '"') {
+      continue;
+    } else if (quoted && ch == '"') {
+      /* When quoting, quote means end of field or a quoted quote. */
+      ch = get_char(self);
       if (ch == '"') {
         quoted = jtrue;
-        /* Opening quote does not contribute to field size. But it probably
-         * should to ease skipping. */
-        continue;
+        goto handle_end_of_field;
       }
-    } else {
-      /* When quoting, quote means end of field or a quoted quote. */
-      if (quoted) {
-        if (ch == '"') {
-          ch = get_char(self);
-          if (ch == '"') {
-            quoted = jtrue;
-            goto handle_end_of_field;
-          }
-          if (ch != EOF && ch != '\n' && ch != ',') {
-            fprintf(stderr, "ERROR: non-terminated CVS quote is %s.\n",
-                    self->file_path);
-          }
-        } else {
-          goto handle_char_in_field;
-        }
+      /* Ending quote terminates field. */
+      if (ch != EOF && ch != '\n' && ch != ',') {
+        fprintf(stderr, "ERROR: non-terminated CVS quote is %s.\n",
+                self->file_path);
       }
     }
 
@@ -156,16 +140,12 @@ wrong. */
     case EOF:
     case ',':
     handle_end_of_field:
-      if ((err = JVEC_PUSH_BACK(&self->line.fields, &field)))
+      if ((err = JVEC_PUSH_BACK(&self->line.fields, &self->field_size)))
         return err;
-      start_of_field = jtrue;
-      field.size = 0;
+      self->field_size = 0;
       if (ch != ',')
         return 0;
       break;
-    default:
-    handle_char_in_field:
-      field.size += 1;
     }
   }
 }
@@ -190,9 +170,7 @@ int csv_index_file(char *file_path) {
   while (!self->done) {
     if ((err = csv_index_file_read_line(self)))
       goto exit;
-    if (self->done)
-      break;
-    if ((err = csv_index_file_write_line(self)))
+    if (self->done || ((err = csv_index_file_write_line(self))))
       goto exit;
   }
 

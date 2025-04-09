@@ -67,10 +67,10 @@ int jvarint_decode_adapt_buffer_to_function_pointer(void *void_context) {
   return args->buffer[args->index++];
 }
 
-void jvarint_decode_unsigned(jvarint_decode_t *args) {
+uint64_t jvarint_decode_unsigned(jvarint_decode_t *args) {
+  uint64_t unsigned_value = 0;
   /* TODO: What if shift goes beyond 64? */
   args->shift = 0;
-  args->unsigned_value = 0;
 
   if (args->buffer) {
     args->read_byte = jvarint_decode_adapt_buffer_to_function_pointer;
@@ -82,24 +82,23 @@ void jvarint_decode_unsigned(jvarint_decode_t *args) {
     args->byte = args->read_byte(args->read_byte_context);
     if (args->byte < 0) {
       args->err = args->byte;
-      return;
+      return unsigned_value;
     }
     ++(args->bytes_consumed);
-    args->unsigned_value |= ((args->byte & 0x7F) << args->shift);
+    unsigned_value |= ((args->byte & 0x7F) << args->shift);
     args->shift += 7;
   } while (args->byte & 0x80);
+
+  return unsigned_value;
 }
 
-void jvarint_decode_signed(jvarint_decode_t *args) {
+int64_t jvarint_decode_signed(jvarint_decode_t *args) {
   /* TODO: What if shift goes beyond 64? */
   int64_t zero = 0;
-  int64_t signed_value;
-
-  jvarint_decode_unsigned(args);
-  signed_value = args->unsigned_value;
+  int64_t signed_value = jvarint_decode_unsigned(args);
 
   if ((args->shift < args->size) && (args->byte & jvarint_sign_bit))
     signed_value |= (~zero << args->shift); /* sign extend */
 
-  args->signed_value = signed_value;
+  return signed_value;
 }
