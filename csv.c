@@ -34,37 +34,27 @@ typedef struct line_t {
 } line_t;
 
 typedef struct csv_index_file_t {
-  int ch;
   FILE *file_r;
   FILE *file_w;
   line_t line;
-  field_t field;
-  jbool start_of_field;
   jbool done;
 } csv_index_file_t;
 
 static int get_char(csv_index_file_t *self) {
   int ch = fgetc(self->file_r);
   if (ch != '\r')
-    return self->ch = ch;
+    return ch;
   ch = fgetc(self->file_r);
   if (ch == EOF)
-    return self->ch = '\r';
+    return '\r';
   if (ch != '\n') {
     ungetc(ch, self->file_r);
-    return self->ch = '\r';
+    return '\r';
   }
-  return self->ch = '\n';
+  return '\n';
 }
 
-static int handle_of_field(csv_index_file_t *self) {
-  int err;
-  if ((err = JVEC_PUSH_BACK(&self->line.fields, &self->field)))
-    return err;
-  self->start_of_field = jtrue;
-  self->field.size = 0;
-  return 0;
-}
+static int handle_end_of_field(csv_index_file_t *self) { int err; }
 
 static int csv_index_file_write_line(csv_index_file_t *self) {
   jvarint_encode_t encode = {0};
@@ -92,7 +82,8 @@ exit:
 static int csv_index_file_read_line(csv_index_file_t *self) {
   int err = 0;
   jbool quoted = jfalse;
-  self->start_of_field = jtrue;
+  jbool start_of_field = jtrue;
+  field_t field = {0};
   self->done = jtrue;
   self->line.fields.size = 0;
 
@@ -104,8 +95,8 @@ static int csv_index_file_read_line(csv_index_file_t *self) {
     if (ch == '\n')
       return 0;
 
-    if (self->start_of_field) {
-      self->start_of_field = jfalse;
+    if (start_of_field) {
+      start_of_field = jfalse;
       if (ch == '"') {
         quoted = jtrue;
         continue;
@@ -125,11 +116,16 @@ static int csv_index_file_read_line(csv_index_file_t *self) {
     case '\n':
     case EOF:
     case ',':
-      if ((err = handle_of_field(self)) || ch != ',')
+      /* handle end of field */
+      if ((err = JVEC_PUSH_BACK(&self->line.fields, &field)))
         return err;
+      start_of_field = jtrue;
+      field.size = 0;
+      if (ch != ',')
+        return 0;
       break;
     default:
-      self->field.size += 1;
+      field.size += 1;
     }
   }
 }
