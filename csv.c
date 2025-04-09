@@ -40,23 +40,23 @@ typedef struct csv_index_file_t {
   jbool done;
 } csv_index_file_t;
 
-static int get_char(csv_index_file_t *self) {
+static int get_char(csv_index_file_t *self)
+/* Get a character. This handles \r\n sequences returning them as \n.
+   And \r is returned as \n. */
+{
   int ch = fgetc(self->file_r);
   if (ch != '\r')
     return ch;
   ch = fgetc(self->file_r);
-  if (ch == EOF)
-    return '\r';
-  if (ch != '\n') {
+  if (ch != EOF && ch != '\n')
     ungetc(ch, self->file_r);
-    return '\r';
-  }
   return '\n';
 }
 
-static int handle_end_of_field(csv_index_file_t *self) { int err; }
-
-static int csv_index_file_write_line(csv_index_file_t *self) {
+static int csv_index_file_write_line(csv_index_file_t *self)
+/* Write a line, as a count of fields and field lengths.
+TODO: What is a field length really, given quoting? */
+{
   jvarint_encode_t encode = {0};
   int err = 0;
   encode.size = 64;
@@ -79,7 +79,12 @@ exit:
   return err;
 }
 
-static int csv_index_file_read_line(csv_index_file_t *self) {
+static int csv_index_file_read_line(csv_index_file_t *self)
+/* Read a line, recording field lengths and number of fields.
+This handles quoting. Presently quoted quotes count as length=1,
+and quotes surrounding a field count as length=0. However this is probably
+wrong. */
+{
   int err = 0;
   jbool quoted = jfalse;
   jbool start_of_field = jtrue;
@@ -91,10 +96,14 @@ static int csv_index_file_read_line(csv_index_file_t *self) {
     int ch = get_char(self);
     if (ch == EOF)
       return 0; /* not an error but this function is done */
+
+    /* There is at least an empty line, so processing should continue. */
     self->done = jfalse;
+
     if (ch == '\n')
       return 0;
 
+    /* Fields can be quoted. Quotes are at the start of field. */
     if (start_of_field) {
       start_of_field = jfalse;
       if (ch == '"') {
@@ -102,12 +111,17 @@ static int csv_index_file_read_line(csv_index_file_t *self) {
         continue;
       }
     } else {
+      /* Once quoting, quote means end of field or a quoted quote. */
       if (quoted) {
         if (ch == '"') { /* end of field or quoted quote */
           ch = get_char(self);
-          if (ch != '"' && ch != EOF && ch != '\n' != ch != ',') {
+          if (ch == '"')
+            goto handle_end_of_field;
+          if (ch != EOF && ch != '\n' != ch != ',') {
             /* error */
           }
+        } else {
+          goto handle_char_in_field;
         }
       }
     }
@@ -116,7 +130,7 @@ static int csv_index_file_read_line(csv_index_file_t *self) {
     case '\n':
     case EOF:
     case ',':
-      /* handle end of field */
+    handle_end_of_field:
       if ((err = JVEC_PUSH_BACK(&self->line.fields, &field)))
         return err;
       start_of_field = jtrue;
@@ -125,6 +139,7 @@ static int csv_index_file_read_line(csv_index_file_t *self) {
         return 0;
       break;
     default:
+    handle_char_in_field:
       field.size += 1;
     }
   }
