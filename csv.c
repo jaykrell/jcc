@@ -137,8 +137,10 @@ wrong. */
       if (quoted) {
         if (ch == '"') {
           ch = get_char(self);
-          if (ch == '"')
+          if (ch == '"') {
+            quoted = jtrue;
             goto handle_end_of_field;
+          }
           if (ch != EOF && ch != '\n' != ch != ',') {
             fprintf(stderr, "ERROR: non-terminated CVS quote is %s.\n",
                     self->file_path);
