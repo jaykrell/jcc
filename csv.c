@@ -133,7 +133,7 @@ wrong. */
         continue;
       }
     } else {
-      /* Once quoting, quote means end of field or a quoted quote. */
+      /* When quoting, quote means end of field or a quoted quote. */
       if (quoted) {
         if (ch == '"') {
           ch = get_char(self);
