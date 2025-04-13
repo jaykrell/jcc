@@ -159,7 +159,7 @@ int jos_get_file_size(int file_handle, int64_t *file_size)
 int jos_mmap(int file_handle, int64_t size, int read, void **q)
 /* mmap a file for read or read/write */
 {
-  void *p=0;
+  void *p = 0;
   int err = 0;
 #if _WIN32
   HANDLE hfile = (HANDLE)(intptr_t)file_handle;
@@ -184,7 +184,7 @@ int jos_mmap(int file_handle, int64_t size, int read, void **q)
   if (p == MAP_FAILED)
     err = errno;
   else
-   *q = p;
+    *q = p;
 #endif
   return err;
 }

@@ -3,8 +3,8 @@
 #if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
 #endif
-#include "jsize.h"
 #include "jint64.h"
+#include "jsize.h"
 #include "jvec.h"
 #include <assert.h>
 #include <stdio.h>

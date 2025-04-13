@@ -2,10 +2,10 @@
 #ifdef _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
 #endif
-#include <stdlib.h>
+#include "jint64.h"
 #include <stdint.h>
 #include <stdio.h>
-#include "jint64.h"
+#include <stdlib.h>
 /*************************************************************************************************/
 int main(void) {
   const unsigned N = 1000;

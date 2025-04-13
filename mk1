@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -e
+set -x
+gcc -c *.c -ansi -std=c89 -pedantic -Wno-long-long -Wall
