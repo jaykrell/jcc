@@ -4,6 +4,7 @@
 #pragma warning(disable : 4100) /* unused parameter */
 #endif
 #include "jsize.h"
+#include "jint64.h"
 #include "jvec.h"
 #include <assert.h>
 #include <stdio.h>
@@ -13,11 +14,11 @@
 int main(void) {
   JVEC(double) vd = {0};
   JVEC(int) vi = {0};
-  int *vii = {0};
+  int *vii = 0;
   int a = 1;
   double b = 1;
-  size_t size = {0};
-  size_t i = {0};
+  jsize size = 0;
+  jsize i = 0;
 
   /* test vector */
 

@@ -2,17 +2,18 @@
 #ifdef _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
 #endif
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include "jint64.h"
 /*************************************************************************************************/
 int main(void) {
   const unsigned N = 1000;
   const unsigned M = 1000;
   char *vec = (char *)calloc(M, N);
-  int64_t i = {0};
-  int64_t j = {0};
-  int64_t prev = 5;
+  jint64 i = 0;
+  jint64 j = 0;
+  jint64 prev = 5;
   for (i = 3; i < N; i += 2) {
     j = i;
     while (1) {
@@ -27,7 +28,7 @@ int main(void) {
     if (!vec[i]) {
       if (i > (prev * 3)) {
         prev = i;
-        printf("%ld, ", i);
+        printf("%" JINT64_PRI "d, ", i);
         if (++j == 8) {
           printf("\n");
           j = 0;

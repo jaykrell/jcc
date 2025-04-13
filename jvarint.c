@@ -22,7 +22,7 @@
 #include "jvarint.h"
 
 /* sign bit of byte is second high-order bit (0x40) */
-uint8_t const jvarint_sign_bit = 0x40;
+static uint8_t const jvarint_sign_bit = 0x40;
 
 void jvarint_encode_signed(int64_t value, jvarint_encode_t *args)
 /* https://en.wikipedia.org/wiki/LEB128 */

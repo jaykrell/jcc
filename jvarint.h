@@ -6,7 +6,6 @@
 
 #if _MSC_VER
 #pragma warning(disable : 4668) /* #if vs. #ifdef */
-#pragma warning(disable : 4201) /* nameless union */
 #endif
 
 #if __cplusplus
