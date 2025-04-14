@@ -40,8 +40,8 @@ int main(int argc, char **argv) {
   while (1) {
     uint64_t i = jvarint_decode_unsigned(&decode);
     if (decode.err) {
-      // j_uint64_to_hex_shortest(total, i64buf);
-      // printf("dump_variant: error: %d after %s\n", decode.err, i64buf);
+      /* j_uint64_to_hex_shortest(total, i64buf);
+      printf("dump_variant: error: %d after %s\n", decode.err, i64buf);*/
       break;
     }
     j_uint64_to_hex_shortest(i, i64buf);

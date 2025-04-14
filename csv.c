@@ -20,8 +20,8 @@
 #define __cdecl
 #endif
 
-static long csv_debug = 1;
-static long csv_line;
+long csv_debug = 1;
+long csv_line;
 
 typedef JVEC(char) jvec_char_t;
 
@@ -71,7 +71,7 @@ TODO: What is a field length really, given quoting? */
   int64_t i;
   encode.size = 64;
 
-  printf("csv: line %d has %d fields\n", (long)++csv_line,
+  printf("csv: line %ld has %ld fields\n", (long)++csv_line,
          (long)self->line.fields.size);
 
   /* Write how many fields line has. */
