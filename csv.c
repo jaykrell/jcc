@@ -67,14 +67,14 @@ TODO: What is a field length really, given quoting? */
 
   /* Write how many fields line has. */
   jvarint_encode_unsigned(self->line.fields.size, &encode);
-  if (encode.bytes_required !=
-      fwrite(encode.buffer, 1, encode.bytes_required, self->file_w))
+  if (encode.encoded_size !=
+      fwrite(encode.buffer, 1, encode.encoded_size, self->file_w))
     goto exit;
   /* Write size of each field. */
   for (i = 0; i < self->line.fields.size; ++i) {
     jvarint_encode_unsigned(self->line.fields.data[i], &encode);
-    if (encode.bytes_required !=
-        fwrite(encode.buffer, 1, encode.bytes_required, self->file_w))
+    if (encode.encoded_size !=
+        fwrite(encode.buffer, 1, encode.encoded_size, self->file_w))
       goto exit;
   }
 

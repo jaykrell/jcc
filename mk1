@@ -3,3 +3,4 @@
 set -e
 set -x
 gcc -c *.c -ansi -std=c89 -pedantic -Wno-long-long -Wall
+gcc csv.o jvarint.o jvec.o -o csv
