@@ -3,7 +3,7 @@
 #ifndef JVEC_H
 #define JVEC_H 1
 
-#include <stddef.h>
+#include "jssize.h"
 
 #if __cplusplus
 extern "C" {
@@ -23,10 +23,13 @@ extern "C" {
 
 typedef JVEC(char) jvec_generic;
 
+void jvec_cleanup(jvec_generic *);
 int jvec_push_back(jvec_generic *, void const *element, ptrdiff_t element_size);
 int jvec_resize(jvec_generic *, ptrdiff_t new_size, ptrdiff_t element_size);
 int jvec_insert(jvec_generic *, void const *before, void const *begin,
                 ptrdiff_t count, ptrdiff_t element_size);
+
+#define JVEC_CLEANUP(v) jvec_cleanup((jvec_generic *)(v))
 
 #define JVEC_RESIZE(v, size)                                                   \
   jvec_resize((jvec_generic *)(v), size, sizeof((v)->data[0]))

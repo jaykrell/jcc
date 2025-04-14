@@ -20,9 +20,6 @@
 #define __cdecl
 #endif
 
-long csv_debug = 1;
-long csv_line;
-
 typedef JVEC(char) jvec_char_t;
 
 /* temporary in memory form; file form is varint64 */
@@ -37,10 +34,13 @@ typedef struct csv_index_file_t {
   FILE *file_r;
   FILE *file_w;
   line_t line;
+  jvec_char_t index_file_path;
   char *file_path;
-  jbool done;
   int64_t field_size;
   int64_t total;
+  int64_t debug_line;
+  jbool done;
+  jbool debug;
 } csv_index_file_t;
 
 static int get_char(csv_index_file_t *self)
@@ -68,11 +68,12 @@ TODO: What is a field length really, given quoting? */
 {
   jvarint_encode_t encode = {0};
   int err = 0;
-  int64_t i;
+  int64_t i = 0;
   encode.size = 64;
 
-  printf("csv: line %ld has %ld fields\n", (long)++csv_line,
-         (long)self->line.fields.size);
+  if (self->debug)
+    printf("csv: line %ld has %ld fields\n", (long)++(self->debug_line),
+           (long)self->line.fields.size);
 
   /* Write how many fields line has. */
   jvarint_encode_unsigned(self->line.fields.size, &encode);
@@ -164,19 +165,27 @@ commas and quotes do contribute to field size. */
   }
 }
 
+void csv_index_cleanup(csv_index_file_t *self) {
+  JVEC_CLEANUP(&self->index_file_path);
+  if (self->file_r)
+    fclose(self->file_r);
+  if (self->file_w)
+    fclose(self->file_w);
+  self->file_w = self->file_r = 0;
+}
+
 int csv_index_file(csv_index_file_t *self, char *file_path) {
-  jvec_char_t index_file_path = {0};
   int err = 0;
 
   self->file_path = file_path;
-  if ((err = JVEC_APPEND(&index_file_path, file_path, strlen(file_path))))
+  if ((err = JVEC_APPEND(&self->index_file_path, file_path, strlen(file_path))))
     goto exit;
-  if ((err = JVEC_APPEND(&index_file_path, ".index", sizeof(".index"))))
+  if ((err = JVEC_APPEND(&self->index_file_path, ".index", sizeof(".index"))))
     goto exit;
 
   if (!(self->file_r = fopen(file_path, "rb")))
     goto exit;
-  if (!(self->file_w = fopen(index_file_path.data, "wb")))
+  if (!(self->file_w = fopen(self->index_file_path.data, "wb")))
     goto exit;
 
   while (!self->done) {
@@ -187,10 +196,6 @@ int csv_index_file(csv_index_file_t *self, char *file_path) {
   }
 
 exit:
-  if (self->file_r)
-    fclose(self->file_r);
-  if (self->file_w)
-    fclose(self->file_w);
   return err;
 }
 
@@ -199,13 +204,21 @@ exit:
 #endif
 
 int main(int argc, char **argv) {
+  csv_index_file_t xself = {0};
+  csv_index_file_t *self = &xself;
   char i64buf[65] = {0};
+
+  if (strcmp(argv[1], "debug") == 0) {
+    self->debug = 1;
+    ++argv;
+  }
   if (strcmp(argv[1], "index") == 0) {
-    csv_index_file_t xself = {0};
-    csv_index_file_t *self = &xself;
     csv_index_file(self, argv[2]);
     j_uint64_to_hex_shortest(self->total, i64buf);
     printf("total: %s\n", i64buf);
   }
+
+  csv_index_cleanup(self);
+
   return 0;
 }

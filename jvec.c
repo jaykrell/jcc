@@ -7,6 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+void jvec_cleanup(jvec_generic *v) {
+  free(v->data);
+  /*JMEMSET0_POINTER(v);*/
+  v->data = 0;
+}
+
 int jvec_resize(jvec_generic *v, ptrdiff_t new_size, ptrdiff_t element_size) {
   ptrdiff_t size = v->size;
   ptrdiff_t capacity = v->capacity;
