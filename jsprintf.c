@@ -4,6 +4,7 @@
  * Use these functions to double buffer to a char[] and then printf %s.
  */
 
+#include "jswap.h"
 #include "juint.h"
 #include <assert.h>
 #include <limits.h>
@@ -30,9 +31,7 @@ char *j_revstr(char *a, size_t len) {
   len -= 1;
   i = 0;
   while (i < len) {
-    char temp = a[i];
-    a[i] = a[len];
-    a[len] = temp;
+    JSWAP(char, a[i], a[len]);
     i += 1;
     len -= 1;
   }
