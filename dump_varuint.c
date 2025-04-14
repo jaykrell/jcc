@@ -21,6 +21,7 @@ static int read_byte(void *v) {
 int main(int argc, char **argv) {
   char i64buf[65] = {0};
   FILE *file = 0;
+  int64_t total = 0;
   unsigned count = 0;
   jvarint_decode_t decode = {0};
   if (!argv[1]) {
@@ -38,13 +39,19 @@ int main(int argc, char **argv) {
   decode.read_byte_context = file;
   while (1) {
     uint64_t i = jvarint_decode_unsigned(&decode);
-    if (decode.err)
+    if (decode.err) {
+      // j_uint64_to_hex_shortest(total, i64buf);
+      // printf("dump_variant: error: %d after %s\n", decode.err, i64buf);
       break;
+    }
     j_uint64_to_hex_shortest(i, i64buf);
     printf("%s ", i64buf);
     if (++count > 3)
       count &= printf("\n");
+    ++total;
   }
   printf("\n");
+  j_uint64_to_hex_shortest(total, i64buf);
+  printf("total: %s\n", i64buf);
   return 0;
 }

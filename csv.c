@@ -10,6 +10,7 @@
 #include "jmax.h"
 #include "jmem.h"
 #include "jmisc.h"
+#include "jsprintf.h"
 #include "jvarint.h"
 #include "jvec.h"
 #include <stdio.h>
@@ -19,8 +20,8 @@
 #define __cdecl
 #endif
 
-long csv_debug = 1;
-long csv_line;
+static long csv_debug = 1;
+static long csv_line;
 
 typedef JVEC(char) jvec_char_t;
 
@@ -39,6 +40,7 @@ typedef struct csv_index_file_t {
   char *file_path;
   jbool done;
   int64_t field_size;
+  int64_t total;
 } csv_index_file_t;
 
 static int get_char(csv_index_file_t *self)
@@ -77,12 +79,14 @@ TODO: What is a field length really, given quoting? */
   if (encode.encoded_size !=
       fwrite(encode.buffer, 1, encode.encoded_size, self->file_w))
     goto exit;
+  ++(self->total);
   /* Write size of each field. */
   for (i = 0; i < self->line.fields.size; ++i) {
     jvarint_encode_unsigned(self->line.fields.data[i], &encode);
     if (encode.encoded_size !=
         fwrite(encode.buffer, 1, encode.encoded_size, self->file_w))
       goto exit;
+    ++(self->total);
   }
 
 exit:
@@ -160,9 +164,7 @@ commas and quotes do contribute to field size. */
   }
 }
 
-int csv_index_file(char *file_path) {
-  csv_index_file_t xself = {0};
-  csv_index_file_t *self = &xself;
+int csv_index_file(csv_index_file_t *self, char *file_path) {
   jvec_char_t index_file_path = {0};
   int err = 0;
 
@@ -197,8 +199,13 @@ exit:
 #endif
 
 int main(int argc, char **argv) {
+  char i64buf[65] = {0};
   if (strcmp(argv[1], "index") == 0) {
-    csv_index_file(argv[2]);
+    csv_index_file_t xself = {0};
+    csv_index_file_t *self = &xself;
+    csv_index_file(self, argv[2]);
+    j_uint64_to_hex_shortest(self->total, i64buf);
+    printf("total: %s\n", i64buf);
   }
   return 0;
 }
