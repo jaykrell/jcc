@@ -122,7 +122,7 @@ commas and quotes do contribute to field size. */
       goto handle_end_of_field;
 
     /* Fields can be quoted. Quotes are at the start of field. */
-    if (ch == '"' && self->field_size == 1) {
+    if (ch == '"' && self->field_size == 0) {
       quoted = jtrue;
       continue;
     } else if (quoted && ch != '"') {
