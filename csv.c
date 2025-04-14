@@ -3,7 +3,7 @@
 #define NOMINMAX 1
 #define _CRT_SECURE_NO_WARNINGS 1
 #if _MSC_VER
-#pragma warning(disable : 4018) // unsigned/signed mismatch
+#pragma warning(disable : 4018) /* unsigned/signed mismatch */
 #endif
 #include "csv.h"
 #include "jbool.h"
