@@ -7,6 +7,7 @@
 #include "jvarint.h"
 #include <assert.h>
 #include <errno.h>
+#include "jsprintf.h"
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
@@ -18,6 +19,7 @@ static int read_byte(void *v) {
 }
 
 int main(int argc, char **argv) {
+  char i64buf[65]={0};
   FILE *file = 0;
   unsigned count = 0;
   jvarint_decode_t decode = {0};
@@ -38,7 +40,8 @@ int main(int argc, char **argv) {
     uint64_t i = jvarint_decode_unsigned(&decode);
     if (decode.err)
       break;
-    printf("%" JINT64_PRI "x ", i);
+    j_uint64_to_hex_shortest(i, i64buf);
+    printf("%s ", i64buf);
     if (++count > 3)
       count &= printf("\n");
   }

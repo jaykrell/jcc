@@ -11,7 +11,9 @@
 extern "C" {
 #endif
 
+/*useful?
 void j_append_char(char c, char **p, char *limit);
+*/
 
 char *j_revstr(char *a, size_t len);
 
