@@ -19,7 +19,7 @@
 #define __cdecl
 #endif
 
-long csv_debug=1;
+long csv_debug = 1;
 long csv_line;
 
 typedef JVEC(char) jvec_char_t;
@@ -69,7 +69,8 @@ TODO: What is a field length really, given quoting? */
   int64_t i;
   encode.size = 64;
 
-  printf("csv: line %d has %d fields\n", (long)++csv_line, (long)self->line.fields.size);
+  printf("csv: line %d has %d fields\n", (long)++csv_line,
+         (long)self->line.fields.size);
 
   /* Write how many fields line has. */
   jvarint_encode_unsigned(self->line.fields.size, &encode);
@@ -93,7 +94,7 @@ static int csv_index_file_read_line(csv_index_file_t *self)
 This handles quoting. For ease of later skipping fields,
 commas and quotes do contribute to field size. */
 {
-  int any=0;
+  int any = 0;
   int err = 0;
 
   /* Initially we are not within quotes. */
@@ -122,7 +123,7 @@ commas and quotes do contribute to field size. */
     if (ch == '\n')
       goto handle_end_of_field;
 
-    any=1;
+    any = 1; /* completely empty lines have zero fields */
 
     /* Fields can be quoted. Quotes are at the start of field. */
     if (ch == '"' && self->field_size == 0) {
@@ -149,8 +150,7 @@ commas and quotes do contribute to field size. */
     case EOF:
     case ',':
     handle_end_of_field:
-      if (any)
-      if ((err = JVEC_PUSH_BACK(&self->line.fields, &self->field_size)))
+      if (any && (err = JVEC_PUSH_BACK(&self->line.fields, &self->field_size)))
         return err;
       self->field_size = 0;
       if (ch != ',')

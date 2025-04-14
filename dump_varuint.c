@@ -4,10 +4,10 @@
 #pragma warning(disable : 4100) /* unused parameter */
 #endif
 #include "jint64.h"
+#include "jsprintf.h"
 #include "jvarint.h"
 #include <assert.h>
 #include <errno.h>
-#include "jsprintf.h"
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
@@ -19,7 +19,7 @@ static int read_byte(void *v) {
 }
 
 int main(int argc, char **argv) {
-  char i64buf[65]={0};
+  char i64buf[65] = {0};
   FILE *file = 0;
   unsigned count = 0;
   jvarint_decode_t decode = {0};
