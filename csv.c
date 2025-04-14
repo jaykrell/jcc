@@ -93,6 +93,7 @@ static int csv_index_file_read_line(csv_index_file_t *self)
 This handles quoting. For ease of later skipping fields,
 commas and quotes do contribute to field size. */
 {
+  int any=0;
   int err = 0;
 
   /* Initially we are not within quotes. */
@@ -113,13 +114,15 @@ commas and quotes do contribute to field size. */
     /* End file means end of reading this line, and the file, with possibly
      * still this line to write. */
     if (ch == EOF)
-      return 0;
+      goto handle_end_of_field;
 
     /* There is at least an empty line, so processing should continue. */
     self->done = jfalse;
 
     if (ch == '\n')
       goto handle_end_of_field;
+
+    any=1;
 
     /* Fields can be quoted. Quotes are at the start of field. */
     if (ch == '"' && self->field_size == 0) {
@@ -146,6 +149,7 @@ commas and quotes do contribute to field size. */
     case EOF:
     case ',':
     handle_end_of_field:
+      if (any)
       if ((err = JVEC_PUSH_BACK(&self->line.fields, &self->field_size)))
         return err;
       self->field_size = 0;
