@@ -226,7 +226,7 @@ csv_random_write$(EXE): $(OBJS) csv_random_write.c
 clean:
 	$(RM_F) *.h.gch
 	$(RM_F) 1 2 genprimes 1.exe 2.exe genprimes.exe
-	$(RM_F) csv1 csv1.exe test_os test_vec1
+	$(RM_F) csv1 csv1.exe test_os test_vec1 dump_varuint dump_varuint.exe a.out
 	$(RM_F) csv csv_random_write csv.exe csv_random_write.exe
 	$(RM_F) camd64.$(O) carm64.$(O) ccheck.$(O) ccpe.$(O) celf.$(O) clex.$(O)
 	$(RM_F) cmacho.$(O) cmain.$(O) config.cpp config.mk config.$(O)
