@@ -19,6 +19,9 @@
 #define __cdecl
 #endif
 
+long csv_debug=1;
+long csv_line;
+
 typedef JVEC(char) jvec_char_t;
 
 /* temporary in memory form; file form is varint64 */
@@ -56,6 +59,7 @@ static int get_char(csv_index_file_t *self)
   return '\n';
 }
 
+/* TODO: rename "self" to "csv" or "csv_index" or "indexer" */
 static int csv_index_file_write_line(csv_index_file_t *self)
 /* Write a line, as a count of fields and field lengths.
 TODO: What is a field length really, given quoting? */
@@ -64,6 +68,8 @@ TODO: What is a field length really, given quoting? */
   int err = 0;
   int64_t i;
   encode.size = 64;
+
+  printf("csv: line %d has %d fields\n", (long)++csv_line, (long)self->line.fields.size);
 
   /* Write how many fields line has. */
   jvarint_encode_unsigned(self->line.fields.size, &encode);
@@ -113,7 +119,7 @@ commas and quotes do contribute to field size. */
     self->done = jfalse;
 
     if (ch == '\n')
-      return 0;
+      goto handle_end_of_field;
 
     /* Fields can be quoted. Quotes are at the start of field. */
     if (ch == '"' && self->field_size == 1) {

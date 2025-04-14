@@ -45,5 +45,6 @@ int main(int argc, char **argv) {
     if (++count > 3)
       count &= printf("\n");
   }
+  printf("\n");
   return 0;
 }

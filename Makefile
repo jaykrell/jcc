@@ -58,6 +58,7 @@ OBJS=\
  jlist.$O \
  jmem.$O \
  jos.$O \
+ jsprintf.$O \
  jstr.$O \
  jthread.$O \
  jvarint.$O \
@@ -164,7 +165,9 @@ all: test_vec1$(EXE) test_vec$(EXE) \
 	test_os$(EXE) \
 	test_thread$(EXE) \
 	csv1$(EXE) \
+	csv$(EXE) \
 	csv_random_write$(EXE) \
+	dump_varuint$(EXE) \
 
 # TODO clang cross
 #
@@ -207,6 +210,14 @@ test_varint$(EXE): $(OBJS) test_varint.c
 csv1$(EXE): $(OBJS) csv1.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
 	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) csv1.c $(OBJS) $(CLINK_FLAGS)
+
+csv$(EXE): $(OBJS) csv.c
+	@-$(RM_F) $(@R).pdb $(@R).ilk
+	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) csv.c $(OBJS) $(CLINK_FLAGS)
+
+dump_varuint$(EXE): $(OBJS) dump_varuint.c
+	@-$(RM_F) $(@R).pdb $(@R).ilk
+	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) dump_varuint.c $(OBJS) $(CLINK_FLAGS)
 
 csv_random_write$(EXE): $(OBJS) csv_random_write.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
