@@ -14,7 +14,7 @@ extern "C" {
 
 typedef struct jvarint_encode_t {
   size_t size; /* bits */
-  size_t bytes_required;
+  size_t encoded_size;
   uint8_t buffer[16];
 } jvarint_encode_t;
 
@@ -29,9 +29,9 @@ typedef struct jvarint_decode_t {
   int err;
 
   /* private */
+  int pad_unused;
   int byte;
   unsigned shift;
-  int pad;
   size_t index;
 } jvarint_decode_t;
 

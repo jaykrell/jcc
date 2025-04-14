@@ -17,6 +17,12 @@
  *  - unsigned numbers <  0x0100000000000000 are eight bytes
  *  - unsigned numbers <  0x8000000000000000 are nine bytes
  *  - unsigned numbers >= 0x8000000000000000 are ten bytes
+ *
+ * Note that you can write a signed number as unsigned.
+ * The difference is compactness. i.e. small values like -1
+ * written as unsigned will take a full 10 bytes, but less
+ * as signed, like just one byte.
+ *
  */
 
 #include "jvarint.h"
@@ -35,7 +41,7 @@ void jvarint_encode_signed(int64_t value, jvarint_encode_t *args)
   /* as the value is right shifted 7, be sure to sign fill the upper 7 bits, */
   int64_t const sign_extend = (negative ? (~zero << (size - 7)) : 0);
 
-  args->bytes_required = 0;
+  args->encoded_size = 0;
 
   while (more) {
     uint8_t byte = (0x7f & value);
@@ -45,18 +51,20 @@ void jvarint_encode_signed(int64_t value, jvarint_encode_t *args)
     if ((value == 0 && !(byte & jvarint_sign_bit)) ||
         (value == -1 && (byte & jvarint_sign_bit)))
       more = 0;
-    args->buffer[args->bytes_required++] = (byte | more);
+    args->buffer[args->encoded_size++] = (byte | more);
   }
 }
 
 void jvarint_encode_unsigned(uint64_t value, jvarint_encode_t *args) {
   uint8_t more = 0x80;
 
+  args->encoded_size = 0;
+
   while (more) {
     uint8_t byte = (0x7f & value);
     value >>= 7;
     more = (value ? more : 0);
-    args->buffer[args->bytes_required++] = (byte | more);
+    args->buffer[args->encoded_size++] = (byte | more);
   }
 }
 
