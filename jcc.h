@@ -6,7 +6,7 @@
 #include "jmap.h"
 #include "jstr.h"
 #include "jtype.h"
-#include "jvec1.h"
+#include "jvec.h"
 #include <stdint.h>
 
 /*struct jmap { };*/
@@ -257,5 +257,12 @@ cToken cgetNextToken(cSourceFile *file);
 /* ccheck */
 
 /* ccode */
+
+struct jcc_t;
+typedef struct jcc_t jcc_t;
+
+struct jcc_t
+{
+};
 
 #endif
