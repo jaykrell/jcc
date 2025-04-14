@@ -206,7 +206,7 @@ exit:
 int main(int argc, char **argv) {
   csv_index_file_t xself = {0};
   csv_index_file_t *self = &xself;
-  char i64buf[65] = {0};
+  char i64buf[99] = {0};
 
   if (strcmp(argv[1], "debug") == 0) {
     self->debug = 1;
