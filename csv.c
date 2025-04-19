@@ -111,11 +111,7 @@ commas and quotes do contribute to field size. */
       goto handle_end_of_field;
 
     /* There is at least an empty line, so processing should continue. */
-    self->done = jfalse;
-
-    if (ch == '\n')
-      goto handle_end_of_field;
-
+    self->done = FALSE;
     any = 1; /* completely empty lines have zero fields */
 
     /* Fields can be quoted. Quotes are at the start of field. */
@@ -123,12 +119,14 @@ commas and quotes do contribute to field size. */
       quoted = jtrue;
       continue;
     } else if (quoted && ch != '"') {
+      /* Anything while quoted, except quote and EOF, means just keep reading the field. */
       continue;
     } else if (quoted && ch == '"') {
       /* When quoting, quote means end of field or a quoted quote. */
       ch = get_char(self);
       if (ch == '"') {
-        quoted = jtrue;
+        /* TODO: The next character must be a comma or newline or EOF.
+         * Verify this when we have more than one character of unget. */
         goto handle_end_of_field;
       }
       /* Ending quote terminates field. */
@@ -143,6 +141,7 @@ commas and quotes do contribute to field size. */
     case EOF:
     case ',':
     handle_end_of_field:
+      quoted = 0;
       if (any && (err = JVEC_PUSH_BACK(&self->line.fields, &self->field_size)))
         return err;
       self->field_size = 0;
