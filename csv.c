@@ -1,26 +1,14 @@
 /* comma separated value text file handling */
 
-#define NOMINMAX 1
-#define _CRT_SECURE_NO_WARNINGS 1
-#if _MSC_VER
-#pragma warning(disable : 4018) /* unsigned/signed mismatch */
-#endif
 #include "csv.h"
 #include "jbool.h"
+#include "jcommon.h"
 #include "jmax.h"
 #include "jmem.h"
 #include "jmisc.h"
 #include "jsprintf.h"
 #include "jvarint.h"
 #include "jvec.h"
-#include <stdio.h>
-#include <string.h>
-
-#if !_MSC_VER && !defined(__cdecl)
-#define __cdecl
-#endif
-
-typedef JVEC(char) jvec_char_t;
 
 /* temporary in memory form; file form is varint64 */
 typedef JVEC(int64_t) jvec_field_t;

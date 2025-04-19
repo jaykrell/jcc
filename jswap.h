@@ -1,4 +1,4 @@
-#ifndef JSWAP_H
+#if !JSWAP_H
 #define JSWAP_H 1
 
 #define JSWAP(type, a, b)                                                      \

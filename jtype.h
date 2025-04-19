@@ -1,5 +1,5 @@
-#ifndef JTYPE_H
-#define JTYPE_H
+#if !JTYPE_H
+#define JTYPE_H 1
 
 #include "jbase.h"
 #include "jerr.h"

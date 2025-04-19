@@ -1,4 +1,4 @@
-#ifndef JFILE_H
+#if !JFILE_H
 #define JFILE_H 1
 
 #include <stddef.h>

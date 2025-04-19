@@ -1,4 +1,4 @@
-#ifndef JSTDIO_H
+#if !JSTDIO_H
 #define JSTDIO_H 1
 
 #include <stdio.h>

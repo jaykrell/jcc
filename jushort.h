@@ -1,6 +1,6 @@
-#ifndef JUSHORT_H
+#if !JUSHORT_H
 #define JUSHORT_H 1
 
-typedef unsigned short jushort;
+typedef unsigned short jushort, USHORT;
 
 #endif

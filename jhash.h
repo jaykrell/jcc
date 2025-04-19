@@ -5,7 +5,7 @@
  * Collisions are doubly linked list (jlist_t).
  * Full hash code is remembered for quick comparison.
  */
-#ifndef JHASH_H
+#if !JHASH_H
 #define JHASH_H 1
 
 #include "jhashcode.h"

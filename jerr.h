@@ -1,4 +1,4 @@
-#ifndef JERR_H
+#if !JERR_H
 #define JERR_H 1
 
 #if 0

@@ -1,4 +1,4 @@
-#ifndef JPECOFF_H
+#if !JPECOFF_H
 #define JPECOFF_H 1
 
 /*

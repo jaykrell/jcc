@@ -1,4 +1,4 @@
-#ifndef JLIST_H
+#if !JLIST_H
 #define JLIST_H 1
 
 /* Intrusive circular doubly linked lists.

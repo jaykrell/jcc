@@ -4,7 +4,7 @@
  * MEM_ZERO (Win32 ZeroMemory)
  */
 
-#ifndef JMEM_H
+#if !JMEM_H
 #define JMEM_H 1
 
 #include <stddef.h>

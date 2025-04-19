@@ -1,6 +1,6 @@
 /* red black (balanced) tree */
 
-#ifndef JRBTREE_H
+#if !JRBTREE_H
 #define JRBTREE_H 1
 
 #include "jbase.h"

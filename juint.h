@@ -1,4 +1,4 @@
-#ifndef JUINT_H
+#if !JUINT_H
 #define JUINT_H 1
 
 typedef unsigned juint, UINT, uint;

@@ -1,6 +1,6 @@
 /* comma separated value text file handling */
 
-#ifndef CVS1_H
+#if !CVS1_H
 #define CVS1_H 1
 
 #if _MSC_VER

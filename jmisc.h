@@ -1,6 +1,6 @@
 /* Jay miscellanous TODO: reorganize */
 
-#ifndef JMISC_H
+#if !JMISC_H
 #define JMISC_H 1
 
 #define J_COUNT(x) (sizeof(x) / sizeof((x)[0]))

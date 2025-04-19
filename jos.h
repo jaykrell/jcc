@@ -2,7 +2,7 @@
  * Open a file, get its size, etc.
  * Implemented for Win32 and Posix.
  * Threads are in jthread.h */
-#ifndef JOS_H
+#if !JOS_H
 #define JOS_H 1
 
 #define _GNU_SOURCE 1

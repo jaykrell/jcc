@@ -1,4 +1,4 @@
-#ifndef JBASE_H
+#if !JBASE_H
 #define JBASE_H 1
 
 #include "jbool.h"

@@ -1,4 +1,4 @@
-#ifndef JMALLOC_H
+#if !JMALLOC_H
 #define JMALLOC_H 1
 
 #include <stddef.h>

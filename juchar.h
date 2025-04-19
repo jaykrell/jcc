@@ -1,6 +1,6 @@
-#ifndef JUCHAR_H
+#if !JUCHAR_H
 #define JUCHAR_H 1
 
-typedef unsigned char juchar;
+typedef unsigned char juchar, UCHAR;
 
 #endif

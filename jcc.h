@@ -1,4 +1,4 @@
-#ifndef JCC_H
+#if !JCC_H
 #define JCC_H 1
 
 /* #include "jbool.h" */
@@ -261,8 +261,6 @@ cToken cgetNextToken(cSourceFile *file);
 struct jcc_t;
 typedef struct jcc_t jcc_t;
 
-struct jcc_t
-{
-};
+struct jcc_t {};
 
 #endif

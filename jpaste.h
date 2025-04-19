@@ -1,4 +1,4 @@
-#ifndef JPASTE_H
+#if !JPASTE_H
 #define JPASTE_H 1
 
 #define JPASTEx(a, b) a##b

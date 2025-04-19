@@ -1,7 +1,7 @@
 /* It remains to be seen if "string" is useful, vs. vector */
 /* use instead an array of chars, maybe */
 
-#ifndef JSTR_H
+#if !JSTR_H
 #define JSTR_H 1
 
 #include "jbase.h"

@@ -1,4 +1,4 @@
-#ifndef JMAPH_H
+#if !JMAPH_H
 #define JMAPH_H 1
 
 #include "jbase.h"

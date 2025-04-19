@@ -19,8 +19,6 @@
 #define __cdecl
 #endif
 
-typedef JVEC(char) jvec_char_t;
-
 int64_t round_up(int64_t a, int64_t b) {
   int64_t mod = (a % b);
   return (mod ? (a + b - mod) : a);

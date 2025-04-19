@@ -1,4 +1,4 @@
-#ifndef READ_ENTIRE_FILE_H
+#if !READ_ENTIRE_FILE_H
 #define READ_ENTIRE_FILE_H 1
 
 #include "jmalloc.h"

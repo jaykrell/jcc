@@ -1,9 +1,10 @@
 /* jvec is like std::vector
  * jvec1 is earlier version, probably not to use. */
-#ifndef JVEC_H
+#if !JVEC_H
 #define JVEC_H 1
 
 #include "jssize.h"
+#include <stdint.h>
 
 #if __cplusplus
 extern "C" {
@@ -43,6 +44,9 @@ int jvec_insert(jvec_generic *, void const *before, void const *begin,
               sizeof((v)->data[0]))
 #define JVEC_APPEND(v, begin, count) JVEC_INSERT(v, JVEC_END(v), begin, count)
 #define JVEC_RESERVE(v)
+
+typedef JVEC(char) jvec_char_t;
+typedef JVEC(uint64_t) jvec_uint64_t;
 
 #if __cplusplus
 }

@@ -1,4 +1,4 @@
-#ifndef JSSIZE_H
+#if !JSSIZE_H
 #define JSSIZE_H 1
 
 #include <stddef.h>

@@ -1,4 +1,4 @@
-#ifndef JVARINT_H
+#if !JVARINT_H
 #define JVARINT_H 1
 
 #include <stddef.h>

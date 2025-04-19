@@ -1,4 +1,4 @@
-#ifndef JSIZE_H
+#if !JSIZE_H
 #define JSIZE_H 1
 
 #if _WIN64 || VMS || defined(__int64)
