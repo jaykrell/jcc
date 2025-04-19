@@ -27,8 +27,10 @@ typedef struct csv_index_file_t {
   int64_t field_size;
   int64_t total;
   int64_t debug_line;
-  jbool done;
-  jbool debug;
+  int     done;
+  int     debug;
+  int     unget_size;
+  int     unget_value[4];
 } csv_index_file_t;
 
 static int get_char(csv_index_file_t *self)
@@ -91,13 +93,13 @@ commas and quotes do contribute to field size. */
   int err = 0;
 
   /* Initially we are not within quotes. */
-  jbool quoted = jfalse;
+  jbool quoted = FALSE;
 
   /* An initially size=0 field. */
   self->field_size = 0;
 
   /* Assume nothing is read and reading is all done. */
-  self->done = jtrue;
+  self->done = TRUE;
 
   /* Reset number of fields in line. */
   self->line.fields.size = 0;
@@ -116,7 +118,7 @@ commas and quotes do contribute to field size. */
 
     /* Fields can be quoted. Quotes are at the start of field. */
     if (ch == '"' && self->field_size == 0) {
-      quoted = jtrue;
+      quoted = TRUE;
       continue;
     } else if (quoted && ch != '"') {
       /* Anything while quoted, except quote and EOF, means just keep reading the field. */
