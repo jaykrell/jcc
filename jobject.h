@@ -1,7 +1,6 @@
 #if !JOBJECT_H
 #define JOBJECT_H
 
-#include "jbase.h"
 #include "jtype.h"
 
 struct JObject;

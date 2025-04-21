@@ -1,6 +1,5 @@
 /* jvec is like std::vector */
 
-#include "jbase.h"
 #include "jerr.h"
 #include "jpaste.h"
 #include "jssize.h"

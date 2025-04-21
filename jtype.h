@@ -1,7 +1,7 @@
 #if !JTYPE_H
 #define JTYPE_H 1
 
-#include "jbase.h"
+#include "jbool.h"
 #include "jerr.h"
 #include "jssize.h"
 

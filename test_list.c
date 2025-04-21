@@ -3,7 +3,7 @@
 #if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
 #endif
-#include "jbase_of.h"
+#include "jbase.h"
 #include "jlist.h"
 #include "jmem.h"
 #include <assert.h>
@@ -22,7 +22,7 @@ uint64_t list_enumerate_test1(void *context, void *element) {
 
 uint64_t list_enumerate_test2(void *context, void *element) {
   printf("list_enumerate_test2: %d\n",
-         (int)JBASE_OF(jlist_int_t, list, element)->value);
+         (int)JBASE(jlist_int_t, list, element)->value);
   return 1;
 }
 
@@ -55,19 +55,19 @@ int main(void) {
     assert(3 == jlist_size(&l1));
     printf("%d\n", (int)jlist_size(&l1));
 
-    assert(1 == JBASE_OF(jlist_int_t, list, l1.flink)->value);
-    assert(2 == JBASE_OF(jlist_int_t, list, l1.flink->flink)->value);
-    assert(3 == JBASE_OF(jlist_int_t, list, l1.flink->flink->flink)->value);
+    assert(1 == JBASE(jlist_int_t, list, l1.flink)->value);
+    assert(2 == JBASE(jlist_int_t, list, l1.flink->flink)->value);
+    assert(3 == JBASE(jlist_int_t, list, l1.flink->flink->flink)->value);
 
-    assert(3 == JBASE_OF(jlist_int_t, list, l1.blink)->value);
-    assert(2 == JBASE_OF(jlist_int_t, list, l1.blink->blink)->value);
-    assert(1 == JBASE_OF(jlist_int_t, list, l1.blink->blink->blink)->value);
+    assert(3 == JBASE(jlist_int_t, list, l1.blink)->value);
+    assert(2 == JBASE(jlist_int_t, list, l1.blink->blink)->value);
+    assert(1 == JBASE(jlist_int_t, list, l1.blink->blink->blink)->value);
 
     jlist_remove_first(&l1);
     assert(2 == jlist_size(&l1));
     printf("%d\n", (int)jlist_size(&l1));
-    printf("%d\n", (int)JBASE_OF(jlist_int_t, list, l1.flink)->value);
-    assert(2 == JBASE_OF(jlist_int_t, list, l1.flink)->value);
+    printf("%d\n", (int)JBASE(jlist_int_t, list, l1.flink)->value);
+    assert(2 == JBASE(jlist_int_t, list, l1.flink)->value);
   }
 
   {
@@ -89,19 +89,19 @@ int main(void) {
     assert(3 == jlist_size(&l1));
     printf("%d\n", (int)jlist_size(&l1));
 
-    assert(4 == JBASE_OF(jlist_int_t, list, l1.flink)->value);
-    assert(3 == JBASE_OF(jlist_int_t, list, l1.flink->flink)->value);
-    assert(2 == JBASE_OF(jlist_int_t, list, l1.flink->flink->flink)->value);
+    assert(4 == JBASE(jlist_int_t, list, l1.flink)->value);
+    assert(3 == JBASE(jlist_int_t, list, l1.flink->flink)->value);
+    assert(2 == JBASE(jlist_int_t, list, l1.flink->flink->flink)->value);
 
-    assert(2 == JBASE_OF(jlist_int_t, list, l1.blink)->value);
-    assert(3 == JBASE_OF(jlist_int_t, list, l1.blink->blink)->value);
-    assert(4 == JBASE_OF(jlist_int_t, list, l1.blink->blink->blink)->value);
+    assert(2 == JBASE(jlist_int_t, list, l1.blink)->value);
+    assert(3 == JBASE(jlist_int_t, list, l1.blink->blink)->value);
+    assert(4 == JBASE(jlist_int_t, list, l1.blink->blink->blink)->value);
 
     jlist_remove_first(&l1);
     assert(2 == jlist_size(&l1));
     printf("%d\n", (int)jlist_size(&l1));
-    printf("%d\n", (int)JBASE_OF(jlist_int_t, list, l1.flink)->value);
-    assert(3 == JBASE_OF(jlist_int_t, list, l1.flink)->value);
+    printf("%d\n", (int)JBASE(jlist_int_t, list, l1.flink)->value);
+    assert(3 == JBASE(jlist_int_t, list, l1.flink)->value);
   }
   return 0;
 }

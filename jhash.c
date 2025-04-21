@@ -6,7 +6,7 @@
  * Full hash code is remembered for quick comparison.
  */
 #include "jhash.h"
-#include "jbase_of.h"
+#include "jbase.h"
 #include "jcount.h"
 #include "jerr.h"
 #include "jlist.h"

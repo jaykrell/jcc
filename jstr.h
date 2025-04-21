@@ -4,7 +4,6 @@
 #if !JSTR_H
 #define JSTR_H 1
 
-#include "jbase.h"
 #include "jtype.h"
 
 /* jstr is a jvec(char) with terminal nul */
