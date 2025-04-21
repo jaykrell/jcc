@@ -1,5 +1,7 @@
 /* comma separated value text file handling */
 
+#if 0 /* work in progress */
+
 #include "csv.h"
 #include "jbool.h"
 #include "jcommon.h"
@@ -9,6 +11,7 @@
 #include "jsprintf.h"
 #include "jvarint.h"
 #include "jvec.h"
+#include "jstdio_file.h"
 
 /* temporary in memory form; file form is varint64 */
 typedef JVEC(int64_t) jvec_field_t;
@@ -19,8 +22,8 @@ typedef struct line_t {
 } line_t;
 
 typedef struct csv_index_file_t {
-  FILE *file_r;
-  FILE *file_w;
+  jfile_t file_r;
+  jfile_t file_w;
   line_t line;
   jvec_char_t index_file_path;
   char *file_path;
@@ -31,24 +34,34 @@ typedef struct csv_index_file_t {
   int     debug;
   int     unget_size;
   int     unget_value[4];
+
+  jstdio_file_t stdio_file_r;
+  jstdio_file_t stdio_file_w;
+
 } csv_index_file_t;
 
-static int get_char(csv_index_file_t *self)
+static int get_char(csv_index_file_t *self, char *ch)
 /* Get a character. This handles \r\n sequences returning them as \n.
    And \r is returned as \n.
    field size is tracked here. */
 {
-  int ch = fgetc(self->file_r);
-  self->field_size += (ch != EOF);
-  if (ch != '\r')
-    return ch;
-  ch = fgetc(self->file_r);
-  if (ch != EOF && ch != '\n') {
-    ungetc(ch, self->file_r);
+  int actual=0;
+  int err=0;
+  *ch = 0;
+  if ((err = jfile_read(self->file_r, ch, 1, &actual)))
+    return err;
+  self->field_size += actual;
+  if (*ch != '\r')
+    return 0;
+
+  if ((err = jfile_read(self->file_r, ch, 1, &actual)))
+    return err;
+  if (actual && *ch != '\n') {
+    jfile_unget(self->file_r, *ch);
   } else {
-    self->field_size += 1;
+    self->field_size += actual;
   }
-  return '\n';
+  return 0;
 }
 
 /* TODO: rename "self" to "csv" or "csv_index" or "indexer" */
@@ -67,6 +80,7 @@ TODO: What is a field length really, given quoting? */
 
   /* Write how many fields line has. */
   jvarint_encode_unsigned(self->line.fields.size, &encode);
+/* WIP file writing via jfile_t */
   if (encode.encoded_size !=
       fwrite(encode.buffer, 1, encode.encoded_size, self->file_w))
     goto exit;
@@ -80,7 +94,7 @@ TODO: What is a field length really, given quoting? */
     ++(self->total);
   }
 
-exit:
+//exit:
   return err;
 }
 
@@ -105,11 +119,13 @@ commas and quotes do contribute to field size. */
   self->line.fields.size = 0;
 
   while (1) {
-    int ch = get_char(self);
+    char ch =0;
+    if ((err = get_char(self, &ch)))
+      return err;
 
     /* End file means end of reading this line, and the file, with possibly
      * still this line to write. */
-    if (ch == EOF)
+    if (err || self->file_r->eof)
       goto handle_end_of_field;
 
     /* There is at least an empty line, so processing should continue. */
@@ -125,14 +141,16 @@ commas and quotes do contribute to field size. */
       continue;
     } else if (quoted && ch == '"') {
       /* When quoting, quote means end of field or a quoted quote. */
-      ch = get_char(self);
+      ch = 0;
+      if ((err = get_char(self, &ch)))
+        return err;
       if (ch == '"') {
         /* TODO: The next character must be a comma or newline or EOF.
          * Verify this when we have more than one character of unget. */
         goto handle_end_of_field;
       }
       /* Ending quote terminates field. */
-      if (ch != EOF && ch != '\n' && ch != ',') {
+      if (!self->file_r_eof && ch != '\n' && ch != ',') {
         fprintf(stderr, "ERROR: non-terminated CVS quote is %s.\n",
                 self->file_path);
       }
@@ -156,34 +174,36 @@ commas and quotes do contribute to field size. */
 
 void csv_index_cleanup(csv_index_file_t *self) {
   JVEC_CLEANUP(&self->index_file_path);
-  if (self->file_r)
-    fclose(self->file_r);
-  if (self->file_w)
-    fclose(self->file_w);
+  jfile_close(self->file_r);
+  jfile_close(self->file_w);
   self->file_w = self->file_r = 0;
 }
 
 int csv_index_file(csv_index_file_t *self, char *file_path) {
   int err = 0;
-
-  self->file_path = file_path;
-  if ((err = JVEC_APPEND(&self->index_file_path, file_path, strlen(file_path))))
-    goto exit;
-  if ((err = JVEC_APPEND(&self->index_file_path, ".index", sizeof(".index"))))
-    goto exit;
-
-  if (!(self->file_r = fopen(file_path, "rb")))
-    goto exit;
-  if (!(self->file_w = fopen(self->index_file_path.data, "wb")))
-    goto exit;
-
   while (!self->done) {
     if ((err = csv_index_file_read_line(self)))
       goto exit;
     if (self->done || ((err = csv_index_file_write_line(self))))
       goto exit;
   }
+exit:
+  return err;
+}
 
+int csv_index_file_open(csv_index_file_t *self, char *file_path) {
+  int err = 0;
+  self->file_path = file_path;
+  if ((err = JVEC_APPEND(&self->index_file_path, file_path, strlen(file_path))))
+    goto exit;
+  if ((err = JVEC_APPEND(&self->index_file_path, ".index", sizeof(".index"))))
+    goto exit;
+  if ((err = jstdio_file_open(&self->stdio_file_r, file_path, "rb")))
+    goto exit;
+  if ((err = jstdio_file_open(&self->stdio_file_w, self->index_file_path.data, "wb")))
+    goto exit;
+  self->file_r = &self->stdio_file_r.base;
+  self->file_w = &self->stdio_file_w.base;
 exit:
   return err;
 }
@@ -196,18 +216,23 @@ int main(int argc, char **argv) {
   csv_index_file_t xself = {0};
   csv_index_file_t *self = &xself;
   char i64buf[256] = {0};
+  int err=0;
 
   if (strcmp(argv[1], "debug") == 0) {
     self->debug = 1;
     ++argv;
   }
   if (strcmp(argv[1], "index") == 0) {
+    if ((err = cvs_index_file_open(self, argv[2])))
+      goto exit;
     csv_index_file(self, argv[2]);
     j_uint64_to_hex_shortest(self->total, i64buf);
     printf("total: %s\n", i64buf);
   }
 
+exit:
   csv_index_cleanup(self);
-
-  return 0;
+  return err;
 }
+
+#endif
