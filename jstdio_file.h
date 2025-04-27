@@ -2,6 +2,7 @@
 #define JSTDIO_FILE_H
 
 #include <stdio.h>
+#include "jfile.h"
 
 typedef struct jstdio_file_t jstdio_file_t;
 

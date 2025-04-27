@@ -13,7 +13,7 @@ struct jfile_unget_t {
   int size;
 };
 
-int jfile_unget(jfile_t *file,char ch);
+int jfile_unget(jfile_t *file, char ch);
 
 int jfile_unget_init(jfile_unget_t *unget, jfile_t* next);
 

@@ -12,19 +12,23 @@
 /* TODO: Hide jfile_t to the providers and implementation? */
 typedef struct jfile_t jfile_t;
 
+#define JFILE_MODE_READ 1
+#define JFILE_MODE_WRITE 2
+
 typedef struct jbuffer_t {
   char* data;
   size_t size;
-  size_t offset;
-  uint64_t file_offset;
+  size_t capacity;
+/*  uint64_t file_offset;*/
 } jbuffer_t;
 
 struct jfile_t {
-  int eof;
   int err;
-  jbuffer_t unget_buffer;
-  jbuffer_t read_buffer;
-  jbuffer_t write_buffer;
+  char eof;
+  char buffer_mode;
+  char unget;
+  char unget_valid;
+  jbuffer_t buffer;
   int (*can_get_file_size)(jfile_t* file);
   int (*can_write)(jfile_t* file);
   int (*get_size)(jfile_t *file, uint64_t *size);

@@ -10,6 +10,7 @@ int jstdio_file_get_size(jfile_t *self, size_t *size)
 int jstdio_file_read(jfile_t *self, void *buf, size_t requested,
                         size_t *pactual)
 {
+    size_t actual;
     jstdio_file_t* file = JBASE(jstdio_file_t, base, self);
     *pactual = 0;
     if (!file->file)
@@ -21,12 +22,13 @@ int jstdio_file_read(jfile_t *self, void *buf, size_t requested,
     self->eof = feof(file->file);
     if (self->eof)
         return 0;
-    return -errno;
+    return ((self->err = errno));
 }
 
 int jstdio_file_read_at(jfile_t *self, size_t offset, void *buf, size_t requested,
             size_t *pactual)
 {
+    size_t actual;
     jstdio_file_t* file = JBASE(jstdio_file_t, base, self);
     *pactual = 0;
     if (!file->file)
@@ -38,7 +40,7 @@ int jstdio_file_read_at(jfile_t *self, size_t offset, void *buf, size_t requeste
     self->eof = feof(file->file);
     if (self->eof)
         return 0;
-    return -errno;
+    return ((self->err = errno));
 }
 
 int jstdio_file_write(jfile_t *self, size_t offset, void *buf, size_t requested,
