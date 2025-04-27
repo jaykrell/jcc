@@ -12,8 +12,19 @@
 /* TODO: Hide jfile_t to the providers and implementation? */
 typedef struct jfile_t jfile_t;
 
+typedef struct jbuffer_t {
+  char* data;
+  size_t size;
+  size_t offset;
+  uint64_t file_offset;
+} jbuffer_t;
+
 struct jfile_t {
   int eof;
+  int err;
+  jbuffer_t unget_buffer;
+  jbuffer_t read_buffer;
+  jbuffer_t write_buffer;
   int (*can_get_file_size)(jfile_t* file);
   int (*can_write)(jfile_t* file);
   int (*get_size)(jfile_t *file, uint64_t *size);
@@ -26,9 +37,9 @@ int (*read)(jfile_t *file,void *buf, size_t requested,
                size_t *actual);
 int (*write)(jfile_t *file, void *buf, size_t requested,
                 size_t *actual);
-int (*read_at)(jfile_t *file, size_t offset, void *buf, size_t requested,
+int (*read_at)(jfile_t *file, uint64_t file_offset, void *buf, size_t requested,
               size_t *actual);
-  int (*write_at)(jfile_t *file, size_t offset, void *buf, size_t requested,
+  int (*write_at)(jfile_t *file, uint64_t file_offset, void *buf, size_t requested,
                size_t *actual);
   int (*close)(jfile_t *file);
 };
