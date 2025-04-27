@@ -6,6 +6,6 @@
 #include <stddef.h>
 
 #define JBASE(container, member, value)                                        \
-((container *)(((char *)value) - offsetof(container, member)))
+  ((container *)(((char *)value) - offsetof(container, member)))
 
 #endif

@@ -9,9 +9,9 @@
 #include "jmem.h"
 #include "jmisc.h"
 #include "jsprintf.h"
+#include "jstdio_file.h"
 #include "jvarint.h"
 #include "jvec.h"
-#include "jstdio_file.h"
 
 /* temporary in memory form; file form is varint64 */
 typedef JVEC(int64_t) jvec_field_t;
