@@ -4,19 +4,12 @@
 
 int jstdio_file_get_size(jfile_t *self, size_t *size) { return -1; }
 
-int jstdio_file_read(jfile_t *self, void *buf, size_t requested,
-                     size_t *pactual) {
-  size_t actual;
+int
+jstdio_file_read(jfile_t *self, void *buf, size_t req, size_t *actual) {
   jstdio_file_t *file = JBASE(jstdio_file_t, base, self);
-  *pactual = 0;
-  if (!file->file)
-    return -EINVAL;
-  actual = fread(buf, 1, requested, file->file);
-  *pactual = actual;
-  if (actual == requested)
+  if ((*actual = fread(buf, 1, req, file->file)) == req)
     return 0;
-  self->eof = feof(file->file);
-  if (self->eof)
+  if ((self->eof = feof(file->file)))
     return 0;
   return ((self->err = errno));
 }

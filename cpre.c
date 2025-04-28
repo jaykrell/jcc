@@ -100,7 +100,12 @@ void cpre_unget_char(cpre_t *cpre, int ch)
   cpre_unget_unget(&cpre->unget_char, ch);
 }
 
-int cpre_translate_space(int ch) {
+int cpre_translate_space(int ch)
+/* Translate whitespace except carriage return and newline to canonical space. */
+/* No other layer should see these characters. */
+/* Therefore there is one horizontal whitespace and one vertical whitespace, ' ' and '\n'. */
+/* Vertical whitespace is handled elsewhere. */
+{
   switch (ch) {
   case '\f':
   case '\t':
@@ -111,7 +116,17 @@ int cpre_translate_space(int ch) {
 }
 
 int cpre_get_char(cpre_t *cpre)
-/* Get next character, handling newline/carriage_returns. */
+/* Get next character, handling newline/carriage_returns.
+ * Specifically: \n returns as \n
+ * \r\n returns as \n
+ * \r not followed by \n returns as \n
+ * Everything else is itself (which covers \n).
+ * Upon seeing \r we have to readahead 1.
+ * If the readahead is \n, it accepted.
+ * If the readhead is not \n, it is put back ("unget").
+ *
+ * As such, no other layer should have to handle or see \r.
+ */
 {
   int ch = 0;
   if (cpre_unget_get(&cpre->unget_char, &ch))
@@ -133,11 +148,11 @@ int cpre_get_line_cont(cpre_t *cpre)
 /* Get next character, handling line continuations. */
 {
   int (*get)(cpre_t *) = cpre_get_char;
-  int (*unget)(cpre_t *, int) = cpre_unget_unchar;
+  int (*unget)(cpre_t *, int) = cpre_unget_line_cont;
   int ch = 0;
-  if (cpre_unget_get(&cpre->unget_line_cont, &ch))
-    return ch;
   while (1) {
+    if (cpre_unget_get(&cpre->unget_line_cont, &ch))
+      return ch;
     int ch = get(cpre);
     if (ch != '\\')
       return ch;
@@ -178,14 +193,14 @@ int cpre_get_token() {
   int start_of_line = 1;
   int pound = 0;
   int ch = get(cpre);
+  assert(ch != '\v');
+  assert(ch != '\f');
+  assert(ch != '\t');
   switch (ch) {
   case '\n':
     start_of_line = 1;
     break;
-  case '\v':
-  case '\f':
-  case '\t':
-  case ' ':
+  case '\v': case '\f': case '\t': case ' ':
     break;
   case '#':
     pound = start_of_line;

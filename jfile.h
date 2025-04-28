@@ -48,10 +48,11 @@ struct jfile_t {
 
 /*int jfile_init(const char *, jfile_t **);*/
 int jfile_read(jfile_t *file, void *buf, size_t requested, size_t *actual);
+int jfile_write(jfile_t *file, void *buf, size_t requested, size_t *actual);
+int jfile_unget(jfile_t *file, char ch);
+int jfile_flush(jfile_t *file);
+int jfile_close(jfile_t* file);
 /*
-int jfile_unget(jfile_t *file,void *buf, size_t requested,
-               size_t *actual);
-
 int jfile_unget_init(jfile_unget_t *unget, jfile_t* file);
 */
 #endif

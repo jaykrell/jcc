@@ -3,7 +3,7 @@
 #include "jmin.h"
 #include <string.h>
 
-static int jfile_flush(jfile_t *f) {
+int jfile_flush(jfile_t *f) {
   if (!f->buffer_mode)
     return 0;
   return 0;
@@ -17,7 +17,7 @@ static int jfile_set_buffer_mode(jfile_t *f, int mode) {
   return 0;
 }
 
-int jfile_unget(jfile_t *file, int ch) {
+int jfile_unget(jfile_t *file, char ch) {
   int err = 0;
   if ((err = jfile_set_buffer_mode(file, JFILE_MODE_READ)))
     return err;
@@ -68,7 +68,19 @@ int jfile_read(jfile_t *f, void *buf, size_t requested, size_t *actual) {
   return f->read(f, buf, requested, actual);
 }
 
-void jfile_close(jfile_t *f) {
+int jfile_write(jfile_t *f, void *buf, size_t requested, size_t *actual) {
+  int err = 0;
+  *actual = 0;
+  if ((err = jfile_set_buffer_mode(f, JFILE_MODE_WRITE)))
+    return err;
+  if (requested < 1)
+    return 0;
+  /* TODO: Buffering */
+  return f->write(f, buf, requested, actual);
+}
+
+int jfile_close(jfile_t *f) {
   if (f && f->close)
-    f->close(f);
+    return f->close(f);
+  return 0;
 }
