@@ -46,7 +46,7 @@ typedef struct jhash_lookup_t {
   i.e. This is an interior pointer into the table.
   */
   void *data;
-  int64_t size; /* for insert */
+  size_t size; /* for insert */
 
   /* internal
   If key is not found, this helps insert.

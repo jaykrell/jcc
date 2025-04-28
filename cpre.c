@@ -2,8 +2,8 @@
 
 #include "jcommon.h"
 #include "jhash.h"
-
-#if 0 /* work in progress */
+#include "jcc.h"
+#include "jstring_constant.h"
 
 struct cpre_t;
 typedef struct cpre_t cpre_t;
@@ -11,9 +11,10 @@ typedef struct cpre_t cpre_t;
 typedef struct cmacro_t {
   jvec_char_t name;
   long nary; /* or <0 */
-  long ord;
+  size_t ord; /* index cpre_expanding_t.recurse_guard */
   /* TODO: tokenize body? */
   jvec_char_t body;
+  jbool undef;
 } cmacro_t;
 
 /* Every phase has a get and unget. unget requires a buffer.
@@ -27,9 +28,9 @@ typedef struct cpre_unget_t {
 
 typedef struct cpre_t {
   /* Every macro is assigned an ordinal, to index the bits
-   * of cpre_expanding_t.
+   * of cpre_expanding_t. That is macros.size.
+   * To assist this, undef will mark the entry without deleting it.
    */
-  long macro_ord;
   jhash_t macros;
   cfile_t cfile;
 
@@ -45,11 +46,11 @@ typedef struct cpre_t {
  * BAR may be subject to further expansion but FOO is not.
  */
 typedef struct cpre_expanding_t {
-  jvec_uint64_t recurse_guard;
+  jvec_uint64_t recurse_guard; /* really jvec_size_t */
   jvec_char_t chars;
 } cpre_expanding_t;
 
-void (*cpre_directive_handler)(cpre_t *);
+typedef int (*cpre_directive_handler)(cpre_t *);
 
 typedef struct cpre_directive_t {
   jstring_constant_t str;
@@ -66,13 +67,16 @@ int cpre_elif(cpre_t *cpre) { return 0; }
 
 int cpre_line(cpre_t *cpre) { return 0; }
 
-directive_t directives[] = {
-    {JSTRING_CONSTANT("if"), cpre_if},
-    {JSTRING_CONSTANT("endif"), cpre_endif},
-    {JSTRING_CONSTANT("elif"), cpre_elif},
-    {JSTRING_CONSTANT("else"), cpre_else},
-    {JSTRING_CONSTANT("define"), cpre_else},
-    {JSTRING_CONSTANT("undef"), cpre_undef},
+int cpre_undef(cpre_t *cpre) { return 0; }
+
+cpre_directive_t directives[] = {
+    {{JSTRING_CONSTANT("if")}, cpre_if},
+    {{JSTRING_CONSTANT("endif")}, cpre_endif},
+    {{JSTRING_CONSTANT("elif")}, cpre_elif},
+    {{JSTRING_CONSTANT("else")}, cpre_else},
+    {{JSTRING_CONSTANT("define")}, cpre_else},
+    {{JSTRING_CONSTANT("line")}, cpre_line},
+    {{JSTRING_CONSTANT("undef")}, cpre_undef},
 };
 
 int cpre_unget_get(cpre_unget_t *unget, int *value)
@@ -115,7 +119,7 @@ int cpre_translate_space(int ch)
   return ch;
 }
 
-int cpre_get_char(cpre_t *cpre)
+int cpre_get_char(cpre_t *cpre, int* ch)
 /* Get next character, handling newline/carriage_returns.
  * Specifically: \n returns as \n
  * \r\n returns as \n
@@ -128,71 +132,122 @@ int cpre_get_char(cpre_t *cpre)
  * As such, no other layer should have to handle or see \r.
  */
 {
-  int ch = 0;
-  if (cpre_unget_get(&cpre->unget_char, &ch))
-    return ch;
-  ch = fgetc(jcc->cfile);
-  if (ch != '\r')
-    return ch;
-  ch = fgetc(jcc->cfile);
-  if (ch != '\n')
-    cpre_unget_unget(&cpre->unget_char, ch);
-  return '\n';
+  size_t actual=0;
+  int err=0;
+
+  if (cpre_unget_get(&cpre->unget_char, ch))
+    return 0;
+
+  if (cpre->cfile->file->eof) {
+    *ch = JFILE_END;
+    return 0;
+  }
+
+  if ((err = jfile_read(cpre->cfile->file, ch, 1, &actual)))
+    return err;
+
+  if (actual == 0) {
+    cpre->cfile->file->eof = 1;
+    *ch = JFILE_END;
+    return 0;
+  }
+
+  if (*ch != '\r')
+    return 0;
+
+  /* Try to read one past \r, which could be end of file. */
+
+  err = jfile_read(cpre->cfile->file, ch, 1, &actual);
+  if (err)
+    goto return_newline;
+  if (actual == 0) {
+    cpre->cfile->file->eof = 1;
+    goto return_newline;
+  }
+
+  if (*ch != '\n')
+    cpre_unget_unget(&cpre->unget_char, *ch);
+return_newline:
+  *ch = '\n';
+  return 0;
 }
 
 void cpre_unget_line_cont(cpre_t *cpre, int ch) {
   cpre_unget_unget(&cpre->unget_line_cont, ch);
 }
 
-int cpre_get_line_cont(cpre_t *cpre)
+int cpre_get_line_cont(cpre_t *cpre, int* ch)
 /* Get next character, handling line continuations. */
 {
-  int (*get)(cpre_t *) = cpre_get_char;
+  int (*get)(cpre_t *, int*) = cpre_get_char;
   int (*unget)(cpre_t *, int) = cpre_unget_line_cont;
-  int ch = 0;
+  int err = 0;
   while (1) {
-    if (cpre_unget_get(&cpre->unget_line_cont, &ch))
-      return ch;
-    int ch = get(cpre);
-    if (ch != '\\')
-      return ch;
-    ch = get(cpre);
-    if (ch != '\n') {
-      unget(cpre, ch);
+    if (cpre_unget_get(&cpre->unget_line_cont, ch))
+      return 0;
+    if (((err = get(cpre, ch))) || *ch != '\\')
+      return err;
+    if (((err = get(cpre, ch))) || *ch != '\n')
+      unget(cpre, *ch);
       return '\\';
     }
   }
 }
 
-int cpre_get_comment(cpre_t *cpre) {
-  int (*get)(cpre_t *) = cpre_get_line_cont;
+int cpre_get_comment(cpre_t *cpre, int *ch)
+/* C preprocessor scanning.
+ * Read, at the phase that handles comments, turning them into spaces.
+ *
+ * Read a character. If it is not '/', return it.
+ * If it is '/', read ahead another. If that is not '*' push it back and return '/'.
+ * If it is '*', then read until closing '*' and '/', which is similar to opening.
+ * Matters such as line continuation with backward slashes are handled at a different layer.
+ * TODO: C99/C++ comments.
+ */
+ {
+  int (*get)(cpre_t *, int*) = cpre_get_line_cont;
   int (*unget)(cpre_t *, int) = cpre_unget_line_cont;
-  int ch = get(cpre);
+  int err = 0;
+  int ch = 0;
+  /* If our caller did an unget to this layer, return that. */
   if (cpre_unget_get(&cpre->unget_comment, &ch))
     return ch;
-  if (ch != '/')
-    return ch;
-  ch = get(cpre);
-  if (ch != '*') {
+  /* If next character is definitely not opening a comment, return it. */
+  if (((err = get(cpre, ch))) || *ch != '/')
+    return err;
+  /* If the second character does not complete the comment start, push it back
+   * and return the first character. */
+  if (((err = get(cpre, ch))) || *ch != '*')
     unget(cpre, ch);
-    return '/';
+   *ch = '/';
+    return 0;
   }
   while (1) {
     /* Read until end of comment, yielding a space. */
-    while ((ch = get(cpre)) != '*')
-      ;
-    ch = get(cpre);
-    if (ch == '/')
-      return ' ';
-    unget(cpre, ch); /* put back in case it is star */
+      while (!((err = get(cpre, ch))) && *ch != '*')
+      ; /* nothing */
+    if ((err = get(cpre, ch)))
+      return err;
+    if (*ch == '/') {
+      *ch = ' ';
+      return 0;
+    }
+    unget(cpre, *ch); /* put back in case it is star */
   }
 }
 
-int cpre_get_token() {
-  int (*get)(cpre_t *) = cpre_get_comment;
+int cpre_get_token(cpre_t* cpre)
+/* Read a C token from the preprocessor.
+ * This handles #include, #define, #undef, #if, #ifdef.
+ */
+{
+  int (*get)(cpre_t *, int*) = cpre_get_comment;
   int start_of_line = 1;
   int pound = 0;
-  int ch = get(cpre);
+  char ch = 0;
+  int err = 0;
+  if ((err = get(cpre, &ch)))
+    goto exit;
   assert(ch != '\v');
   assert(ch != '\f');
   assert(ch != '\t');
@@ -212,6 +267,7 @@ int cpre_get_token() {
     }
     break;
   }
+exit:
+  return err;
 }
 
-#endif

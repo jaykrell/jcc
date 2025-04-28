@@ -15,6 +15,9 @@ typedef struct jfile_t jfile_t;
 #define JFILE_MODE_READ 1
 #define JFILE_MODE_WRITE 2
 
+#define JFILE_END (256)
+#define JFILE_ERROR (257)
+
 typedef struct jfile_buffer_t {
   char *data;
   size_t size;

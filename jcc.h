@@ -7,6 +7,7 @@
 #include "jstr.h"
 #include "jtype.h"
 #include "jvec.h"
+#include "jfile.h"
 #include <stdint.h>
 
 /*struct jmap { };*/
@@ -86,12 +87,13 @@ struct cmember {
 #endif
 
 /* or hfile, really a cprefile */
-typedef struct cfile cfile;
-struct cfile {
-  jstr *path;
+typedef struct cfile_t cfile_t;
+struct cfile_t {
+  jvec_char_t path;
   int64_t size;
   int64_t position;
-  cfile *stack;
+  cfile_t *stack;
+  jfile_t* file;
 };
 
 /* C compiler preprocessor directive */
