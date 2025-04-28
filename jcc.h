@@ -261,6 +261,6 @@ cToken cgetNextToken(cSourceFile *file);
 struct jcc_t;
 typedef struct jcc_t jcc_t;
 
-struct jcc_t {};
+struct jcc_t { char todo; };
 
 #endif

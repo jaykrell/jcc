@@ -1,5 +1,7 @@
 /* comma separated value text file handling */
 
+char csv_todo;
+
 #if 0 /* work in progress */
 
 #include "csv.h"

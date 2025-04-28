@@ -1,5 +1,7 @@
 /* The lexer of a C compiler. */
 
+#include <stdlib.h>
+
 char clex;
 
 /*
@@ -15,4 +17,7 @@ int jcc_get_char()
 }
 */
 
-int clex_get_token() {}
+int clex_get_token() {
+   /* TODO */
+   abort();
+}

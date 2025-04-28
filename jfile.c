@@ -1,3 +1,4 @@
+/* Jay Krell stuff */
 #include "jfile.h"
 #include "jmin.h"
 #include <string.h>

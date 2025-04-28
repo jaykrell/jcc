@@ -23,15 +23,15 @@ typedef struct jfile_buffer_t {
 } jfile_buffer_t;
 
 struct jfile_t {
-  int err;
-  char eof;
-  char buffer_mode;
-  char unget;
-  char unget_valid;
-  jfile_buffer_t buffer;
-  int (*can_get_file_size)(jfile_t *file);
-  int (*can_write)(jfile_t *file);
-  int (*get_size)(jfile_t *file, uint64_t *size);
+  int err;  /* Has error occured, and if so, what is it? */
+  char eof; /* Has end of file occured, boolean. */
+  char buffer_mode; /* Is buffer for reading or writing? */
+  char unget; /* Single byte go-back for reading, like stdio. */
+  char unget_valid; /* Is unget valid? */
+  jfile_buffer_t buffer; /* Large optional buffer. */
+  int (*can_get_file_size)(jfile_t *file); /* Can the file's size be queried? */
+  int (*can_write)(jfile_t *file); /* Is the file wriable? */
+  int (*get_size)(jfile_t *file, uint64_t *size); /* Get the file's size. */
   /*int (*can_seek)(jfile_t* file);
     int (*seek_forward)(jfile_t* file, int64_t);
     int (*seek_backward)(jfile_t* file, int64_t);
