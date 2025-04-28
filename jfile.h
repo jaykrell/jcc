@@ -15,12 +15,12 @@ typedef struct jfile_t jfile_t;
 #define JFILE_MODE_READ 1
 #define JFILE_MODE_WRITE 2
 
-typedef struct jbuffer_t {
+typedef struct jfile_buffer_t {
   char *data;
   size_t size;
   size_t capacity;
   /*  uint64_t file_offset;*/
-} jbuffer_t;
+} jfile_buffer_t;
 
 struct jfile_t {
   int err;
@@ -28,7 +28,7 @@ struct jfile_t {
   char buffer_mode;
   char unget;
   char unget_valid;
-  jbuffer_t buffer;
+  jfile_buffer_t buffer;
   int (*can_get_file_size)(jfile_t *file);
   int (*can_write)(jfile_t *file);
   int (*get_size)(jfile_t *file, uint64_t *size);
