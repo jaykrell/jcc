@@ -51,14 +51,16 @@ exe:
 
 OBJS=\
  read_entire_file.$O \
- jstdio.$O \
- jmalloc.$O \
  jerr.$O \
+ jfile.$O \
  jhash.$O \
  jlist.$O \
+ jmalloc.$O \
  jmem.$O \
  jos.$O \
  jsprintf.$O \
+ jstdio.$O \
+ jstdio_file.$O \
  jstr.$O \
  jthread.$O \
  jvarint.$O \
@@ -209,15 +211,15 @@ test_varint$(EXE): $(OBJS) test_varint.c
 
 csv1$(EXE): $(OBJS) csv1.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) csv1.c $(OBJS) $(CLINK_FLAGS)
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) csv1.c $(OBJS) $(CLINK_FLAGS)
 
 csv$(EXE): $(OBJS) csv.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) csv.c $(OBJS) $(CLINK_FLAGS)
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) csv.c $(OBJS) $(CLINK_FLAGS)
 
 dump_varuint$(EXE): $(OBJS) dump_varuint.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CXX) $(CFLAGS) $(Wall) $(Qspectre) dump_varuint.c $(OBJS) $(CLINK_FLAGS)
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) dump_varuint.c $(OBJS) $(CLINK_FLAGS)
 
 csv_random_write$(EXE): $(OBJS) csv_random_write.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk

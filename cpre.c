@@ -36,6 +36,7 @@ typedef struct cpre_t {
 
   /* Every phase has a get and unget. unget requires a buffer. */
   cpre_unget_t unget_char;
+  cpre_unget_t unget_comment;
   cpre_unget_t unget_line_cont;
 } cpre_t;
 
@@ -78,6 +79,11 @@ cpre_directive_t directives[] = {
     {{JSTRING_CONSTANT("line")}, cpre_line},
     {{JSTRING_CONSTANT("undef")}, cpre_undef},
 };
+
+int cpre_directive(cpre_t* cpre)
+{
+  return -1;
+}
 
 int cpre_unget_get(cpre_unget_t *unget, int *value)
 /* Generic get from unget buffer (i.e. lookahead of length 1). */
@@ -138,16 +144,16 @@ int cpre_get_char(cpre_t *cpre, int* ch)
   if (cpre_unget_get(&cpre->unget_char, ch))
     return 0;
 
-  if (cpre->cfile->file->eof) {
+  if (cpre->cfile.file->eof) {
     *ch = JFILE_END;
     return 0;
   }
 
-  if ((err = jfile_read(cpre->cfile->file, ch, 1, &actual)))
+  if ((err = jfile_read(cpre->cfile.file, ch, 1, &actual)))
     return err;
 
   if (actual == 0) {
-    cpre->cfile->file->eof = 1;
+    cpre->cfile.file->eof = 1;
     *ch = JFILE_END;
     return 0;
   }
@@ -157,11 +163,11 @@ int cpre_get_char(cpre_t *cpre, int* ch)
 
   /* Try to read one past \r, which could be end of file. */
 
-  err = jfile_read(cpre->cfile->file, ch, 1, &actual);
+  err = jfile_read(cpre->cfile.file, ch, 1, &actual);
   if (err)
     goto return_newline;
   if (actual == 0) {
-    cpre->cfile->file->eof = 1;
+    cpre->cfile.file->eof = 1;
     goto return_newline;
   }
 
@@ -180,14 +186,14 @@ int cpre_get_line_cont(cpre_t *cpre, int* ch)
 /* Get next character, handling line continuations. */
 {
   int (*get)(cpre_t *, int*) = cpre_get_char;
-  int (*unget)(cpre_t *, int) = cpre_unget_line_cont;
+  void (*unget)(cpre_t *, int) = cpre_unget_char;
   int err = 0;
   while (1) {
     if (cpre_unget_get(&cpre->unget_line_cont, ch))
       return 0;
     if (((err = get(cpre, ch))) || *ch != '\\')
       return err;
-    if (((err = get(cpre, ch))) || *ch != '\n')
+    if (((err = get(cpre, ch))) || *ch != '\n') {
       unget(cpre, *ch);
       return '\\';
     }
@@ -206,19 +212,18 @@ int cpre_get_comment(cpre_t *cpre, int *ch)
  */
  {
   int (*get)(cpre_t *, int*) = cpre_get_line_cont;
-  int (*unget)(cpre_t *, int) = cpre_unget_line_cont;
+  void (*unget)(cpre_t *, int) = cpre_unget_line_cont;
   int err = 0;
-  int ch = 0;
   /* If our caller did an unget to this layer, return that. */
-  if (cpre_unget_get(&cpre->unget_comment, &ch))
-    return ch;
+  if (cpre_unget_get(&cpre->unget_comment, ch))
+    return 0;
   /* If next character is definitely not opening a comment, return it. */
   if (((err = get(cpre, ch))) || *ch != '/')
     return err;
   /* If the second character does not complete the comment start, push it back
    * and return the first character. */
-  if (((err = get(cpre, ch))) || *ch != '*')
-    unget(cpre, ch);
+  if (((err = get(cpre, ch))) || *ch != '*') {
+    unget(cpre, *ch);
    *ch = '/';
     return 0;
   }
@@ -226,7 +231,9 @@ int cpre_get_comment(cpre_t *cpre, int *ch)
     /* Read until end of comment, yielding a space. */
       while (!((err = get(cpre, ch))) && *ch != '*')
       ; /* nothing */
-    if ((err = get(cpre, ch)))
+      if (err) return err;
+      assert(*ch == '*');
+      if ((err = get(cpre, ch)))
       return err;
     if (*ch == '/') {
       *ch = ' ';
@@ -244,7 +251,7 @@ int cpre_get_token(cpre_t* cpre)
   int (*get)(cpre_t *, int*) = cpre_get_comment;
   int start_of_line = 1;
   int pound = 0;
-  char ch = 0;
+  int ch = 0;
   int err = 0;
   if ((err = get(cpre, &ch)))
     goto exit;
