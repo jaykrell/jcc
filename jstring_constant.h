@@ -4,7 +4,7 @@
 #define JSTRING_CONSTANT_H 1
 
 typedef struct jstring_constant_t {
-  char *chars;
+  char *data;
   size_t size;
 } jstring_constant_t;
 

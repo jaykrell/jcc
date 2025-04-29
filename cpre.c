@@ -4,29 +4,28 @@
 #include "jcommon.h"
 #include "jhash.h"
 #include "jstring_constant.h"
+#include "cpre_internal.h"
+#include "jcount.h"
 
-struct cpre_t;
-typedef struct cpre_t cpre_t;
-
-typedef struct cmacro_t {
+struct cmacro_t {
   jvec_char_t name;
   long nary;  /* or <0 */
   size_t ord; /* index cpre_expanding_t.recurse_guard */
   /* TODO: tokenize body? */
   jvec_char_t body;
   jbool undef;
-} cmacro_t;
+};
 
 /* Every phase has a get and unget. unget requires a buffer.
  * TODO: expand to arbitrrary size? jvec?
  * TODO: Rename to lookahead?
  */
-typedef struct cpre_unget_t {
+struct cpre_unget_t {
   int value;
   int valid;
-} cpre_unget_t;
+};
 
-typedef struct cpre_t {
+struct cpre_t {
   /* Every macro is assigned an ordinal, to index the bits
    * of cpre_expanding_t. That is macros.size.
    * To assist this, undef will mark the entry without deleting it.
@@ -38,7 +37,7 @@ typedef struct cpre_t {
   cpre_unget_t unget_char;
   cpre_unget_t unget_comment;
   cpre_unget_t unget_line_cont;
-} cpre_t;
+};
 
 /* Because macros cannot recurse, expanding a macro is stateful.
  * i.e. every expanded macro needs a bool
@@ -46,19 +45,19 @@ typedef struct cpre_t {
  * e.g. define FOO FOO BAR is valid and makes FOO expand to FOO BAR
  * BAR may be subject to further expansion but FOO is not.
  */
-typedef struct cpre_expanding_t {
+struct cpre_expanding_t {
   jvec_uint64_t recurse_guard; /* really jvec_size_t */
   jvec_char_t chars;
-} cpre_expanding_t;
+};
 
-typedef int (*cpre_directive_handler)(cpre_t *);
-
-typedef struct cpre_directive_t {
+struct cpre_directive_t {
   jstring_constant_t str;
   cpre_directive_handler handler;
-} cpre_directive_t;
+};
 
 int cpre_if(cpre_t *cpre) { return 0; }
+
+int cpre_include(cpre_t *cpre) { return 0; }
 
 int cpre_endif(cpre_t *cpre) { return 0; }
 
@@ -71,16 +70,60 @@ int cpre_line(cpre_t *cpre) { return 0; }
 int cpre_undef(cpre_t *cpre) { return 0; }
 
 cpre_directive_t directives[] = {
-    {{JSTRING_CONSTANT("if")}, cpre_if},
-    {{JSTRING_CONSTANT("endif")}, cpre_endif},
-    {{JSTRING_CONSTANT("elif")}, cpre_elif},
-    {{JSTRING_CONSTANT("else")}, cpre_else},
-    {{JSTRING_CONSTANT("define")}, cpre_else},
-    {{JSTRING_CONSTANT("line")}, cpre_line},
-    {{JSTRING_CONSTANT("undef")}, cpre_undef},
+  {{JSTRING_CONSTANT("define")}, cpre_else},
+  {{JSTRING_CONSTANT("endif")}, cpre_endif},
+  {{JSTRING_CONSTANT("elif")}, cpre_elif},
+  {{JSTRING_CONSTANT("else")}, cpre_else},
+  {{JSTRING_CONSTANT("if")}, cpre_if},
+  {{JSTRING_CONSTANT("include")}, cpre_include},
+  {{JSTRING_CONSTANT("line")}, cpre_line},
+  {{JSTRING_CONSTANT("undef")}, cpre_undef},
 };
 
-int cpre_directive(cpre_t *cpre) { return -1; }
+int cpre_is_directive_char(int ch)
+{
+  switch (ch) {
+    case 'c':
+    case 'd':
+    case 'e':
+    case 'f':
+    case 'i':
+    case 'n':
+    case 'u':
+    case 'l':
+    case 's':
+      return 1;
+  }
+  return 0;
+}
+
+void cpre_error(const char* a, const char* b)
+{
+  fprintf(stderr, a, b);
+}
+
+int cpre_directive(cpre_t *cpre, int ch)
+{
+  cpre_directive_t* directive = directives;
+  int i=0;
+  int err = 0;
+  char buf[7] = {0};
+  buf[0] = ch;
+  for (i = 1; i < 7; ++i)
+  {
+    if (((err = cpre_get_comment(cpre, &ch))) || !cpre_is_directive_char(ch))
+      break;
+    buf[i] = ch;
+  }
+  for (i = 0; i < JCOUNT(directives); ++i)
+  {
+    if (i = directive->str.size && memcmp(buf, directive->str.data, i) == 0)
+      return directive->handler(cpre);
+    ++directive;
+  }
+  cpre_error("ERROR: Unknown directive %s\n", buf);
+  return -1;
+}
 
 int cpre_unget_get(cpre_unget_t *unget, int *value)
 /* Generic get from unget buffer (i.e. lookahead of length 1). */
@@ -259,7 +302,9 @@ int cpre_get_token(cpre_t *cpre)
   assert(ch != '\v');
   assert(ch != '\f');
   assert(ch != '\t');
+  assert(ch != '\r');
   switch (ch) {
+  case '\r':
   case '\n':
     start_of_line = 1;
     break;
@@ -274,7 +319,7 @@ int cpre_get_token(cpre_t *cpre)
     break;
   default:
     if (pound) {
-      cpre_directive(cpre);
+      cpre_directive(cpre, ch);
     }
     break;
   }
