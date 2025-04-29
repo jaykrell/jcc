@@ -1,7 +1,7 @@
 /* C preprocessor. */
 
 typedef struct cpre_t cpre_t;
-typedef struct cmacro_t  cmacro_t;
+typedef struct cmacro_t cmacro_t;
 typedef struct cpre_unget_t cpre_unget_t;
 typedef struct cpre_t cpre_t;
 typedef struct cpre_expanding_t cpre_expanding_t;
@@ -12,15 +12,10 @@ int cpre_if(cpre_t *cpre);
 int cpre_endif(cpre_t *cpre);
 int cpre_else(cpre_t *cpre);
 int cpre_elif(cpre_t *cpre);
+int cpre_include(cpre_t *cpre);
 int cpre_line(cpre_t *cpre);
 int cpre_undef(cpre_t *cpre);
 int cpre_directive(cpre_t *cpre, int ch);
-int cpre_unget_get(cpre_unget_t *unget, int *value);
-void cpre_unget_unget(cpre_unget_t *unget, int value);
-void cpre_unget_char(cpre_t *cpre, int ch);
 int cpre_translate_space(int ch);
-int cpre_get_char(cpre_t *cpre, int *ch);
-void cpre_unget_line_cont(cpre_t *cpre, int ch);
-int cpre_get_line_cont(cpre_t *cpre, int *ch);
-int cpre_get_comment(cpre_t *cpre, int *ch);
 int cpre_get_token(cpre_t *cpre);
+int cpre_get_char(cpre_t *cpre, int *ch);

@@ -1,11 +1,11 @@
 /* C preprocessor. */
 
+#include "cpre_internal.h"
 #include "jcc.h"
 #include "jcommon.h"
+#include "jcount.h"
 #include "jhash.h"
 #include "jstring_constant.h"
-#include "cpre_internal.h"
-#include "jcount.h"
 
 struct cmacro_t {
   jvec_char_t name;
@@ -70,55 +70,55 @@ int cpre_line(cpre_t *cpre) { return 0; }
 int cpre_undef(cpre_t *cpre) { return 0; }
 
 cpre_directive_t directives[] = {
-  {{JSTRING_CONSTANT("define")}, cpre_else},
-  {{JSTRING_CONSTANT("endif")}, cpre_endif},
-  {{JSTRING_CONSTANT("elif")}, cpre_elif},
-  {{JSTRING_CONSTANT("else")}, cpre_else},
-  {{JSTRING_CONSTANT("if")}, cpre_if},
-  {{JSTRING_CONSTANT("include")}, cpre_include},
-  {{JSTRING_CONSTANT("line")}, cpre_line},
-  {{JSTRING_CONSTANT("undef")}, cpre_undef},
+    {{JSTRING_CONSTANT("define")}, cpre_else},
+    {{JSTRING_CONSTANT("endif")}, cpre_endif},
+    {{JSTRING_CONSTANT("elif")}, cpre_elif},
+    {{JSTRING_CONSTANT("else")}, cpre_else},
+    {{JSTRING_CONSTANT("if")}, cpre_if},
+    {{JSTRING_CONSTANT("include")}, cpre_include},
+    {{JSTRING_CONSTANT("line")}, cpre_line},
+    {{JSTRING_CONSTANT("undef")}, cpre_undef},
 };
 
-int cpre_is_directive_char(int ch)
-{
+int cpre_is_directive_char(int ch) {
   switch (ch) {
-    case 'c':
-    case 'd':
-    case 'e':
-    case 'f':
-    case 'i':
-    case 'n':
-    case 'u':
-    case 'l':
-    case 's':
-      return 1;
+  case 'c':
+  case 'd':
+  case 'e':
+  case 'f':
+  case 'i':
+  case 'n':
+  case 'u':
+  case 'l':
+  case 's':
+    return 1;
   }
   return 0;
 }
 
-void cpre_error(const char* a, const char* b)
+void cpre_error(const char *a, const char *b) { fprintf(stderr, a, b); }
+
+int cpre_directive_found(cpre_t *cpre, cpre_directive_t *directive)
+/* Read to newline and call handler. */
 {
-  fprintf(stderr, a, b);
+  jvec_char_t body = {0};
+  return directive->handler(cpre);
 }
 
-int cpre_directive(cpre_t *cpre, int ch)
-{
-  cpre_directive_t* directive = directives;
-  int i=0;
+int cpre_directive(cpre_t *cpre, int ch) {
+  cpre_directive_t *directive = directives;
+  int i = 0;
   int err = 0;
   char buf[7] = {0};
   buf[0] = ch;
-  for (i = 1; i < 7; ++i)
-  {
-    if (((err = cpre_get_comment(cpre, &ch))) || !cpre_is_directive_char(ch))
+  for (i = 1; i < 7; ++i) {
+    if (((err = cpre_get_char(cpre, &ch))) || !cpre_is_directive_char(ch))
       break;
     buf[i] = ch;
   }
-  for (i = 0; i < JCOUNT(directives); ++i)
-  {
-    if (i = directive->str.size && memcmp(buf, directive->str.data, i) == 0)
-      return directive->handler(cpre);
+  for (i = 0; i < JCOUNT(directives); ++i) {
+    if (i == directive->str.size && memcmp(buf, directive->str.data, i) == 0)
+      return cpre_directive_found(cpre, directive);
     ++directive;
   }
   cpre_error("ERROR: Unknown directive %s\n", buf);
@@ -144,7 +144,8 @@ void cpre_unget_unget(cpre_unget_t *unget, int value)
   unget->value = value;
 }
 
-void cpre_unget_char(cpre_t *cpre, int ch)
+void cpre_unget_char_handling_newlines_and_carriage_returns(cpre_t *cpre,
+                                                            int ch)
 /* Unget next character, using newline/carriage_returns unget buffer. */
 {
   cpre_unget_unget(&cpre->unget_char, ch);
@@ -167,7 +168,7 @@ int cpre_translate_space(int ch)
   return ch;
 }
 
-int cpre_get_char(cpre_t *cpre, int *ch)
+int cpre_get_char_handling_newlines_and_carriage_returns(cpre_t *cpre, int *ch)
 /* Get next character, handling newline/carriage_returns.
  * Specifically: \n returns as \n
  * \r\n returns as \n
@@ -220,15 +221,17 @@ return_newline:
   return 0;
 }
 
-void cpre_unget_line_cont(cpre_t *cpre, int ch) {
+void cpre_unget_char_handling_line_continuations(cpre_t *cpre, int ch) {
   cpre_unget_unget(&cpre->unget_line_cont, ch);
 }
 
-int cpre_get_line_cont(cpre_t *cpre, int *ch)
+int cpre_get_char_handling_line_continuations(cpre_t *cpre, int *ch)
 /* Get next character, handling line continuations. */
 {
-  int (*get)(cpre_t *, int *) = cpre_get_char;
-  void (*unget)(cpre_t *, int) = cpre_unget_char;
+  int (*get)(cpre_t *, int *) =
+      cpre_get_char_handling_newlines_and_carriage_returns;
+  void (*unget)(cpre_t *, int) =
+      cpre_unget_char_handling_newlines_and_carriage_returns;
   int err = 0;
   while (1) {
     if (cpre_unget_get(&cpre->unget_line_cont, ch))
@@ -242,7 +245,7 @@ int cpre_get_line_cont(cpre_t *cpre, int *ch)
   }
 }
 
-int cpre_get_comment(cpre_t *cpre, int *ch)
+int cpre_get_char_hndling_comments(cpre_t *cpre, int *ch)
 /* C preprocessor scanning.
  * Read, at the phase that handles comments, turning them into spaces.
  *
@@ -254,8 +257,8 @@ int cpre_get_comment(cpre_t *cpre, int *ch)
  * TODO: C99/C++ comments.
  */
 {
-  int (*get)(cpre_t *, int *) = cpre_get_line_cont;
-  void (*unget)(cpre_t *, int) = cpre_unget_line_cont;
+  int (*get)(cpre_t *, int *) = cpre_get_char_handling_line_continuations;
+  void (*unget)(cpre_t *, int) = cpre_unget_char_handling_line_continuations;
   int err = 0;
   /* If our caller did an unget to this layer, return that. */
   if (cpre_unget_get(&cpre->unget_comment, ch))
@@ -287,12 +290,16 @@ int cpre_get_comment(cpre_t *cpre, int *ch)
   }
 }
 
+int cpre_get_char(cpre_t *cpre, int *ch) {
+  return cpre_get_char_hndling_comments(cpre, ch);
+}
+
 int cpre_get_token(cpre_t *cpre)
 /* Read a C token from the preprocessor.
  * This handles #include, #define, #undef, #if, #ifdef.
  */
 {
-  int (*get)(cpre_t *, int *) = cpre_get_comment;
+  int (*get)(cpre_t *, int *) = cpre_get_char;
   int start_of_line = 1;
   int pound = 0;
   int ch = 0;
