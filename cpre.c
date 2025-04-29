@@ -1,8 +1,8 @@
 /* C preprocessor. */
 
+#include "jcc.h"
 #include "jcommon.h"
 #include "jhash.h"
-#include "jcc.h"
 #include "jstring_constant.h"
 
 struct cpre_t;
@@ -10,7 +10,7 @@ typedef struct cpre_t cpre_t;
 
 typedef struct cmacro_t {
   jvec_char_t name;
-  long nary; /* or <0 */
+  long nary;  /* or <0 */
   size_t ord; /* index cpre_expanding_t.recurse_guard */
   /* TODO: tokenize body? */
   jvec_char_t body;
@@ -80,10 +80,7 @@ cpre_directive_t directives[] = {
     {{JSTRING_CONSTANT("undef")}, cpre_undef},
 };
 
-int cpre_directive(cpre_t* cpre)
-{
-  return -1;
-}
+int cpre_directive(cpre_t *cpre) { return -1; }
 
 int cpre_unget_get(cpre_unget_t *unget, int *value)
 /* Generic get from unget buffer (i.e. lookahead of length 1). */
@@ -111,9 +108,11 @@ void cpre_unget_char(cpre_t *cpre, int ch)
 }
 
 int cpre_translate_space(int ch)
-/* Translate whitespace except carriage return and newline to canonical space. */
+/* Translate whitespace except carriage return and newline to canonical space.
+ */
 /* No other layer should see these characters. */
-/* Therefore there is one horizontal whitespace and one vertical whitespace, ' ' and '\n'. */
+/* Therefore there is one horizontal whitespace and one vertical whitespace, ' '
+   and '\n'. */
 /* Vertical whitespace is handled elsewhere. */
 {
   switch (ch) {
@@ -125,7 +124,7 @@ int cpre_translate_space(int ch)
   return ch;
 }
 
-int cpre_get_char(cpre_t *cpre, int* ch)
+int cpre_get_char(cpre_t *cpre, int *ch)
 /* Get next character, handling newline/carriage_returns.
  * Specifically: \n returns as \n
  * \r\n returns as \n
@@ -138,8 +137,8 @@ int cpre_get_char(cpre_t *cpre, int* ch)
  * As such, no other layer should have to handle or see \r.
  */
 {
-  size_t actual=0;
-  int err=0;
+  size_t actual = 0;
+  int err = 0;
 
   if (cpre_unget_get(&cpre->unget_char, ch))
     return 0;
@@ -182,10 +181,10 @@ void cpre_unget_line_cont(cpre_t *cpre, int ch) {
   cpre_unget_unget(&cpre->unget_line_cont, ch);
 }
 
-int cpre_get_line_cont(cpre_t *cpre, int* ch)
+int cpre_get_line_cont(cpre_t *cpre, int *ch)
 /* Get next character, handling line continuations. */
 {
-  int (*get)(cpre_t *, int*) = cpre_get_char;
+  int (*get)(cpre_t *, int *) = cpre_get_char;
   void (*unget)(cpre_t *, int) = cpre_unget_char;
   int err = 0;
   while (1) {
@@ -205,13 +204,14 @@ int cpre_get_comment(cpre_t *cpre, int *ch)
  * Read, at the phase that handles comments, turning them into spaces.
  *
  * Read a character. If it is not '/', return it.
- * If it is '/', read ahead another. If that is not '*' push it back and return '/'.
- * If it is '*', then read until closing '*' and '/', which is similar to opening.
- * Matters such as line continuation with backward slashes are handled at a different layer.
+ * If it is '/', read ahead another. If that is not '*' push it back and return
+ * '/'. If it is '*', then read until closing '*' and '/', which is similar to
+ * opening. Matters such as line continuation with backward slashes are handled
+ * at a different layer.
  * TODO: C99/C++ comments.
  */
- {
-  int (*get)(cpre_t *, int*) = cpre_get_line_cont;
+{
+  int (*get)(cpre_t *, int *) = cpre_get_line_cont;
   void (*unget)(cpre_t *, int) = cpre_unget_line_cont;
   int err = 0;
   /* If our caller did an unget to this layer, return that. */
@@ -224,16 +224,17 @@ int cpre_get_comment(cpre_t *cpre, int *ch)
    * and return the first character. */
   if (((err = get(cpre, ch))) || *ch != '*') {
     unget(cpre, *ch);
-   *ch = '/';
+    *ch = '/';
     return 0;
   }
   while (1) {
     /* Read until end of comment, yielding a space. */
-      while (!((err = get(cpre, ch))) && *ch != '*')
+    while (!((err = get(cpre, ch))) && *ch != '*')
       ; /* nothing */
-      if (err) return err;
-      assert(*ch == '*');
-      if ((err = get(cpre, ch)))
+    if (err)
+      return err;
+    assert(*ch == '*');
+    if ((err = get(cpre, ch)))
       return err;
     if (*ch == '/') {
       *ch = ' ';
@@ -243,12 +244,12 @@ int cpre_get_comment(cpre_t *cpre, int *ch)
   }
 }
 
-int cpre_get_token(cpre_t* cpre)
+int cpre_get_token(cpre_t *cpre)
 /* Read a C token from the preprocessor.
  * This handles #include, #define, #undef, #if, #ifdef.
  */
 {
-  int (*get)(cpre_t *, int*) = cpre_get_comment;
+  int (*get)(cpre_t *, int *) = cpre_get_comment;
   int start_of_line = 1;
   int pound = 0;
   int ch = 0;
@@ -262,7 +263,10 @@ int cpre_get_token(cpre_t* cpre)
   case '\n':
     start_of_line = 1;
     break;
-  case '\v': case '\f': case '\t': case ' ':
+  case '\v':
+  case '\f':
+  case '\t':
+  case ' ':
     break;
   case '#':
     pound = start_of_line;
@@ -277,4 +281,3 @@ int cpre_get_token(cpre_t* cpre)
 exit:
   return err;
 }
-

@@ -18,6 +18,6 @@ int jcc_get_char()
 */
 
 int clex_get_token() {
-   /* TODO */
-   abort();
+  /* TODO */
+  abort();
 }

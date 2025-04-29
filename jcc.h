@@ -3,11 +3,11 @@
 
 /* #include "jbool.h" */
 /* #include "jpaste.h" */
+#include "jfile.h"
 #include "jmap.h"
 #include "jstr.h"
 #include "jtype.h"
 #include "jvec.h"
-#include "jfile.h"
 #include <stdint.h>
 
 /*struct jmap { };*/
@@ -93,7 +93,7 @@ struct cfile_t {
   int64_t size;
   int64_t position;
   cfile_t *stack;
-  jfile_t* file;
+  jfile_t *file;
 };
 
 /* C compiler preprocessor directive */
@@ -263,6 +263,8 @@ cToken cgetNextToken(cSourceFile *file);
 struct jcc_t;
 typedef struct jcc_t jcc_t;
 
-struct jcc_t { char todo; };
+struct jcc_t {
+  char todo;
+};
 
 #endif
