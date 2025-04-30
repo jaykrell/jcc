@@ -14,13 +14,16 @@ typedef struct cpre_span_t {
   size_t len;
 } cpre_span_t;
 
+typedef JVEC(cpre_span_t) cpre_vec_span_t;
+
 struct cmacro_t {
   jvec_char_t name;
-  long nary;  /* or <0 */
   size_t ord; /* index cpre_expanding_t.recurse_guard */
   /* TODO: tokenize body? */
-  jvec_char_t body;
+  jvec_char_t body; /* does not include args */
   jbool undef;
+  jbool parens;
+  cpre_vec_span_t args;
 };
 
 /* Every phase has a get and unget. unget requires a buffer.
@@ -133,14 +136,17 @@ int cpre_directive_found(cpre_t *cpre, cpre_directive_t *directive)
   /* further handling is done by each handler */
   while (1) {
     if ((err = cpre_get_char(cpre, &i)))
-      return err;
+      goto exit;
     if (i < 0 || i == '\n')
       break;
     ch = i;
     if ((err = JVEC_PUSH_BACK(&body, &ch)))
-      return err;
+      goto exit;
   }
-  return directive->handler(cpre, &body);
+  err = directive->handler(cpre, &body);
+exit:
+  JVEC_CLEANUP(&body);
+  return err;
 }
 
 int cpre_directive(cpre_t *cpre, int ch) {
