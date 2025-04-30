@@ -6,6 +6,13 @@
 #include "jcount.h"
 #include "jhash.h"
 #include "jstring_constant.h"
+#include "jvec.h"
+
+/*TODO: generic*/
+typedef struct cpre_span_t {
+  char *p;
+  size_t len;
+} cpre_span_t;
 
 struct cmacro_t {
   jvec_char_t name;
@@ -55,54 +62,85 @@ struct cpre_directive_t {
   cpre_directive_handler handler;
 };
 
-int cpre_if(cpre_t *cpre) { return 0; }
+int cpre_define(cpre_t *cpre, jvec_char_t *body) { return 0; }
 
-int cpre_include(cpre_t *cpre) { return 0; }
+int cpre_endif(cpre_t *cpre, jvec_char_t *body) { return 0; }
 
-int cpre_endif(cpre_t *cpre) { return 0; }
+int cpre_else(cpre_t *cpre, jvec_char_t *body) { return 0; }
 
-int cpre_else(cpre_t *cpre) { return 0; }
+int cpre_elif(cpre_t *cpre, jvec_char_t *body) { return 0; }
 
-int cpre_elif(cpre_t *cpre) { return 0; }
+int cpre_error(cpre_t *cpre, jvec_char_t *body) { return 0; }
 
-int cpre_line(cpre_t *cpre) { return 0; }
+int cpre_if(cpre_t *cpre, jvec_char_t *body) { return 0; }
 
-int cpre_undef(cpre_t *cpre) { return 0; }
+int cpre_include(cpre_t *cpre, jvec_char_t *body) { return 0; }
+
+int cpre_line(cpre_t *cpre, jvec_char_t *body) { return 0; }
+
+int cpre_once(cpre_t *cpre, jvec_char_t *body) { return 0; }
+
+int cpre_pragma(cpre_t *cpre, jvec_char_t *body) { return 0; }
+
+int cpre_undef(cpre_t *cpre, jvec_char_t *body) { return 0; }
 
 cpre_directive_t directives[] = {
-    {{JSTRING_CONSTANT("define")}, cpre_else},
+    {{JSTRING_CONSTANT("define")}, cpre_define},
     {{JSTRING_CONSTANT("endif")}, cpre_endif},
     {{JSTRING_CONSTANT("elif")}, cpre_elif},
     {{JSTRING_CONSTANT("else")}, cpre_else},
+    {{JSTRING_CONSTANT("error")}, cpre_error},
     {{JSTRING_CONSTANT("if")}, cpre_if},
     {{JSTRING_CONSTANT("include")}, cpre_include},
     {{JSTRING_CONSTANT("line")}, cpre_line},
+    {{JSTRING_CONSTANT("once")}, cpre_once},
+    {{JSTRING_CONSTANT("pragma")}, cpre_pragma},
     {{JSTRING_CONSTANT("undef")}, cpre_undef},
 };
 
 int cpre_is_directive_char(int ch) {
   switch (ch) {
-  case 'c':
-  case 'd':
-  case 'e':
-  case 'f':
-  case 'i':
-  case 'n':
-  case 'u':
-  case 'l':
-  case 's':
+  case 'a': /* pragma */
+  case 'c': /* include */
+  case 'd': /* define */
+  case 'e': /* define */
+  case 'f': /* define */
+  case 'g': /* pragma */
+  case 'i': /* define */
+  case 'm': /* pragma */
+  case 'n': /* define */
+  case 'l': /* line */
+  case 'o': /* once */
+  case 'p': /* pragma */
+  case 'r': /* pragma */
+  case 's': /* else */
+  case 'u': /* undef */
     return 1;
   }
   return 0;
 }
 
-void cpre_error(const char *a, const char *b) { fprintf(stderr, a, b); }
+void cpre_report_error(const char *a, const char *b) { fprintf(stderr, a, b); }
 
 int cpre_directive_found(cpre_t *cpre, cpre_directive_t *directive)
 /* Read to newline and call handler. */
 {
+  int i = 0;
+  char ch = 0;
+  int err = 0;
   jvec_char_t body = {0};
-  return directive->handler(cpre);
+  /* read to end of line or file */
+  /* further handling is done by each handler */
+  while (1) {
+    if ((err = cpre_get_char(cpre, &i)))
+      return err;
+    if (i < 0 || i == '\n')
+      break;
+    ch = i;
+    if ((err = JVEC_PUSH_BACK(&body, &ch)))
+      return err;
+  }
+  return directive->handler(cpre, &body);
 }
 
 int cpre_directive(cpre_t *cpre, int ch) {
@@ -121,7 +159,7 @@ int cpre_directive(cpre_t *cpre, int ch) {
       return cpre_directive_found(cpre, directive);
     ++directive;
   }
-  cpre_error("ERROR: Unknown directive %s\n", buf);
+  cpre_report_error("ERROR: Unknown directive %s\n", buf);
   return -1;
 }
 
@@ -168,7 +206,7 @@ int cpre_translate_space(int ch)
   return ch;
 }
 
-int cpre_get_char_handling_newlines_and_carriage_returns(cpre_t *cpre, int *ch)
+int cpre_get_char_handling_newlines_and_carriage_returns(cpre_t *cpre, int *pch)
 /* Get next character, handling newline/carriage_returns.
  * Specifically: \n returns as \n
  * \r\n returns as \n
@@ -183,30 +221,41 @@ int cpre_get_char_handling_newlines_and_carriage_returns(cpre_t *cpre, int *ch)
 {
   size_t actual = 0;
   int err = 0;
+  unsigned char ch = 0;
+  int i = 0;
 
-  if (cpre_unget_get(&cpre->unget_char, ch))
+  if (cpre_unget_get(&cpre->unget_char, pch))
     return 0;
 
+  if ((err = cpre->cfile.file->err)) {
+    *pch = JFILE_ERROR;
+    return err;
+  }
+
   if (cpre->cfile.file->eof) {
-    *ch = JFILE_END;
+    *pch = JFILE_END;
     return 0;
   }
 
-  if ((err = jfile_read(cpre->cfile.file, ch, 1, &actual)))
+  if ((err = jfile_read(cpre->cfile.file, &ch, 1, &actual))) {
+    *pch = JFILE_ERROR;
     return err;
+  }
 
   if (actual == 0) {
     cpre->cfile.file->eof = 1;
-    *ch = JFILE_END;
+    *pch = JFILE_END;
     return 0;
   }
 
-  if (*ch != '\r')
+  *pch = ch;
+
+  if (ch != '\r')
     return 0;
 
   /* Try to read one past \r, which could be end of file. */
 
-  err = jfile_read(cpre->cfile.file, ch, 1, &actual);
+  err = jfile_read(cpre->cfile.file, &ch, 1, &actual);
   if (err)
     goto return_newline;
   if (actual == 0) {
@@ -214,10 +263,10 @@ int cpre_get_char_handling_newlines_and_carriage_returns(cpre_t *cpre, int *ch)
     goto return_newline;
   }
 
-  if (*ch != '\n')
-    cpre_unget_unget(&cpre->unget_char, *ch);
+  if (ch != '\n')
+    cpre_unget_unget(&cpre->unget_char, ch);
 return_newline:
-  *ch = '\n';
+  *pch = '\n';
   return 0;
 }
 
@@ -245,7 +294,7 @@ int cpre_get_char_handling_line_continuations(cpre_t *cpre, int *ch)
   }
 }
 
-int cpre_get_char_hndling_comments(cpre_t *cpre, int *ch)
+int cpre_get_char_handling_comments(cpre_t *cpre, int *ch)
 /* C preprocessor scanning.
  * Read, at the phase that handles comments, turning them into spaces.
  *
@@ -291,12 +340,12 @@ int cpre_get_char_hndling_comments(cpre_t *cpre, int *ch)
 }
 
 int cpre_get_char(cpre_t *cpre, int *ch) {
-  return cpre_get_char_hndling_comments(cpre, ch);
+  return cpre_get_char_handling_comments(cpre, ch);
 }
 
 int cpre_get_token(cpre_t *cpre)
 /* Read a C token from the preprocessor.
- * This handles #include, #define, #undef, #if, #ifdef.
+ * This handles #include, #define, #undef, #if, #ifdef, etc.
  */
 {
   int (*get)(cpre_t *, int *) = cpre_get_char;

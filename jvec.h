@@ -20,6 +20,8 @@ extern "C" {
     T *data;                                                                   \
     ptrdiff_t size;                                                            \
     ptrdiff_t capacity;                                                        \
+    T *prealloc;                 /*TODO*/                                      \
+    ptrdiff_t prealloc_capacity; /*TODO*/                                      \
   }
 
 typedef JVEC(char) jvec_generic;
