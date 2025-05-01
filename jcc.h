@@ -10,6 +10,20 @@
 #include "jvec.h"
 #include <stdint.h>
 
+#define JCC_CHAR_ERROR (-1)
+#define JCC_CHAR_END_OF_FILE (-2)
+
+/* Some phases require lookahead of a single character.
+ * This is like stdio unget.
+ * TODO: expand to arbitrrary size? jvec?
+ * TODO: Rename to lookahead?
+ * TODO: Expand to contain tokens?
+ */
+typedef struct jcc_unget_t {
+  int value;
+  int valid;
+} jcc_unget_t;
+
 /*struct jmap { };*/
 /*struct jhash { };*/
 /*struct jstr { };*/
@@ -264,7 +278,10 @@ struct jcc_t;
 typedef struct jcc_t jcc_t;
 
 struct jcc_t {
-  char todo;
+  jcc_unget_t phase1_unget;
+  jcc_unget_t phase2_unget;
+  jcc_unget_t phase3_unget;
+  cfile_t* cfile;
 };
 
 #endif

@@ -1,0 +1,87 @@
+https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf
+WG14/N1256 Committee Draft — Septermber 7, 2007 ISO/IEC 9899:TC3
+
+A.3 Preprocessing directives
+(6.10) preprocessing-file:
+  group_opt
+
+(6.10) group:
+  group-part
+  group group-part
+
+(6.10) group-part:
+  if-section
+  control-line
+  text-line
+  # non-directive
+
+(6.10) if-section:
+  if-group elif-groups_opt else-group_opt endif-line
+
+(6.10) if-group:
+  # if constant-expression new-line group_opt
+  # ifdef identifier new-line group_opt
+  # ifndef identifier new-line group_opt
+
+(6.10) elif-groups:
+  elif-group
+  elif-groups elif-group
+
+(6.10) elif-group:
+  # elif constant-expression new-line group_opt
+
+(6.10) else-group:
+  # else new-line group_opt
+
+(6.10) endif-line:
+  # endif new-line
+
+(6.10) control-line:
+  # include pp-tokens new-line
+  # define identifier replacement-list new-line
+  # define identifier lparen identifier-list_opt ) replacement-list new-line
+  # define identifier lparen ... ) replacement-list new-line
+  # define identifier lparen identifier-list , ... ) replacement-list new-line
+  # undef identifier new-line
+  # line pp-tokens new-line
+  # error pp-tokens_opt new-line
+  # pragma pp-tokens_opt new-line
+  # new-line
+
+(6.10) text-line:
+  pp-tokens_opt new-line
+
+(6.10) non-directive:
+  pp-tokens new-line
+(6.10) lparen:
+  a ( character not immediately preceded by white-space
+
+(6.10) replacement-list:
+  pp-tokens_opt
+
+(6.10) pp-tokens:
+  preprocessing-token
+  pp-tokens preprocessing-token
+
+(6.10) new-line:
+  the new-line character
+
+6.4 lexical elements
+preprocessing-token:
+  header-name
+  identifier
+  pp-number
+  character-constant
+  string-literal
+  punctuator
+  each non-white-space character that cannot be one of the above
+
+6.4.6 Punctuators
+punctuator: one of
+ [ ] ( ) { } . ->
+ ++ -- & * + - ~ !
+ / % << >> < > <= >= == != ^ | && ||
+ ? : ; ...
+ = *= /= %= += -= <<= >>= &= ^= |=
+ , # ##
+ <: :> <% %> %: %:%:
