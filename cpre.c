@@ -14,12 +14,17 @@ typedef struct cpre_span_t {
   size_t len;
 } cpre_span_t;
 
+typedef struct cpre_token_t {
+  char *p;
+  size_t len;
+} cpre_token_t;
+
 typedef JVEC(cpre_span_t) cpre_vec_span_t;
 
 struct cmacro_t {
   jvec_char_t name;
   size_t ord; /* index cpre_expanding_t.recurse_guard */
-  /* TODO: tokenize body? */
+  /* TODO: tokenize body */
   jvec_char_t body; /* does not include args */
   jbool undef;
   jbool parens;
