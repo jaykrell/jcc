@@ -20,6 +20,7 @@ extern "C" {
     T *data;                                                                   \
     ptrdiff_t size;                                                            \
     ptrdiff_t capacity;                                                        \
+    int static_;                                                               \
     T *prealloc;                 /*TODO*/                                      \
     ptrdiff_t prealloc_capacity; /*TODO*/                                      \
   }

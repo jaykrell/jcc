@@ -357,7 +357,78 @@ int cpre_get_char(cpre_t *cpre, int *ch) {
   return cpre_get_char_handling_comments(cpre, ch);
 }
 
-int cpre_get_token(jcc_t *jcc)
+int (*jcc_call_t)(jcc_t* jcc);
+
+int jcc_if_section(jcc_t* jcc)
+/*   if-group elif-groups_opt else-group_opt endif-line
+ */
+{
+}
+
+int jcc_control_line(jcc_t* jcc)
+/*
+ *  # include pp-tokens new-line
+ *  # define identifier replacement-list new-line
+ *  # define identifier lparen identifier-list_opt ) replacement-list new-line
+ *  # define identifier lparen ... ) replacement-list new-line
+ *  # define identifier lparen identifier-list , ... ) replacement-list new-line
+ *  # undef identifier new-line
+ *  # line pp-tokens new-line
+ *  # error pp-tokens_opt new-line
+ *  # pragma pp-tokens_opt new-line
+ *  # new-line
+ */
+{
+}
+
+int jcc_text_line(jcc_t* jcc)
+/* pp-tokens_opt new-line */
+{
+}
+
+int jcc_pound_nondirective(jcc_t* jcc)
+/* # pp-tokens new-line */
+{
+}
+
+int jcc_ppgroup(jcc_t* jcc)
+{
+  jcc_call_t call;
+  jcc_call_t jcc_ppgroup_options[] = {
+    jcc_if_section,
+    jcc_control_line,
+    jcc_pound_nondirective,
+    jcc_text_line,
+    0
+  };
+  int err = 0;
+  int i = -1;
+  while ((call = jcc_ppgroup_options[++i]))
+  {
+    int recognized = 0;
+    jcc_phase2_mark(jcc);
+    if ((err = call(jcc, &recognized)))
+      return err;;
+    if (recognized) {
+      jcc_phase2_commit(jcc);
+      i = -1;
+      continue;
+    }
+    jcc_phase2_backup(jcc);
+  }
+  return JCC_UNRECOGNIZED;
+}
+
+int jcc_ppfile(jcc_t* jcc)
+{
+  int err = 0;
+  int recognized = 0;
+  while (jcc_ppgroup(jcc, &recognized) && recognized)
+  {
+  }
+}
+
+int jcc_get_pptoken(jcc_t* jcc, jcc_pptoken_t** pptoken)
 /* Read a C token from the preprocessor.
  * This handles #include, #define, #undef, #if, #ifdef, etc.
  *

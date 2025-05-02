@@ -9,20 +9,11 @@
 #include "jtype.h"
 #include "jvec.h"
 #include <stdint.h>
+#include "jcc_unget.h"
 
 #define JCC_CHAR_ERROR (-1)
 #define JCC_CHAR_END_OF_FILE (-2)
-
-/* Some phases require lookahead of a single character.
- * This is like stdio unget.
- * TODO: expand to arbitrrary size? jvec?
- * TODO: Rename to lookahead?
- * TODO: Expand to contain tokens?
- */
-typedef struct jcc_unget_t {
-  int value;
-  int valid;
-} jcc_unget_t;
+#define JCC_UNRECOGNIZED (-3)
 
 typedef enum jcc_pptoken_tag {
   jcc_pptoken_tag_header_name        = 1,
@@ -34,13 +25,12 @@ typedef enum jcc_pptoken_tag {
   jcc_pptoken_tag_other              = 7 /* each non-white-space character that cannot be one of the above */
 } jcc_pptoken_tag;
 
-extern jvec_char_t jcc_char1_pptokens[256];
-extern jvec_char_t jcc_char2_pptokens[256][256];
+extern jvec_char_t* jcc_char1_pptokens[256];
+extern jvec_char_t* jcc_char2_pptokens[256][256];
 extern jvec_char_t jcc_char3_pptokens[256][256][256];
 
 typedef struct jcc_pptoken_t {
   jcc_pptoken_tag tag;
-  jvec_char_t  *pstring;
   jvec_char_t  string;
   /* TODO: What representations are needed? */
 } jcc_pptoken_t;
