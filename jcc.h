@@ -24,9 +24,26 @@ typedef struct jcc_unget_t {
   int valid;
 } jcc_unget_t;
 
-/*struct jmap { };*/
-/*struct jhash { };*/
-/*struct jstr { };*/
+typedef enum jcc_pptoken_tag {
+  jcc_pptoken_tag_header_name        = 1,
+  jcc_pptoken_tag_identifier         = 2,
+  jcc_pptoken_tag_pp_number          = 3,
+  jcc_pptoken_tag_character_constant = 4,
+  jcc_pptoken_tag_string_literal     = 5,
+  jcc_pptoken_tag_punctuator         = 6,
+  jcc_pptoken_tag_other              = 7 /* each non-white-space character that cannot be one of the above */
+} jcc_pptoken_tag;
+
+extern jvec_char_t jcc_char1_pptokens[256];
+extern jvec_char_t jcc_char2_pptokens[256][256];
+extern jvec_char_t jcc_char3_pptokens[256][256][256];
+
+typedef struct jcc_pptoken_t {
+  jcc_pptoken_tag tag;
+  jvec_char_t  *pstring;
+  jvec_char_t  string;
+  /* TODO: What representations are needed? */
+} jcc_pptoken_t;
 
 /* C compiler type enum */
 /* language and backend types must be considered different, i.e. int32 vs. int

@@ -5,22 +5,6 @@
 
 #include "jvec.h"
 
-typedef enum jcc_pptoken_tag {
-  jcc_pptoken_tag_header_name        = 1,
-  jcc_pptoken_tag_identifier         = 2,
-  jcc_pptoken_tag_pp_number          = 3,
-  jcc_pptoken_tag_character_constant = 4,
-  jcc_pptoken_tag_string_literal     = 5,
-  jcc_pptoken_tag_punctuator         = 6,
-  jcc_pptoken_tag_other              = 7 /* each non-white-space character that cannot be one of the above */
-} jcc_pptoken_tag;
-
-typedef struct jcc_pptoken_t {
-  jcc_pptoken_tag tag;
-  jvec_char_t  string;
-  /* TODO: What representations are needed? */
-} jcc_pptoken_t;
-
 typedef struct cpre_t cpre_t;
 typedef struct cmacro_t cmacro_t;
 typedef struct cpre_unget_t cpre_unget_t;
