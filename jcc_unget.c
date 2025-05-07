@@ -1,5 +1,7 @@
 /* Jay C compiler. */
 
+/* Single character unget like stdio. */
+
 #include "jcc_unget.h"
 #include <assert.h>
 

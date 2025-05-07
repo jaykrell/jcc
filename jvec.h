@@ -24,12 +24,14 @@ extern "C" {
     T *prealloc;                 /*TODO*/                                      \
     ptrdiff_t prealloc_capacity; /*TODO*/                                      \
   }
+/*TODO: size_t? */
 
 typedef JVEC(char) jvec_generic;
 
 void jvec_cleanup(jvec_generic *);
 int jvec_push_back(jvec_generic *, void const *element, ptrdiff_t element_size);
 int jvec_resize(jvec_generic *, ptrdiff_t new_size, ptrdiff_t element_size);
+int jvec_reserve(jvec_generic *, ptrdiff_t new_size, ptrdiff_t element_size);
 int jvec_insert(jvec_generic *, void const *before, void const *begin,
                 ptrdiff_t count, ptrdiff_t element_size);
 
@@ -46,7 +48,8 @@ int jvec_insert(jvec_generic *, void const *before, void const *begin,
   jvec_insert((jvec_generic *)(v), (before), (begin), (count),                 \
               sizeof((v)->data[0]))
 #define JVEC_APPEND(v, begin, count) JVEC_INSERT(v, JVEC_END(v), begin, count)
-#define JVEC_RESERVE(v)
+#define JVEC_RESERVE(v, n) \
+  jvec_reserve((jvec_generic *)(v), (n), sizeof((v)->data[0]))
 
 typedef JVEC(char) jvec_char_t;
 typedef JVEC(uint64_t) jvec_uint64_t;

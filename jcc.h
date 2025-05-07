@@ -10,30 +10,25 @@
 #include "jvec.h"
 #include <stdint.h>
 #include "jcc_unget.h"
+#include "jcc_preprocess_token.h"
 
 #define JCC_CHAR_ERROR (-1)
 #define JCC_CHAR_END_OF_FILE (-2)
 #define JCC_UNRECOGNIZED (-3)
 
-typedef enum jcc_pptoken_tag {
-  jcc_pptoken_tag_header_name        = 1,
-  jcc_pptoken_tag_identifier         = 2,
-  jcc_pptoken_tag_pp_number          = 3,
-  jcc_pptoken_tag_character_constant = 4,
-  jcc_pptoken_tag_string_literal     = 5,
-  jcc_pptoken_tag_punctuator         = 6,
-  jcc_pptoken_tag_other              = 7 /* each non-white-space character that cannot be one of the above */
-} jcc_pptoken_tag;
+struct jcc_t;
+typedef struct jcc_t jcc_t;
 
-extern jvec_char_t* jcc_char1_pptokens[256];
-extern jvec_char_t* jcc_char2_pptokens[256][256];
-extern jvec_char_t jcc_char3_pptokens[256][256][256];
+/* phase1 is newline handling. */
+int jcc_phase1_getchar(jcc_t *jcc, int *pch);
 
-typedef struct jcc_pptoken_t {
-  jcc_pptoken_tag tag;
-  jvec_char_t  string;
-  /* TODO: What representations are needed? */
-} jcc_pptoken_t;
+/* phase2 is backslash line continuation. */
+int jcc_phase2_getchar(jcc_t *jcc, int *ch);
+
+/* preprocess == phase2 */
+void jcc_preprocess_backtrack_prepare(jcc_t *jcc);
+void jcc_preprocess_backtrack_cancel(jcc_t *jcc);
+void jcc_preprocess_backtrack(jcc_t *jcc);
 
 /* C compiler type enum */
 /* language and backend types must be considered different, i.e. int32 vs. int
@@ -115,6 +110,7 @@ struct cfile_t {
   int64_t position;
   cfile_t *stack;
   jfile_t *file;
+  jlist_t /*jcc_preprocess_token_t */ preprocess_tokens_free;
 };
 
 /* C compiler preprocessor directive */
@@ -217,7 +213,7 @@ struct cMember {
   ctype *type;
   char *name;
   int64_t bit_offset;
-  int64_t byte_offset;
+    int64_t byte_offset;
   cMember *next;
 };
 
@@ -281,13 +277,11 @@ cToken cgetNextToken(cSourceFile *file);
 
 /* ccode */
 
-struct jcc_t;
-typedef struct jcc_t jcc_t;
-
 struct jcc_t {
   jcc_unget_t phase1_unget;
   jcc_unget_t phase2_unget;
   jcc_unget_t phase3_unget;
+  jlist_t /*jcc_preprocess_token_t */ preprocess_tokens;
   cfile_t* cfile;
 };
 

@@ -51,6 +51,7 @@ exe:
 
 OBJS=\
  read_entire_file.$O \
+ jbase.$O \
  jcc_unget.$O \
  jerr.$O \
  jfile.$O \

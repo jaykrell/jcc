@@ -307,8 +307,7 @@ int jcc_phase2_getchar(jcc_t *jcc, int *ch)
   }
 }
 
-/* TODO: Expand into implementing all of phase 3. */
-int cpre_get_char_handling_comments(jcc_t *jcc, int *ch)
+int jcc_phase3_getchar(jcc_t *jcc, int *ch)
 /* C preprocessor scanning.
  * Read, at the phase that handles comments, turning them into spaces.
  *
@@ -318,14 +317,10 @@ int cpre_get_char_handling_comments(jcc_t *jcc, int *ch)
  * opening. Matters such as line continuation with backward slashes are handled
  * at a different layer.
  * TODO: C99/C++ comments.
- *
- * This is part of translation phase 3 and should probably become all of it.
- */
+*/
 {
   int err = 0;
-  /* If our caller did an unget to this layer, return that. */
-  if (jcc_unget_get(&jcc->phase3_unget, ch))
-    return 0;
+
   /* If next character is definitely not opening a comment, return it. */
   if (((err = jcc_phase2_getchar(jcc, ch))) || *ch != '/')
     return err;
@@ -357,15 +352,35 @@ int cpre_get_char(cpre_t *cpre, int *ch) {
   return cpre_get_char_handling_comments(cpre, ch);
 }
 
-int (*jcc_call_t)(jcc_t* jcc);
+int (*jcc_call_t)(jcc_t* jcc, size_t* recognized);
 
-int jcc_if_section(jcc_t* jcc)
+int jcc_preprocess_if_group(jcc_t* jcc, size_t* recognized)
+/*  # if constant-expression new-line group_opt
+ *  # ifdef identifier new-line group_opt
+ *  # ifndef identifier new-line group_opt
+*/
+{
+}
+
+int jcc_preprocess_elif_group(jcc_t* jcc, size_t* recognized)
+/*  # elif constant-expression new-line group_opt
+ */
+{
+}
+
+int jcc_preprocess_elif_groups_opt(jcc_t* jcc, size_t* recognized)
+/*  elif-groups elif-group
+ */
+{
+}
+
+int jcc_preprocess_if_section(jcc_t* jcc, size_t* recognized)
 /*   if-group elif-groups_opt else-group_opt endif-line
  */
 {
 }
 
-int jcc_control_line(jcc_t* jcc)
+int jcc_preprocess_control_line(jcc_t* jcc, size_t* recognized)
 /*
  *  # include pp-tokens new-line
  *  # define identifier replacement-list new-line
@@ -381,60 +396,130 @@ int jcc_control_line(jcc_t* jcc)
 {
 }
 
-int jcc_text_line(jcc_t* jcc)
+int jcc_preprocess_text_line(jcc_t* jcc, size_t* recognized)
 /* pp-tokens_opt new-line */
 {
 }
 
-int jcc_pound_nondirective(jcc_t* jcc)
+int jcc_preprocess_pound_nondirective(jcc_t* jcc, size_t* recognized)
 /* # pp-tokens new-line */
 {
 }
 
-int jcc_ppgroup(jcc_t* jcc)
+int jcc_preprocess_try_alternates_once(jcc_t* jcc, jcc_call_t* alternates, size_t* precognized)
 {
   jcc_call_t call;
-  jcc_call_t jcc_ppgroup_options[] = {
-    jcc_if_section,
-    jcc_control_line,
-    jcc_pound_nondirective,
-    jcc_text_line,
-    0
-  };
   int err = 0;
-  int i = -1;
-  while ((call = jcc_ppgroup_options[++i]))
+  size_t i = 0;
+  while ((call = alternates[i]))
   {
     int recognized = 0;
-    jcc_phase2_mark(jcc);
+    ++i;
+    jcc_preprocess_backtrack_prepare(jcc);
     if ((err = call(jcc, &recognized)))
-      return err;;
+      return err;
     if (recognized) {
-      jcc_phase2_commit(jcc);
-      i = -1;
-      continue;
+      jcc_preprocess_backtrack_cancel(jcc);
+      *precognized += 1;
+      return 0;
     }
-    jcc_phase2_backup(jcc);
+    jcc_preprocess_backtrack(jcc);
   }
   return JCC_UNRECOGNIZED;
 }
 
-int jcc_ppfile(jcc_t* jcc)
+int jcc_preprocess_try_alternates_repeatedly(jcc_t* jcc, jcc_call_t* alternates, size_t* precognized)
 {
   int err = 0;
-  int recognized = 0;
-  while (jcc_ppgroup(jcc, &recognized) && recognized)
-  {
-  }
+  size_t recognized = 0;
+  while (!(err = jcc_preprocess_try_alternates_once(jcc, alternates, &recognized)) && recognized)
+      recognized = 0;
+  return err;
 }
 
-int jcc_get_pptoken(jcc_t* jcc, jcc_pptoken_t** pptoken)
+jcc_call_t jcc_preprocess_group_parts[] = {
+  jcc_preprocess_if_section,
+  jcc_preprocess_control_line,
+  jcc_preprocess_pound_nondirective,
+  jcc_preprocess_text_line,
+  0
+};
+
+int jcc_preprocess_group_part(jcc_t* jcc, size_t* precognized)
+{
+  return jcc_preprocess_try_alternates_once(jcc, jcc_preprocess_group_parts, precognized);
+}
+
+int jcc_preprocess_group(jcc_t* jcc)
+{
+  int err = 0;
+  size_t recognized = 0;
+  while (!(err = jcc_jcc_preprocess_group_part(jcc, &recognized)) && recognized)
+    recognized = 0;
+  return err;
+}
+
+int jcc_preprocess_group_opt(jcc_t* jcc)
+{
+  size_t recognized = 0;
+  return jcc_preprocess_group(jcc, &recognized);
+}
+
+int jcc_preprocess_file(jcc_t* jcc)
+{
+  return jcc_preprocess_group_opt(jcc);
+}
+
+int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t** pptoken)
+/* Read a preprocessing token from the preprocessor.
+ *
+ * This is meant to become translation phase 3.
+ */
+{
+  int ch = 0;
+  int err = 0;
+
+  if ((*pptoken = JBASE(jcc_preprocess_token_t, list, jlist_remove_first(jcc->preprocess_tokens))))
+    return 0;
+
+  while (1) {
+    err = jcc_phase3_getchar(jcc, &ch);
+    switch (ch) {
+      case '\r':
+      case '\n':
+        start_of_line = 1;
+        break;
+      case '\v':
+      case '\f':
+      case '\t':
+      case ' ':
+        break;
+      case '#':
+        pound = start_of_line;
+        start_of_line = 0;
+        break;
+      default:
+        if (pound) {
+          cpre_directive(jcc, ch);
+        }
+        break;
+    }
+}
+
+int jcc_get_token(jcc_t *jcc, jcc_token_t** pptoken)
 /* Read a C token from the preprocessor.
  * This handles #include, #define, #undef, #if, #ifdef, etc.
  *
  * This is meant to become translation phase 4.
  */
 {
+  int ch = 0;
+  int err = 0;
+
+  if ((*pptoken = JBASE(jcc_preprocess_token_t, list, jlist_remove_first(jcc->preprocess_tokens))))
+    return 0;
+
+  err = jcc_phase3_getchar(jcc, &ch);
   int (*get)(jcc_t *, int *) = cpre_get_char;
   int start_of_line = 1;
   int pound = 0;
