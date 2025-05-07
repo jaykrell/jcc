@@ -19,6 +19,11 @@
 struct jcc_t;
 typedef struct jcc_t jcc_t;
 
+int jcc_phase1_getchar(jcc_t *jcc, int* ch);
+void jcc_phase1_unget(jcc_t *jcc, int ch);
+void jcc_phase2_unget(jcc_t *jcc, int ch);
+int jcc_phase2_getchar(jcc_t *jcc, int *ch);
+
 /* phase1 is newline handling. */
 int jcc_phase1_getchar(jcc_t *jcc, int *pch);
 

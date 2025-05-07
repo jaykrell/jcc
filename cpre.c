@@ -146,7 +146,7 @@ exit:
   return err;
 }
 
-int jcc_ppdirective(jcc_t *jcc, int ch) {
+int jcc_preprocess_find_directive(jcc_t *jcc, int ch) {
   jcc_ppdirective_t *directive = jcc_ppdirectives;
   int i = 0;
   int err = 0;
@@ -166,32 +166,6 @@ int jcc_ppdirective(jcc_t *jcc, int ch) {
   return -1;
 }
 
-int jcc_unget_get(jcc_unget_t *unget, int *value)
-/* Generic get from unget buffer (i.e. lookahead of length 1). */
-{
-  if (unget->valid) {
-    unget->valid = 0;
-    *value = unget->value;
-    return 1;
-  }
-  return 0;
-}
-
-void jcc_unget_unget(jcc_unget_t *unget, int value)
-/* Generic unget. */
-{
-  assert(!unget->valid);
-  unget->valid = 1;
-  unget->value = value;
-}
-
-void jcc_phase1_unget(jcc_t *jcc, int ch)
-/* Unget next character, using newline/carriage_returns unget buffer.
- */
-{
-  jcc_unget_unget(&jcc->unget_char, ch);
-}
-
 int jcc_translate_space(int ch)
 /* Translate whitespace except carriage return and newline to canonical space.
  * No other layer should see these characters.
@@ -206,146 +180,6 @@ int jcc_translate_space(int ch)
     return ' ';
   }
   return ch;
-}
-
-int jcc_phase1_getchar(jcc_t *jcc, int *pch)
-/* Get next character, handling newline/carriage_returns.
- * Specifically: \n returns as \n
- * \r\n returns as \n
- * \r not followed by \n returns as \n
- * Everything else is itself (which covers \n).
- * Upon seeing \r we have to readahead 1.
- * If the readahead is \n, it accepted.
- * If the readhead is not \n, it is put back ("unget").
- * As such, no other layer should have to handle or see \r.
- *
- * Translation phase 1.
- *
- * Physical source file multibyte characters are mapped, in an implementation-
- * defined manner, to the source character set (introducing new-line characters for
- * end-of-line indicators) if necessary. Trigraph sequences are replaced by
- * corresponding single-character internal representations
- */
-{
-  size_t actual = 0;
-  int err = 0;
-  unsigned char ch = 0;
-  int i = 0;
-
-  if (cpre_unget_get(&jcc->phase1_unget, pch))
-    return 0;
-
-  if ((err = jcc->cfile.file->err)) {
-    *pch = JCC_CHAR_ERROR;
-    return err;
-  }
-
-  if (jcc->cfile.file->eof) {
-    *pch = JCC_CHAR_END_OF_FILE;
-    return 0;
-  }
-
-  if ((err = jfile_read(jcc->cfile.file, &ch, 1, &actual))) {
-    *pch = JCC_CHAR_ERROR;
-    return err;
-  }
-
-  if (actual == 0) {
-    jcc->cfile.file->eof = 1;
-    *pch = JCC_CHAR_END_OF_FILE;
-    return 0;
-  }
-
-  *pch = ch;
-
-  if (ch != '\r')
-    return 0;
-
-  /* Try to read one past \r, which could be end of file. */
-
-  err = jfile_read(jcc->cfile.file, &ch, 1, &actual);
-  if (err)
-    goto return_newline;
-  if (actual == 0) {
-    jcc->cfile.file->eof = 1;
-    goto return_newline;
-  }
-
-  if (ch != '\n')
-    cpre_unget_unget(&jcc->phase1_unget, ch);
-return_newline:
-  *pch = '\n';
-  return 0;
-}
-
-void jcc_phase2_unget(jcc_t *jcc, int ch) {
-  jcc_unget_unget(&jcc->phase2_unget, ch);
-}
-
-int jcc_phase2_getchar(jcc_t *jcc, int *ch)
-/* Get next character, handling line continuations.
- * This is translation phase 2.
- *
- * Each instance of a backslash character (\) immediately followed by a new-line
- * character is deleted, splicing physical source lines to form logical source lines.
- * Only the last backslash on any physical source line shall be eligible for being part
- * of such a splice. A source file that is not empty shall end in a new-line character,
- * which shall not be immediately preceded by a backslash character before any such
- * splicing takes place
- */
-{
-  int err = 0;
-  while (1) {
-    if (cpre_unget_get(&jcc->phase2_unget, ch))
-      return 0;
-    if (((err = jcc_phase1_getchar(jcc, ch))) || *ch != '\\')
-      return err;
-    if (((err = jcc_phase1_getchar(jcc, ch))) || *ch != '\n') {
-      jcc_phase1_unget(jcc, *ch);
-      return '\\';
-    }
-  }
-}
-
-int jcc_phase3_getchar(jcc_t *jcc, int *ch)
-/* C preprocessor scanning.
- * Read, at the phase that handles comments, turning them into spaces.
- *
- * Read a character. If it is not '/', return it.
- * If it is '/', read ahead another. If that is not '*' push it back and return
- * '/'. If it is '*', then read until closing '*' and '/', which is similar to
- * opening. Matters such as line continuation with backward slashes are handled
- * at a different layer.
- * TODO: C99/C++ comments.
-*/
-{
-  int err = 0;
-
-  /* If next character is definitely not opening a comment, return it. */
-  if (((err = jcc_phase2_getchar(jcc, ch))) || *ch != '/')
-    return err;
-  /* If the second character does not complete the comment start, push it back
-   * and return the first character. */
-  if (((err = jcc_phase2_getchar(jcc, ch))) || *ch != '*') {
-    jcc_phase2_unget(jcc, *ch);
-    *ch = '/';
-    return 0;
-  }
-  while (1) {
-    /* Read until end of comment, yielding a space. */
-    while (!((err = jcc_phase2_getchar(jcc, ch))) && *ch != '*')
-      ; /* nothing */
-    if (err)
-      return err;
-    assert(*ch == '*');
-    if ((err = jcc_phase2_getchar(jcc, ch)))
-      return err;
-    if (*ch == '/') {
-      *ch = ' ';
-      return 0;
-    }
-    jcc_phase2_unget(jcc, *ch); /* put back in case it is star */
-  }
 }
 
 int cpre_get_char(cpre_t *cpre, int *ch) {

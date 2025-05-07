@@ -1,5 +1,12 @@
 #include "jcc.h"
 
+void jcc_phase1_unget(jcc_t *jcc, int ch)
+/* Unget next character, using newline/carriage_returns unget buffer.
+ */
+{
+    jcc_unget_unget(&jcc->phase1_unget, ch);
+}
+
 int jcc_phase1_getchar(jcc_t *jcc, int *pch)
 /* Get next character, handling newline/carriage_returns.
  * Specifically: \n returns as \n
@@ -22,28 +29,27 @@ int jcc_phase1_getchar(jcc_t *jcc, int *pch)
     size_t actual = 0;
     int err = 0;
     unsigned char ch = 0;
-    int i = 0;
 
-    if (cpre_unget_get(&jcc->phase1_unget, pch))
+    if (jcc_unget_get(&jcc->phase1_unget, pch))
         return 0;
 
-    if ((err = jcc->cfile.file->err)) {
+    if ((err = jcc->cfile->file->err)) {
         *pch = JCC_CHAR_ERROR;
         return err;
     }
 
-    if (jcc->cfile.file->eof) {
+    if (jcc->cfile->file->eof) {
         *pch = JCC_CHAR_END_OF_FILE;
         return 0;
     }
 
-    if ((err = jfile_read(jcc->cfile.file, &ch, 1, &actual))) {
+    if ((err = jfile_read(jcc->cfile->file, &ch, 1, &actual))) {
         *pch = JCC_CHAR_ERROR;
         return err;
     }
 
     if (actual == 0) {
-        jcc->cfile.file->eof = 1;
+        jcc->cfile->file->eof = 1;
         *pch = JCC_CHAR_END_OF_FILE;
         return 0;
     }
@@ -55,32 +61,17 @@ int jcc_phase1_getchar(jcc_t *jcc, int *pch)
 
     /* Try to read one past \r, which could be end of file. */
 
-    err = jfile_read(jcc->cfile.file, &ch, 1, &actual);
+    err = jfile_read(jcc->cfile->file, &ch, 1, &actual);
     if (err)
         goto return_newline;
     if (actual == 0) {
-        jcc->cfile.file->eof = 1;
+        jcc->cfile->file->eof = 1;
         goto return_newline;
     }
 
     if (ch != '\n')
-        cpre_unget_unget(&jcc->phase1_unget, ch);
+        jcc_unget_unget(&jcc->phase1_unget, ch);
     return_newline:
     *pch = '\n';
     return 0;
-}
-
-int jcc_translate_newlines(jcc_t* jcc, jvec_char_t* out)
-{
-    int err;
-    JVEC_RESERVE(out, 0x1000);
-    while (1)
-    {
-        int ch = 0;
-        if ((err = jcc_phase1_getchar(jcc, &ch)) && ch >= 0)
-            return err;
-        if ((err = JVEC_PUSH_BACK(out, ch)))
-            return err;
-    }
-    return err;
 }
