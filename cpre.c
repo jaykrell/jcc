@@ -307,12 +307,15 @@ int jcc_preprocess_file(jcc_t* jcc)
 int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t** pptoken)
 /* Read a preprocessing token from the preprocessor.
  *
- * This is meant to become translation phase 3.
+ * This is meant to become translation phase 3 or 4.
  */
 {
   int ch = 0;
   int err = 0;
+  int pound = 0;
+  int start_of_line = 0;
 
+  /* Handle backtracking. */
   if ((*pptoken = JBASE(jcc_preprocess_token_t, list, jlist_remove_first(jcc->preprocess_tokens))))
     return 0;
 
