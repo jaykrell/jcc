@@ -1,6 +1,11 @@
 #include "jcc.h"
 #include <assert.h>
 
+int jcc_getchar(jcc_t *jcc, int *ch)
+{
+    return jcc_phase3_getchar (jcc, ch);
+}
+
 int jcc_phase3_getchar(jcc_t *jcc, int *ch)
 /* C preprocessor scanning.
  * Read, at the phase that handles comments, turning them into spaces.

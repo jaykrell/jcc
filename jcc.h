@@ -19,21 +19,51 @@
 struct jcc_t;
 typedef struct jcc_t jcc_t;
 
+/* phase1 is newline handling. */
 int jcc_phase1_getchar(jcc_t *jcc, int* ch);
 void jcc_phase1_unget(jcc_t *jcc, int ch);
+
+/* phase2 is backslash line continuation. */
 void jcc_phase2_unget(jcc_t *jcc, int ch);
 int jcc_phase2_getchar(jcc_t *jcc, int *ch);
 
-/* phase1 is newline handling. */
-int jcc_phase1_getchar(jcc_t *jcc, int *pch);
+/* phase3 handles comments, replacing them with space. */
+int jcc_phase3_getchar(jcc_t *jcc, int *ch);
 
-/* phase2 is backslash line continuation. */
-int jcc_phase2_getchar(jcc_t *jcc, int *ch);
+/* Hide the phases. */
+int jcc_getchar(jcc_t *jcc, int *ch);
 
-/* preprocess == phase2 */
 void jcc_preprocess_backtrack_prepare(jcc_t *jcc);
 void jcc_preprocess_backtrack_cancel(jcc_t *jcc);
 void jcc_preprocess_backtrack(jcc_t *jcc);
+
+/*
+typedef struct cpre_t cpre_t;
+typedef struct cmacro_t cmacro_t;
+typedef struct cpre_unget_t cpre_unget_t;
+typedef struct cpre_t cpre_t;
+typedef struct cpre_expanding_t cpre_expanding_t;
+*/
+typedef int (*jcc_preprocess_directive_handler_t)(jcc_t *, jvec_char_t *);
+typedef struct jcc_preprocess_directive_t jcc_preprocess_directive_t;
+
+int jcc_preprocess_endif(jcc_t *jcc, jvec_char_t *body);
+int jcc_preprocess_error(jcc_t *jcc, jvec_char_t *body);
+int jcc_preprocess_else(jcc_t *jcc, jvec_char_t *body);
+int jcc_preprocess_elif(jcc_t *jcc, jvec_char_t *body);
+int jcc_preprocess_if(jcc_t *jcc, jvec_char_t *body);
+int jcc_preprocess_include(jcc_t *jcc, jvec_char_t *body);
+int jcc_preprocess_line(jcc_t *jcc, jvec_char_t *body);
+int jcc_preprocess_once(jcc_t *jcc, jvec_char_t *body);
+int jcc_preprocess_pragma(jcc_t *jcc, jvec_char_t *body);
+int jcc_preprocess_undef(jcc_t *jcc, jvec_char_t *body);
+
+int jcc_ppdirective(jcc_t *jcc, int ch);
+/*
+int cpre_translate_space(int ch);
+int cpre_get_token(jcc_t *jcc);
+int cpre_get_char(jcc_t *jcc, int *ch);
+*/
 
 /* C compiler type enum */
 /* language and backend types must be considered different, i.e. int32 vs. int

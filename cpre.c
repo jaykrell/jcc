@@ -39,11 +39,6 @@ struct cpre_t {
    */
   jhash_t macros;
   cfile_t cfile;
-
-  /* Every phase has a get and unget. unget requires a buffer. */
-  cpre_unget_t unget_char;
-  cpre_unget_t unget_comment;
-  cpre_unget_t unget_line_cont;
 };
 
 /* Because macros cannot recurse, expanding a macro is stateful.
@@ -57,48 +52,48 @@ struct jcc_macro_expanding_t {
   jvec_char_t chars;
 };
 
-struct jcc_ppdirective_t {
+struct jcc_preprocess_directive_t {
   jstring_constant_t str;
-  jcc_ppdirective_handler handler;
+  jcc_preprocess_directive_handler_t handler;
 };
 
-int jcc_pp_define(jcc_t *jcc, jvec_char_t *body) { return 0; }
+int jcc_preprocess_define(jcc_t *jcc, jvec_char_t *body) { return 0; }
 
-int jcc_pp_endif(jcc_t *jcc, jvec_char_t *body) { return 0; }
+int jcc_preprocess_endif(jcc_t *jcc, jvec_char_t *body) { return 0; }
 
-int jcc_pp_else(jcc_t *jcc, jvec_char_t *body) { return 0; }
+int jcc_preprocess_else(jcc_t *jcc, jvec_char_t *body) { return 0; }
 
-int jcc_pp_elif(jcc_t *jcc, jvec_char_t *body) { return 0; }
+int jcc_preprocess_elif(jcc_t *jcc, jvec_char_t *body) { return 0; }
 
-int jcc_pp_error(jcc_t *jcc, jvec_char_t *body) { return 0; }
+int jcc_preprocess_error(jcc_t *jcc, jvec_char_t *body) { return 0; }
 
-int jcc_pp_if(jcc_t *jcc, jvec_char_t *body) { return 0; }
+int jcc_preprocess_if(jcc_t *jcc, jvec_char_t *body) { return 0; }
 
-int jcc_pp_include(jcc_t *jcc, jvec_char_t *body) { return 0; }
+int jcc_preprocess_include(jcc_t *jcc, jvec_char_t *body) { return 0; }
 
-int jcc_pp_line(jcc_t *jcc, jvec_char_t *body) { return 0; }
+int jcc_preprocess_line(jcc_t *jcc, jvec_char_t *body) { return 0; }
 
-int jcc_pp_once(jcc_t *jcc, jvec_char_t *body) { return 0; }
+int jcc_preprocess_once(jcc_t *jcc, jvec_char_t *body) { return 0; }
 
-int jcc_pp_pragma(jcc_t *jcc, jvec_char_t *body) { return 0; }
+int jcc_preprocess_pragma(jcc_t *jcc, jvec_char_t *body) { return 0; }
 
-int jcc_pp_undef(jcc_t *jcc, jvec_char_t *body) { return 0; }
+int jcc_preprocess_undef(jcc_t *jcc, jvec_char_t *body) { return 0; }
 
-jcc_ppdirective_t jcc_ppdirectives[] = {
-    {{JSTRING_CONSTANT("define")}, jcc_pp_define},
-    {{JSTRING_CONSTANT("endif")}, jcc_pp_endif},
-    {{JSTRING_CONSTANT("elif")}, jcc_pp_elif},
-    {{JSTRING_CONSTANT("else")}, jcc_pp_else},
-    {{JSTRING_CONSTANT("error")}, jcc_pp_error},
-    {{JSTRING_CONSTANT("if")}, jcc_pp_if},
-    {{JSTRING_CONSTANT("include")}, cpre_include},
-    {{JSTRING_CONSTANT("line")}, cpre_line},
-    {{JSTRING_CONSTANT("once")}, cpre_once},
-    {{JSTRING_CONSTANT("pragma")}, cpre_pragma},
-    {{JSTRING_CONSTANT("undef")}, cpre_undef},
+jcc_preprocess_directive_t jcc_preprocess_directives[] = {
+    {{JSTRING_CONSTANT("define")}, jcc_preprocess_define},
+    {{JSTRING_CONSTANT("endif")}, jcc_preprocess_endif},
+    {{JSTRING_CONSTANT("elif")}, jcc_preprocess_elif},
+    {{JSTRING_CONSTANT("else")}, jcc_preprocess_else},
+    {{JSTRING_CONSTANT("error")}, jcc_preprocess_error},
+    {{JSTRING_CONSTANT("if")}, jcc_preprocess_if},
+    {{JSTRING_CONSTANT("include")}, jcc_preprocess_include},
+    {{JSTRING_CONSTANT("line")}, jcc_preprocess_line},
+    {{JSTRING_CONSTANT("once")}, jcc_preprocess_once},
+    {{JSTRING_CONSTANT("pragma")}, jcc_preprocess_pragma},
+    {{JSTRING_CONSTANT("undef")}, jcc_preprocess_undef},
 };
 
-int jcc_is_ppdirective_char(int ch) {
+int jcc_is_preprocess_directive_char(int ch) {
   switch (ch) {
   case 'a': /* pragma */
   case 'c': /* include */
@@ -122,7 +117,7 @@ int jcc_is_ppdirective_char(int ch) {
 
 void jcc_report_error(const char *a, const char *b) { fprintf(stderr, a, b); }
 
-int jcc_ppdirective_found(jcc_t *jcc, jcc_ppdirective_t *directive)
+int jcc_preprocess_directive_found(jcc_t *jcc, jcc_preprocess_directive_t *directive)
 /* Read to newline and call handler. */
 {
   int i = 0;
@@ -132,7 +127,7 @@ int jcc_ppdirective_found(jcc_t *jcc, jcc_ppdirective_t *directive)
   /* read to end of line or file */
   /* further handling is done by each handler */
   while (1) {
-    if ((err = cpre_get_char(cpre, &i)))
+    if ((err = jcc_getchar(jcc, &i)))
       goto exit;
     if (i < 0 || i == '\n')
       break;
@@ -140,26 +135,26 @@ int jcc_ppdirective_found(jcc_t *jcc, jcc_ppdirective_t *directive)
     if ((err = JVEC_PUSH_BACK(&body, &ch)))
       goto exit;
   }
-  err = directive->handler(cpre, &body);
+  err = directive->handler(jcc, &body);
 exit:
   JVEC_CLEANUP(&body);
   return err;
 }
 
 int jcc_preprocess_find_directive(jcc_t *jcc, int ch) {
-  jcc_ppdirective_t *directive = jcc_ppdirectives;
+  jcc_preprocess_directive_t *directive = jcc_preprocess_directives;
   int i = 0;
   int err = 0;
   char buf[7] = {0};
   buf[0] = ch;
   for (i = 1; i < 7; ++i) {
-    if (((err = jcc_phase2_getchar(jcc, &ch))) || !jcc_is_ppdirective_char(ch))
+    if (((err = jcc_getchar(jcc, &ch))) || !jcc_is_preprocess_directive_char(ch))
       break;
     buf[i] = ch;
   }
-  for (i = 0; i < JCOUNT(directives); ++i) {
+  for (i = 0; i < JCOUNT(jcc_preprocess_directives); ++i) {
     if (i == directive->str.size && memcmp(buf, directive->str.data, i) == 0)
-      return jcc_ppdirective_found(cpre, directive);
+      return jcc_preprocess_directive_found(jcc, directive);
     ++directive;
   }
   cpre_report_error("ERROR: Unknown directive %s\n", buf);
@@ -320,7 +315,7 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t** pptoken)
     return 0;
 
   while (1) {
-    err = jcc_phase3_getchar(jcc, &ch);
+    err = jcc_getchar(jcc, &ch);
     switch (ch) {
       case '\r':
       case '\n':
