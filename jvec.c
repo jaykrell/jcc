@@ -13,7 +13,8 @@ void jvec_cleanup(jvec_generic *v) {
   v->data = 0;
 }
 
-int jvec_reserve(jvec_generic *v, ptrdiff_t new_capacity, ptrdiff_t element_size) {
+int jvec_reserve(jvec_generic *v, ptrdiff_t new_capacity,
+                 ptrdiff_t element_size) {
   ptrdiff_t capacity = v->capacity;
   if (new_capacity > capacity) {
     char *new_data = (char *)realloc(v->data, new_capacity * element_size);

@@ -48,7 +48,7 @@ int jvec_insert(jvec_generic *, void const *before, void const *begin,
   jvec_insert((jvec_generic *)(v), (before), (begin), (count),                 \
               sizeof((v)->data[0]))
 #define JVEC_APPEND(v, begin, count) JVEC_INSERT(v, JVEC_END(v), begin, count)
-#define JVEC_RESERVE(v, n) \
+#define JVEC_RESERVE(v, n)                                                     \
   jvec_reserve((jvec_generic *)(v), (n), sizeof((v)->data[0]))
 
 typedef JVEC(char) jvec_char_t;

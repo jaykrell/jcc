@@ -5,7 +5,7 @@
 
 #include <stddef.h>
 
-char* jbase(char* value, size_t offset);
+char *jbase(char *value, size_t offset);
 
 #define JBASE(container, member, value)                                        \
   ((container *)jbase(((char *)value), offsetof(container, member)))

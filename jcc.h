@@ -3,14 +3,14 @@
 
 /* #include "jbool.h" */
 /* #include "jpaste.h" */
+#include "jcc_preprocess_token.h"
+#include "jcc_unget.h"
 #include "jfile.h"
 #include "jmap.h"
 #include "jstr.h"
 #include "jtype.h"
 #include "jvec.h"
 #include <stdint.h>
-#include "jcc_unget.h"
-#include "jcc_preprocess_token.h"
 
 #define JCC_CHAR_ERROR (-1)
 #define JCC_CHAR_END_OF_FILE (-2)
@@ -20,7 +20,7 @@ struct jcc_t;
 typedef struct jcc_t jcc_t;
 
 /* phase1 is newline handling. */
-int jcc_phase1_getchar(jcc_t *jcc, int* ch);
+int jcc_phase1_getchar(jcc_t *jcc, int *ch);
 void jcc_phase1_unget(jcc_t *jcc, int ch);
 
 /* phase2 is backslash line continuation. */
@@ -248,7 +248,7 @@ struct cMember {
   ctype *type;
   char *name;
   int64_t bit_offset;
-    int64_t byte_offset;
+  int64_t byte_offset;
   cMember *next;
 };
 
@@ -317,7 +317,7 @@ struct jcc_t {
   jcc_unget_t phase2_unget;
   jcc_unget_t phase3_unget;
   jlist_t /*jcc_preprocess_token_t */ preprocess_tokens;
-  cfile_t* cfile;
+  cfile_t *cfile;
 };
 
 #endif

@@ -7,10 +7,10 @@
 extern "C" {
 #endif
 
-#define JSPAN(T)  \
-  struct {        \
-    T *data;      \
-    size_t size;  \
+#define JSPAN(T)                                                               \
+  struct {                                                                     \
+    T *data;                                                                   \
+    size_t size;                                                               \
   }
 
 typedef JSPAN(char) jspan_generic;
