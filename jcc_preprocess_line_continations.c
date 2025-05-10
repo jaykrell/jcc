@@ -17,17 +17,21 @@ int jcc_phase2_getchar(jcc_t *jcc, int *pch)
  * character before any such splicing takes place
  */
 {
-  int err = 0;
+  int ch;
+  int err;
   if (jcc_unget_get(&jcc->phase2_unget, pch))
     return 0;
   while (1) {
-    err = jcc_phase1_getchar(jcc, ch);
-    if (err || *ch != '\\')
+    err = jcc_phase1_getchar(jcc, pch);
+    if (err || *pch != '\\')
       return err;
-    err = jcc_phase1_getchar(jcc, ch);
-    if (err || *ch != '\n') {
-      jcc_phase1_unget(jcc, *ch);
-      *ch = '\\';
+    err = jcc_phase1_getchar(jcc, pch);
+    ch = *pch;
+    if (err)
+      return err;
+    if (ch != '\n') {
+      jcc_phase1_unget(jcc, ch);
+      *pch = '\\';
       return err;
     }
   }
