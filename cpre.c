@@ -1,6 +1,5 @@
 /* C preprocessor. */
 
-#include "cpre_internal.h"
 #include "jcc.h"
 #include "jcommon.h"
 #include "jcount.h"
