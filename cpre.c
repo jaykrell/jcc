@@ -327,6 +327,7 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
 
   int jcc_get_token(jcc_t * jcc, jcc_token_t * *pptoken)
   /* Read a C token from the preprocessor.
+   * C tokens and preprocessor tokens are almost but not quite the same.
    * This handles #include, #define, #undef, #if, #ifdef, etc.
    *
    * This is meant to become translation phase 4.
@@ -334,19 +335,16 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
   {
     int ch = 0;
     int err = 0;
+    int start_of_line = 1;
+    int pound = 0;
+    int ch = 0;
+    int err = 0;
 
     if ((*pptoken = JBASE(jcc_preprocess_token_t, list,
                           jlist_remove_first(jcc->preprocess_tokens))))
       return 0;
 
-    err = jcc_phase3_getchar(jcc, &ch);
-    int (*get)(jcc_t *, int *) = cpre_get_char;
-    int start_of_line = 1;
-    int pound = 0;
-    int ch = 0;
-    int err = 0;
-    if ((err = get(jcc, &ch)))
-      goto exit;
+    err = jcc_getchar(jcc, &ch);
     assert(ch != '\v');
     assert(ch != '\f');
     assert(ch != '\t');
@@ -367,7 +365,7 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
       break;
     default:
       if (pound) {
-        cpre_directive(jcc, ch);
+        jcc_preprocess_find_directive(jcc, ch);
       }
       break;
     }
