@@ -298,7 +298,7 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
 
   /* Handle backtracking. */
   if ((*pptoken = JBASE(jcc_preprocess_token_t, list,
-                        jlist_remove_first(jcc->preprocess_tokens))))
+                        jlist_remove_first(&jcc->preprocess_tokens))))
     return 0;
 
   while (1) {
@@ -333,42 +333,5 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
    * This is meant to become translation phase 4.
    */
   {
-    int ch = 0;
-    int err = 0;
-    int start_of_line = 1;
-    int pound = 0;
-    int ch = 0;
-    int err = 0;
-
-    if ((*pptoken = JBASE(jcc_preprocess_token_t, list,
-                          jlist_remove_first(jcc->preprocess_tokens))))
-      return 0;
-
-    err = jcc_getchar(jcc, &ch);
-    assert(ch != '\v');
-    assert(ch != '\f');
-    assert(ch != '\t');
-    assert(ch != '\r');
-    switch (ch) {
-    case '\r':
-    case '\n':
-      start_of_line = 1;
-      break;
-    case '\v':
-    case '\f':
-    case '\t':
-    case ' ':
-      break;
-    case '#':
-      pound = start_of_line;
-      start_of_line = 0;
-      break;
-    default:
-      if (pound) {
-        jcc_preprocess_find_directive(jcc, ch);
-      }
-      break;
-    }
-  exit:
-    return err;
+    return 0;
   }
