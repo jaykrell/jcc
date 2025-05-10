@@ -1,5 +1,10 @@
-#include "jcc.h"
 #include <assert.h>
+
+typedef struct jcc_t jcc_t;
+int jcc_phase2_getchar(jcc_t *jcc, int *ch);
+int jcc_phase3_getchar(jcc_t *jcc, int *ch);
+int jcc_getchar(jcc_t *jcc, int *ch);
+void jcc_phase2_unget(jcc_t *jcc, int ch);
 
 int jcc_getchar(jcc_t *jcc, int *ch) { return jcc_phase3_getchar(jcc, ch); }
 
