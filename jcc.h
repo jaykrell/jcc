@@ -28,7 +28,10 @@ void jcc_phase2_unget(jcc_t *jcc, int ch);
 int jcc_phase2_getchar(jcc_t *jcc, int *ch);
 
 /* phase3 handles comments, replacing them with space. */
-int jcc_phase3_getchar(jcc_t *jcc, int *ch);
+/* int jcc_phase3_getchar(jcc_t *jcc, int *ch); */
+/* This is the intuitive last phase that gets characters before higher level constructs
+ * so the phase notion can be hidden. */
+int jcc_getchar(jcc_t *jcc, int *ch);
 
 /* Hide the phases. */
 int jcc_getchar(jcc_t *jcc, int *ch);

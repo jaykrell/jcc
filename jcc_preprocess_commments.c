@@ -2,13 +2,11 @@
 
 typedef struct jcc_t jcc_t;
 int jcc_phase2_getchar(jcc_t *jcc, int *ch);
-int jcc_phase3_getchar(jcc_t *jcc, int *ch);
 int jcc_getchar(jcc_t *jcc, int *ch);
 void jcc_phase2_unget(jcc_t *jcc, int ch);
+int jcc_getchar(jcc_t *jcc, int *pch);
 
-int jcc_getchar(jcc_t *jcc, int *ch) { return jcc_phase3_getchar(jcc, ch); }
-
-int jcc_phase3_getchar(jcc_t *jcc, int *pch)
+int jcc_getchar(jcc_t *jcc, int *pch)
 /* C preprocessor scanning.
  * Read, at the phase that handles comments, turning them into spaces.
  *
@@ -45,7 +43,7 @@ int jcc_phase3_getchar(jcc_t *jcc, int *pch)
       return err;
     if (*pch != '*')
       continue;
-  jcc_phase3_getchar_star:
+  jcc_getchar_star:
     /* After star, check for slash. */
     err = jcc_phase2_getchar(jcc, pch);
     if (err)
@@ -58,6 +56,6 @@ int jcc_phase3_getchar(jcc_t *jcc, int *pch)
     }
     /* Otherwise it was star not-slash, continue. */
     if (ch == '*')
-      goto jcc_phase3_getchar_star;
+      goto jcc_getchar_star;
   }
 }
