@@ -142,14 +142,19 @@ exit:
 }
 
 int jcc_preprocess_find_directive(jcc_t *jcc, int ch) {
-  jcc_preprocess_directive_t *directive = jcc_preprocess_directives;
+  jcc_preprocess_directive_t *directive = 0;;
   int i = 0;
   int err = 0;
-  char buf[7] = {0};
+  char buf[7]={0};
+
+  for (i = 0; i < 7; ++i)
+    buf[i] = 0;
+  directive = jcc_preprocess_directives;
   buf[0] = ch;
+
   for (i = 1; i < 7; ++i) {
-    if (((err = jcc_getchar(jcc, &ch))) ||
-        !jcc_is_preprocess_directive_char(ch))
+    err = jcc_getchar(jcc, &ch);
+    if (err || !jcc_is_preprocess_directive_char(ch))
       break;
     buf[i] = ch;
   }
@@ -285,29 +290,39 @@ int jcc_preprocess_group_opt(jcc_t *jcc) {
 
 int jcc_preprocess_file(jcc_t *jcc) { return jcc_preprocess_group_opt(jcc); }
 
+int jcc_preprocess_pound_lex(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
+{
+}
+
 int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
 /* Read a preprocessing token from the preprocessor.
  *
  * This is meant to become translation phase 3 or 4.
+ *
+ * Preprocessor tokens are similar to tokens, but not always the same.
  */
 {
   int ch = 0;
   int err = 0;
   int pound = 0;
   int start_of_line = 0;
-
-  /* Handle backtracking. */
-  if ((*pptoken = JBASE(jcc_preprocess_token_t, list,
-                        jlist_remove_first(&jcc->preprocess_tokens))))
-    return 0;
+  jcc_preprocess_token_t *ptoken;
 
   while (1) {
+    /* Handle backtracking. */
+    *pptoken = 0;
+    ptoken = JBASE(jcc_preprocess_token_t, list, jlist_remove_first(&jcc->preprocess_tokens));
+    if (ptoken) {
+      *pptoken = ptoken;
+      return 0;
+    }
     err = jcc_getchar(jcc, &ch);
     switch (ch) {
     case '\r':
     case '\n':
       start_of_line = 1;
       break;
+    /* Vertical whitespace does not change start_of_line. */
     case '\v':
     case '\f':
     case '\t':
@@ -319,7 +334,7 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
       break;
     default:
       if (pound) {
-        cpre_directive(jcc, ch);
+        jcc_preprocess_pound_lex(jcc, ch);
       }
       break;
     }

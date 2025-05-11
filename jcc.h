@@ -16,6 +16,8 @@
 #define JCC_CHAR_END_OF_FILE (-2)
 #define JCC_UNRECOGNIZED (-3)
 
+extern int jcc_ch;
+
 struct jcc_t;
 typedef struct jcc_t jcc_t;
 
@@ -321,6 +323,7 @@ struct jcc_t {
   jcc_unget_t phase3_unget;
   jlist_t /*jcc_preprocess_token_t */ preprocess_tokens;
   cfile_t *cfile;
+  int ch;
 };
 
 #endif
