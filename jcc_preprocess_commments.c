@@ -20,8 +20,8 @@ int jcc_phase3_getchar(jcc_t *jcc, int *pch)
  * TODO: C99/C++ comments (optional, subject to command line switches)
  */
 {
-  int err;
-  int ch;
+  int err = 0;
+  int ch = 0;
 
   /* If next character is definitely not opening a comment, return it. */
   err = jcc_phase2_getchar(jcc, pch);
