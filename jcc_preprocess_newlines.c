@@ -26,32 +26,33 @@ int jcc_phase1_getchar(jcc_t *jcc, int *pch)
  * corresponding single-character internal representations
  */
 {
-  size_t actual = 0;
-  int err = 0;
-  unsigned char ch = 0;
+  size_t actual=0;
+  int err=0;
+  unsigned char ch=0;
 
   if (jcc_unget_get(&jcc->phase1_unget, pch))
     return 0;
 
-  if ((err = jcc->cfile->file->err)) {
+  err = jcc->cfile->file->err;
+  if (err) {
+return_err:
     *pch = JCC_CHAR_ERROR;
     return err;
   }
 
   if (jcc->cfile->file->eof) {
+return_eof:
     *pch = JCC_CHAR_END_OF_FILE;
     return 0;
   }
 
-  if ((err = jfile_read(jcc->cfile->file, &ch, 1, &actual))) {
-    *pch = JCC_CHAR_ERROR;
-    return err;
-  }
+  err = jfile_read(jcc->cfile->file, &ch, 1, &actual);
+  if (err)
+    goto return_err;
 
   if (actual == 0) {
     jcc->cfile->file->eof = 1;
-    *pch = JCC_CHAR_END_OF_FILE;
-    return 0;
+    goto return_eof;
   }
 
   *pch = ch;

@@ -8,7 +8,7 @@ void jcc_phase2_unget(jcc_t *jcc, int ch);
 
 int jcc_getchar(jcc_t *jcc, int *ch) { return jcc_phase3_getchar(jcc, ch); }
 
-int jcc_phase3_getchar(jcc_t *jcc, int *ch)
+int jcc_phase3_getchar(jcc_t *jcc, int *pch)
 /* C preprocessor scanning.
  * Read, at the phase that handles comments, turning them into spaces.
  *
@@ -20,31 +20,43 @@ int jcc_phase3_getchar(jcc_t *jcc, int *ch)
  * TODO: C99/C++ comments (optional, subject to command line switches)
  */
 {
-  int err = 0;
+  int err;
+  int ch;
 
   /* If next character is definitely not opening a comment, return it. */
-  if (((err = jcc_phase2_getchar(jcc, ch))) || *ch != '/')
+  err = jcc_phase2_getchar(jcc, pch);
+  if (err || *pch != '/')
     return err;
   /* If the second character does not complete the comment start, push it back
    * and return the first character. */
-  if (((err = jcc_phase2_getchar(jcc, ch))) || *ch != '*') {
-    jcc_phase2_unget(jcc, *ch);
-    *ch = '/';
+  err = jcc_phase2_getchar(jcc, pch);
+  if (err) return err;
+  ch = *pch;
+  if (ch != '*') {
+    jcc_phase2_unget(jcc, ch);
+    *pch = '/';
     return 0;
   }
   while (1) {
-    /* Read until end of comment, yielding a space. */
-    while (!((err = jcc_phase2_getchar(jcc, ch))) && *ch != '*')
-      ; /* nothing */
+    /* Read until end of comment, i.e. star slash, yielding a space. */
+    err = jcc_phase2_getchar(jcc, pch);
     if (err)
       return err;
-    assert(*ch == '*');
-    if ((err = jcc_phase2_getchar(jcc, ch)))
+    if (*pch != '*')
+      continue;
+star:
+    /* After star, check for slash. */
+    err = jcc_phase2_getchar(jcc, pch);
+    if (err)
       return err;
-    if (*ch == '/') {
-      *ch = ' ';
+    /* If star slash, return space. */
+    ch = *pch;
+    if (ch == '/') {
+      *pch = ' ';
       return 0;
     }
-    jcc_phase2_unget(jcc, *ch); /* put back in case it is star */
+    /* Otherwise it was star not-slash, continue. */
+    if (ch == '*')
+      goto star;
   }
 }
