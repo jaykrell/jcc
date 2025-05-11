@@ -30,7 +30,8 @@ int jcc_phase3_getchar(jcc_t *jcc, int *pch)
   /* If the second character does not complete the comment start, push it back
    * and return the first character. */
   err = jcc_phase2_getchar(jcc, pch);
-  if (err) return err;
+  if (err)
+    return err;
   ch = *pch;
   if (ch != '*') {
     jcc_phase2_unget(jcc, ch);
@@ -44,7 +45,7 @@ int jcc_phase3_getchar(jcc_t *jcc, int *pch)
       return err;
     if (*pch != '*')
       continue;
-jcc_phase3_getchar_star:
+  jcc_phase3_getchar_star:
     /* After star, check for slash. */
     err = jcc_phase2_getchar(jcc, pch);
     if (err)
