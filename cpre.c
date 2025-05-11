@@ -290,8 +290,20 @@ int jcc_preprocess_group_opt(jcc_t *jcc) {
 
 int jcc_preprocess_file(jcc_t *jcc) { return jcc_preprocess_group_opt(jcc); }
 
-int jcc_preprocess_pound_lex(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
+int jcc_preprocess_pound_lex(jcc_t *jcc, int ch)
 {
+  char directive[32];
+  int idir=1;
+
+  jmemset0(directive, sizeof(directive));
+  directive[0] = ch;
+  while (idir < JCOUNT(directive))
+  {
+    err = jcc_getchar(jcc, &ch);
+    if (err) return err;
+    directive[i] = ch;
+
+  }
 }
 
 int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
@@ -309,7 +321,7 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
   jcc_preprocess_token_t *ptoken;
 
   while (1) {
-    /* Handle backtracking. */
+    /* Handle queuing and backtracking. */
     *pptoken = 0;
     ptoken = JBASE(jcc_preprocess_token_t, list, jlist_remove_first(&jcc->preprocess_tokens));
     if (ptoken) {

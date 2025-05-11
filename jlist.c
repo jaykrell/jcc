@@ -50,22 +50,31 @@ jbool jlist_is_empty(jlist_t *list) {
   return !list->flink || list->flink == list;
 }
 
-jlist_t *jlist_remove_element(jlist_t *list, jlist_t *element) {
+static jlist_t *jlist_remove_element_internal(jlist_t *element) {
+  jlist_t *flink = element->flink;
+  jlist_t *blink = element->blink;
+  flink->blink = blink;
+  blink->flink = flink;
+  return element;
+}
+
+static jlist_t *jlist_remove_element_from_list(jlist_t *list, jlist_t *element) {
   if (list != element && element) {
-    jlist_t *flink = element->flink;
-    jlist_t *blink = element->blink;
-    flink->blink = blink;
-    blink->flink = flink;
+    jlist_remove_element_internal(element);
   }
   return element;
 }
 
+void jlist_remove_element(jlist_t *element) {
+  jlist_remove_element_internal (element);
+}
+
 jlist_t *jlist_remove_first(jlist_t *list) {
-  return jlist_remove_element(list, list ? list->flink : 0);
+  return jlist_remove_element_from_list(list, list ? list->flink : 0);
 }
 
 jlist_t *jlist_remove_last(jlist_t *list) {
-  return jlist_remove_element(list, list ? list->blink : 0);
+  return jlist_remove_element_from_list(list, list ? list->blink : 0);
 }
 
 uint64_t jlist_iterate(jlist_t *list,

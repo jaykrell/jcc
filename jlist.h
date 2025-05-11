@@ -33,8 +33,8 @@ void jlist_prepend(jlist_t *list, jlist_t *element);
 /* Remove and return the first element. */
 jlist_t *jlist_remove_first(jlist_t *list);
 
-/* Remove this element from its list, and for convenience, return it. */
-/*jlist_t *jlist_remove_element(jlist_t *element);*/
+/* Remove this element from its list. */
+void jlist_remove_element(jlist_t *element);
 
 /* Remove and return the last element. */
 jlist_t *jlist_remove_last(jlist_t *list);
