@@ -44,7 +44,7 @@ int jcc_phase3_getchar(jcc_t *jcc, int *pch)
       return err;
     if (*pch != '*')
       continue;
-star:
+jcc_phase3_getchar_star:
     /* After star, check for slash. */
     err = jcc_phase2_getchar(jcc, pch);
     if (err)
@@ -57,6 +57,6 @@ star:
     }
     /* Otherwise it was star not-slash, continue. */
     if (ch == '*')
-      goto star;
+      goto jcc_phase3_getchar_star;
   }
 }
