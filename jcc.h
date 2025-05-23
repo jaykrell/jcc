@@ -3,7 +3,7 @@
 
 /* #include "jbool.h" */
 /* #include "jpaste.h" */
-#include "jcc_preprocess_token.h"
+/*#include "jcc_preprocess_token.h"*/
 #include "jcc_unget.h"
 #include "jfile.h"
 #include "jmap.h"
@@ -11,6 +11,7 @@
 #include "jtype.h"
 #include "jvec.h"
 #include <stdint.h>
+#include "jcc_token.h"
 
 #define JCC_CHAR_ERROR (-1)
 #define JCC_CHAR_END_OF_FILE (-2)
@@ -150,7 +151,7 @@ struct cfile_t {
   int64_t position;
   cfile_t *stack;
   jfile_t *file;
-  jlist_t /*jcc_preprocess_token_t */ preprocess_tokens_free;
+  jlist_t /*jcc_token_t */ tokens_free;
 };
 
 /* C compiler preprocessor directive */
@@ -321,8 +322,9 @@ struct jcc_t {
   jcc_unget_t phase1_unget;
   jcc_unget_t phase2_unget;
   jcc_unget_t phase3_unget;
-  jlist_t /*jcc_preprocess_token_t */ preprocess_tokens;
+  jlist_t /*jcc_token_t */ tokens;
   cfile_t *cfile;
+  jcc_token_t* token;
   int ch;
 };
 

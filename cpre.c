@@ -211,6 +211,20 @@ int jcc_preprocess_if_section(jcc_t *jcc, size_t *recognized)
  */
 {}
 
+jcc_token_t jcc_token_define;
+jcc_token_t jcc_token_error;
+jcc_token_t jcc_token_line;
+jcc_token_t jcc_token_include;
+jcc_token_t jcc_token_pragma;
+
+void jcc_initialize_tokensline(void)
+{
+}
+
+int jcc_lex_candidate_token(jcc_t *jcc, size_t *recognized)
+{
+]
+
 int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
 /*
  *  # include pp-tokens new-line
@@ -224,7 +238,34 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
  *  # pragma pp-tokens_opt new-line
  *  # new-line
  */
-{}
+{
+  int err;
+  int ch;
+  if (jcc->ch != '#')
+    return JCC_UNRECOGNIZED;
+  while (1)
+  {
+    err = jcc_getchar(jcc, &ch);
+    if (err) return err;
+  switch (ch) {
+    case '\n':
+      return 1;
+    case 'd':
+      return jcc_lex_candidate_token(jcc, &jcc_token_define);
+    case 'u':
+      return jcc_lex_candidate_token(jcc, &jcc_token_undef);
+    case 'l':
+      return jcc_lex_candidate_token(jcc, &jcc_token_line);
+    case 'e':
+      return jcc_lex_candidate_token(jcc, &jcc_token_error);
+    case 'i':
+      return jcc_lex_candidate_token(jcc, &jcc_token_include);
+    case 'p':
+      return jcc_lex_candidate_token(jcc, &jcc_token_pragma);
+  }
+  }
+  return JCC_UNRECOGNIZED;
+}
 
 int jcc_preprocess_text_line(jcc_t *jcc, size_t *recognized)
 /* pp-tokens_opt new-line */
@@ -267,8 +308,10 @@ int jcc_preprocess_try_alternates_repeatedly(jcc_t *jcc, jcc_call_t *alternates,
 }
 
 jcc_call_t jcc_preprocess_group_parts[] = {
-    jcc_preprocess_if_section, jcc_preprocess_control_line,
-    jcc_preprocess_pound_nondirective, jcc_preprocess_text_line, 0};
+    jcc_preprocess_if_section,
+    jcc_preprocess_control_line,
+    jcc_preprocess_pound_nondirective,
+    jcc_preprocess_text_line, 0};
 
 int jcc_preprocess_group_part(jcc_t *jcc, size_t *precognized) {
   return jcc_preprocess_try_alternates_once(jcc, jcc_preprocess_group_parts,
@@ -288,7 +331,19 @@ int jcc_preprocess_group_opt(jcc_t *jcc) {
   return jcc_preprocess_group(jcc, &recognized);
 }
 
-int jcc_preprocess_file(jcc_t *jcc) { return jcc_preprocess_group_opt(jcc); }
+int jcc_preprocess_file(jcc_t *jcc) {
+  return jcc_preprocess_group_opt(jcc);
+}
+
+int jcc_preprocess_get_identifier(jcc_t *jcc, jvec_char_t* identifier)
+{
+  identifier->size = 0;
+}
+
+int jcc_preprocess_get_identifier(jcc_t *jcc, jvec_char_t* identifier)
+{
+  identifier->size = 0;
+}
 
 int jcc_preprocess_pound_lex(jcc_t *jcc, int ch)
 {
@@ -297,7 +352,7 @@ int jcc_preprocess_pound_lex(jcc_t *jcc, int ch)
 
   jmemset0(directive, sizeof(directive));
   directive[0] = ch;
-  while (idir < JCOUNT(directive))
+  while (idir < JCOUNT(directive) && jcc_is_identifier_char(ch))
   {
     err = jcc_getchar(jcc, &ch);
     if (err) return err;
