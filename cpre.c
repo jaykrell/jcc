@@ -149,7 +149,6 @@ exit:
 
 int jcc_preprocess_find_directive(jcc_t *jcc, int ch) {
   jcc_preprocess_directive_t *directive = 0;
-  ;
   int i = 0;
   int err = 0;
   char buf[7] = {0};
@@ -256,8 +255,8 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
  *  # new-line
  */
 {
-  int err;
-  int ch;
+  int err=0;
+  int ch=0;
   if (jcc->ch != '#')
     return JCC_UNRECOGNIZED;
   while (1) {
