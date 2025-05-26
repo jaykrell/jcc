@@ -58,7 +58,8 @@ static jlist_t *jlist_remove_element_internal(jlist_t *element) {
   return element;
 }
 
-static jlist_t *jlist_remove_element_from_list(jlist_t *list, jlist_t *element) {
+static jlist_t *jlist_remove_element_from_list(jlist_t *list,
+                                               jlist_t *element) {
   if (list != element && element) {
     jlist_remove_element_internal(element);
   }
@@ -66,7 +67,7 @@ static jlist_t *jlist_remove_element_from_list(jlist_t *list, jlist_t *element) 
 }
 
 void jlist_remove_element(jlist_t *element) {
-  jlist_remove_element_internal (element);
+  jlist_remove_element_internal(element);
 }
 
 jlist_t *jlist_remove_first(jlist_t *list) {

@@ -10,7 +10,7 @@ int jcc_is_universal_xid_start(int ch);
 int jcc_is_xid_continue(int ch);
 int jcc_is_universal_xid_continue(int ch);
 
-int jcc_is_keyword(jvec_char_t*);
+int jcc_is_keyword(jvec_char_t *);
 
 typedef enum jcc_token_tag {
   jcc_token_tag_keyword = 1,
@@ -18,7 +18,7 @@ typedef enum jcc_token_tag {
   jcc_token_tag_string_literal = 3,
   jcc_token_tag_punctuator = 4,
   jcc_token_tag_constant = 5,
-/*-----------------------------------------*/
+  /*-----------------------------------------*/
   jcc_token_tag_integer_constant = 6,
   jcc_token_tag_floating_constant = 7,
   jcc_token_tag_enumeration_constant = 8,

@@ -3,7 +3,7 @@
 #include "jbase.h"
 #include "jcommon.h"
 #if _MSC_VER
-#pragma warning(disable:4100) /* unused parameter */
+#pragma warning(disable : 4100) /* unused parameter */
 #endif
 
 int jstdio_file_get_size(jfile_t *self, size_t *size) { return -1; }

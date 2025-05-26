@@ -4,6 +4,7 @@
 /* #include "jbool.h" */
 /* #include "jpaste.h" */
 /*#include "jcc_preprocess_token.h"*/
+#include "jcc_token.h"
 #include "jcc_unget.h"
 #include "jfile.h"
 #include "jmap.h"
@@ -11,7 +12,6 @@
 #include "jtype.h"
 #include "jvec.h"
 #include <stdint.h>
-#include "jcc_token.h"
 
 #define JCC_CHAR_ERROR (-1)
 #define JCC_CHAR_END_OF_FILE (-2)
@@ -32,8 +32,8 @@ int jcc_phase2_getchar(jcc_t *jcc, int *ch);
 
 /* phase3 handles comments, replacing them with space. */
 /* int jcc_phase3_getchar(jcc_t *jcc, int *ch); */
-/* This is the intuitive last phase that gets characters before higher level constructs
- * so the phase notion can be hidden. */
+/* This is the intuitive last phase that gets characters before higher level
+ * constructs so the phase notion can be hidden. */
 int jcc_getchar(jcc_t *jcc, int *ch);
 
 /* Hide the phases. */
@@ -324,7 +324,7 @@ struct jcc_t {
   jcc_unget_t phase3_unget;
   jlist_t /*jcc_token_t */ tokens;
   cfile_t *cfile;
-  jcc_token_t* token;
+  jcc_token_t *token;
   int ch;
 };
 

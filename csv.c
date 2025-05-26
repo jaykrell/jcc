@@ -187,8 +187,7 @@ commas and quotes do contribute to field size. */
   }
 }
 
-static
-void csv_index_cleanup(csv_index_file_t *self) {
+static void csv_index_cleanup(csv_index_file_t *self) {
   JVEC_CLEANUP(&self->index_file_path);
   jfile_close(self->file_r);
   jfile_close(self->file_w);
@@ -196,8 +195,7 @@ void csv_index_cleanup(csv_index_file_t *self) {
   free(self);
 }
 
-static
-int csv_index_file(csv_index_file_t *self, char *file_path) {
+static int csv_index_file(csv_index_file_t *self, char *file_path) {
   int err = 0;
   while (!self->done) {
     if ((err = csv_index_file_read_line(self)))
@@ -209,8 +207,7 @@ exit:
   return err;
 }
 
-static
-int csv_index_file_open(csv_index_file_t *self, char *file_path) {
+static int csv_index_file_open(csv_index_file_t *self, char *file_path) {
   int err = 0;
   self->file_path = file_path;
   if ((err = JVEC_APPEND(&self->index_file_path, file_path, strlen(file_path))))
