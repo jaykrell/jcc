@@ -322,7 +322,8 @@ struct jcc_t {
   jcc_unget_t phase1_unget;
   jcc_unget_t phase2_unget;
   jcc_unget_t phase3_unget;
-  jlist_t /*jcc_token_t */ tokens;
+  jlist_t /*jcc_token_t*/ commited_tokens;
+  jlist_t /*jcc_token_t*/ queued_tokens;
   cfile_t *cfile;
   jcc_token_t *token;
   int ch;

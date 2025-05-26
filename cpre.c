@@ -227,6 +227,8 @@ int jcc_preprocess_if_section(jcc_t *jcc, size_t *recognized)
   return -1;
 }
 
+jcc_token_t jcc_token_pound;
+jcc_token_t jcc_token_newline;
 jcc_token_t jcc_token_define;
 jcc_token_t jcc_token_error;
 jcc_token_t jcc_token_line;
@@ -242,8 +244,7 @@ int jcc_lex_candidate_token(jcc_t *jcc, jcc_token_t *candidate,
 }
 
 int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
-/*
- *  # include pp-tokens new-line
+/*  # include pp-tokens new-line
  *  # define identifier replacement-list new-line
  *  # define identifier lparen identifier-list_opt ) replacement-list new-line
  *  # define identifier lparen ... ) replacement-list new-line
@@ -255,8 +256,9 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
  *  # new-line
  */
 {
-  int err=0;
-  int ch=0;
+  jcc_token_t *token = 0;
+  int err = 0;
+  int ch = 0;
   if (jcc->ch != '#')
     return JCC_UNRECOGNIZED;
   while (1) {
@@ -265,19 +267,45 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
       return err;
     switch (ch) {
     case '\n':
-      return 1;
+      *recognized += 1;
+      return 0;
     case 'd':
-      return jcc_lex_candidate_token(jcc, &jcc_token_define, recognized);
+      err = jcc_lex_candidate_token(jcc, &jcc_token_define, &token, recognized);
+      if (err)
+        return err;
+      if (token) {
+        err = jcc_lex_identifier(jcc, &identifier);
+        if (err || !identifier)
+          return err;
+        err = jcc_lex_replacement_list(jcc, &replacement_list);
+        if (err || !replacement_list)
+          return err;
+        err = jcc_lex_newline(jcc, &newline);
+        if (err || !newline)
+          return err;
+        jcc_lex_commit(jcc);
+      }
     case 'u':
-      return jcc_lex_candidate_token(jcc, &jcc_token_undef, recognized);
+      err = jcc_lex_candidate_token(jcc, &jcc_token_undef, &token, recognized);
+      if (err)
+        return err;
     case 'l':
-      return jcc_lex_candidate_token(jcc, &jcc_token_line, recognized);
+      err = jcc_lex_candidate_token(jcc, &jcc_token_line, &token, recognized);
+      if (err)
+        return err;
     case 'e':
-      return jcc_lex_candidate_token(jcc, &jcc_token_error, recognized);
+      err = jcc_lex_candidate_token(jcc, &jcc_token_error, &token, recognized);
+      if (err)
+        return err;
     case 'i':
-      return jcc_lex_candidate_token(jcc, &jcc_token_include, recognized);
+      err =
+          jcc_lex_candidate_token(jcc, &jcc_token_include, &token, recognized);
+      if (err)
+        return err;
     case 'p':
-      return jcc_lex_candidate_token(jcc, &jcc_token_pragma, recognized);
+      err = jcc_lex_candidate_token(jcc, &jcc_token_pragma, &token, recognized);
+      if (err)
+        return err;
     }
   }
   return JCC_UNRECOGNIZED;
@@ -356,7 +384,7 @@ int jcc_preprocess_get_identifier(jcc_t *jcc, jvec_char_t *identifier) {
 int jcc_is_identifier_char(int);
 
 int jcc_preprocess_pound_lex(jcc_t *jcc, int ch) {
-  char directive[32];
+  char directive[16];
   int i = 1;
   int err = 0;
 
@@ -369,7 +397,7 @@ int jcc_preprocess_pound_lex(jcc_t *jcc, int ch) {
     directive[i] = (char)ch;
     ++i;
   }
-  return -1;
+  return 0;
 }
 
 int jcc_preprocess_get_token(jcc_t *jcc, jcc_token_t **pptoken)
@@ -384,17 +412,19 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_token_t **pptoken)
   int err = 0;
   int pound = 0;
   int start_of_line = 0;
-  jcc_token_t *ptoken;
+  jcc_token_t *ptoken = 0;
 
   while (1) {
     /* Handle queuing and backtracking. */
     *pptoken = 0;
-    ptoken = JBASE(jcc_token_t, list, jlist_remove_first(&jcc->tokens));
+    ptoken = JBASE(jcc_token_t, list, jlist_remove_first(&jcc->queued_tokens));
     if (ptoken) {
       *pptoken = ptoken;
       return 0;
     }
     err = jcc_getchar(jcc, &ch);
+    if (err)
+      return err;
     switch (ch) {
     case '\r':
     case '\n':
@@ -413,6 +443,8 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_token_t **pptoken)
     default:
       if (pound) {
         err = jcc_preprocess_pound_lex(jcc, ch);
+        if (err)
+          return err;
       }
       break;
     }
