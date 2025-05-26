@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-int main(void) {
+int test_os(void) {
   /*
   int jos_open_file_read(const char*, int* file_handle);
   int jos_open_file_write(const char*, int* file_handle);

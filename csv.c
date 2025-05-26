@@ -12,6 +12,10 @@
 #include "jvarint.h"
 #include "jvec.h"
 
+#if _MSC_VER
+#pragma warning(disable : 4100) /* unused parameter */
+#endif
+
 /* temporary in memory form; file form is varint64 */
 typedef JVEC(int64_t) jvec_field_t;
 
@@ -183,6 +187,7 @@ commas and quotes do contribute to field size. */
   }
 }
 
+static
 void csv_index_cleanup(csv_index_file_t *self) {
   JVEC_CLEANUP(&self->index_file_path);
   jfile_close(self->file_r);
@@ -191,6 +196,7 @@ void csv_index_cleanup(csv_index_file_t *self) {
   free(self);
 }
 
+static
 int csv_index_file(csv_index_file_t *self, char *file_path) {
   int err = 0;
   while (!self->done) {
@@ -203,6 +209,7 @@ exit:
   return err;
 }
 
+static
 int csv_index_file_open(csv_index_file_t *self, char *file_path) {
   int err = 0;
   self->file_path = file_path;
@@ -230,11 +237,7 @@ exit:
   return err;
 }
 
-#if _MSC_VER
-#pragma warning(disable : 4100) /* unused parameter */
-#endif
-
-int main(int argc, char **argv) {
+int csv(int argc, char **argv) {
   char i64buf[256] = {0};
   int err = 0;
   csv_index_file_t *self = (csv_index_file_t *)calloc(1, sizeof(*self));

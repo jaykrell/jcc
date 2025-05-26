@@ -17,7 +17,7 @@ static int jfile_set_buffer_mode(jfile_t *f, int mode)
   int err = 0;
   if (f->buffer_mode != mode && ((err = jfile_flush(f))))
     return err;
-  f->buffer_mode = mode;
+  f->buffer_mode = (char)mode;
   return 0;
 }
 

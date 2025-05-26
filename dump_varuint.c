@@ -18,7 +18,7 @@ static int read_byte(void *v) {
   return (ch != EOF) ? ch : -1;
 }
 
-int main(int argc, char **argv) {
+int dump_varuint(int argc, char **argv) {
   char i64buf[65] = {0};
   FILE *file = 0;
   int64_t total = 0;

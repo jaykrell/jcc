@@ -36,7 +36,7 @@ jhash_init_t init1 = {0, hash, compare, copy};
 
 /*************************************************************************************************/
 
-int main(void) {
+int test_hash(void) {
   jhash_t *hash1 = {0};
   int_int data = {1, 3};
 

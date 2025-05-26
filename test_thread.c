@@ -22,7 +22,7 @@ static int thread1(void *p) {
   return 2;
 }
 
-int main() {
+int test_thread() {
   jthread_handle_t thread1_handle = {0};
 
   jlock(&lock);

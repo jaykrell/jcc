@@ -19,11 +19,13 @@
 #define __cdecl
 #endif
 
+static
 int64_t round_up(int64_t a, int64_t b) {
   int64_t mod = (a % b);
   return (mod ? (a + b - mod) : a);
 }
 
+static
 int8_t bytes_for_value(int64_t a) {
   /* Off by one on purpose, just out of a gut feeling. */
   if (a <= INT32_MIN || a >= INT32_MAX)
@@ -35,6 +37,7 @@ int8_t bytes_for_value(int64_t a) {
   return 1;
 }
 
+static
 int8_t bits_for_value(int64_t a) { return bytes_for_value(a) * 8; }
 
 void csv_indexing_line_work(csv_indexing_line_t *self) {
@@ -78,6 +81,7 @@ void *max_element(void *begin, size_t count, size_t size,
   return iter;
 }
 
+static
 jbool line_less_by_field_size(void *va, void *vb)
 /* Compare two lines by the number of fields they have. */
 {
@@ -94,6 +98,7 @@ jbool line_less_by_max_field_size(void *va, void *vb)
   return a->max_field_size < b->max_field_size;
 }
 
+static
 jbool line_less_by_max_field_offset(void *va, void *vb)
 /* Compare two lines by their maximum field offset.
 For example max_field_size + max_field_offset is buffer size to hold a line,
@@ -105,6 +110,7 @@ though it is an exaggeration and could better stated.
   return a->max_field_offset < b->max_field_offset;
 }
 
+static
 int csv_indexing_line_compare(csv_indexing_line_t *a, csv_indexing_line_t *b) {
   if (a->line_offset < b->line_offset)
     return -1;
@@ -130,6 +136,7 @@ static int csv_index_write_int(jvec_char_t *index_contents, int64_t a,
   return JVEC_RESIZE(index_contents, offset + size);
 }
 
+static
 void csv_index_file(csv_indexer_t *self, char *file_path) {
   int8_t field_count_size = 0;
   int8_t field_offset_size = 0;
@@ -254,7 +261,7 @@ void csv_index_file(csv_indexer_t *self, char *file_path) {
 #pragma warning(disable : 4100) /* unused parameter */
 #endif
 
-int main(int argc, char **argv) {
+int csv1(int argc, char **argv) {
   if (strcmp(argv[1], "index") == 0) {
     csv_indexer_t indexer = {0};
     csv_index_file(&indexer, argv[2]);

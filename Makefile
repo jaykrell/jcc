@@ -14,6 +14,9 @@ CPPFLAGS=-MD -Gy -Z7 -EHsc -std:c++20 -W4 -EHsc -WX
 CXXFLAGS=-MD -Gy -Z7 -EHsc -std:c++20 -W4 -EHsc -WX
 CXX=cl
 
+CP_F=copy /y
+UNIX_LN_F=@rem
+WINDOWS_LN_F=mklink /h
 RM = del 2>nul
 RM_F = $(RM) /f
 #ILDASM = ildasm /nobar /out:$@
@@ -29,6 +32,9 @@ CLINK_FLAGS=/link /out:$@ /incremental:no /opt:ref /pdb:$(@B).pdb
 else
 
 # GNU/Posix make on Unix with gcc, clang, etc.
+CP_F=cp -f
+UNIX_LN_F=ln -f
+WINDOWS_LN_F=@echo >/dev/null
 RM = rm 2>/dev/null
 RM_F = rm -f 2>/dev/null
 O=o
@@ -50,9 +56,15 @@ exe:
 # jarray.$O \
 
 OBJS=\
- read_entire_file.$O \
  jbase.$O \
+\
+ jcc_ctype.$O \
+ jcc_preprocess_backtrack.$O \
+ jcc_preprocess_commments.$O \
+ jcc_preprocess_line_continations.$O \
+ jcc_preprocess_newlines.$O \
  jcc_unget.$O \
+\
  jerr.$O \
  jfile.$O \
  jhash.$O \
@@ -79,6 +91,19 @@ OBJS=\
  cpe.$O \
  cpre.$O \
  cx86.$O \
+\
+ read_entire_file.$O \
+\
+ csv.$O \
+ csv1.$O \
+\
+ test_hash.$O \
+ test_list.$O \
+ test_os.$O \
+ test_thread.$O \
+ test_varint.$O \
+ test_vec.$O \
+ test_vec1.$O \
 
 ifdef MAKEDIR:
 !ifdef MAKEDIR
@@ -163,13 +188,12 @@ test:
 endif
 !endif :
 
-all: test_vec1$(EXE) test_vec$(EXE) \
-	test_list$(EXE) \
-	test_hash$(EXE) \
-	test_os$(EXE) \
-	test_thread$(EXE) \
-	csv1$(EXE) \
-	csv$(EXE) \
+EXES=csv$(EXE) csv1$(EXE) dump_varuint$(EXE) \
+ test_thread$(EXE) test_varint$(EXE) test_os$(EXE) \
+ test_hash$(EXE) test_list$(EXE) test_vec$(EXE) test_vec1$(EXE)
+
+all: \
+	$(EXES) \
 	csv_random_write$(EXE) \
 	dump_varuint$(EXE) \
 
@@ -180,55 +204,24 @@ all: test_vec1$(EXE) test_vec$(EXE) \
 #
 
 $(win): $(OBJS)
-	@-$(RM_F) $(@R).pdb $(@R).ilk
+	-$(RM_F) $(@R).pdb $(@R).ilk $@
 	$(CC) $(CFLAGS) $(Wall) $(Qspectre) cmain.c $(CLINK_FLAGS)
 
-test_os$(EXE): $(OBJS) test_os.c
-	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_os.c $(OBJS) $(CLINK_FLAGS)
+jmain$(EXE): $(OBJS) jmain.c
+	-$(RM_F) $(@R).pdb $(@R).ilk $@
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) jmain.c $(OBJS) $(CLINK_FLAGS)
 
-test_vec1$(EXE): $(OBJS) test_vec1.c
-	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_vec1.c $(OBJS) $(CLINK_FLAGS)
+$(EXES): jmain$(EXE)
+	-$(RM_F) $(@R).pdb $(@R).ilk $@
+	$(UNIX_LN_F) jmain$(EXE) $@
+	$(WINDOWS_LN_F) $@ jmain$(EXE)
 
-test_vec$(EXE): $(OBJS) test_vec.c
+csv_random_write$(EXE): csv_random_write.c
 	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_vec.c $(OBJS) $(CLINK_FLAGS)
-
-test_list$(EXE): $(OBJS) test_list.c
-	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_list.c $(OBJS) $(CLINK_FLAGS)
-
-test_hash$(EXE): $(OBJS) test_hash.c
-	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_hash.c $(OBJS) $(CLINK_FLAGS)
-
-test_thread$(EXE): $(OBJS) test_thread.c
-	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_thread.c $(OBJS) $(CLINK_FLAGS)
-
-test_varint$(EXE): $(OBJS) test_varint.c
-	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CC) $(CFLAGS) $(Wall) $(Qspectre) test_varint.c $(OBJS) $(CLINK_FLAGS)
-
-csv1$(EXE): $(OBJS) csv1.c
-	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CC) $(CFLAGS) $(Wall) $(Qspectre) csv1.c $(OBJS) $(CLINK_FLAGS)
-
-csv$(EXE): $(OBJS) csv.c
-	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CC) $(CFLAGS) $(Wall) $(Qspectre) csv.c $(OBJS) $(CLINK_FLAGS)
-
-dump_varuint$(EXE): $(OBJS) dump_varuint.c
-	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CC) $(CFLAGS) $(Wall) $(Qspectre) dump_varuint.c $(OBJS) $(CLINK_FLAGS)
-
-csv_random_write$(EXE): $(OBJS) csv_random_write.c
-	@-$(RM_F) $(@R).pdb $(@R).ilk
-	$(CC) $(CFLAGS) $(Wall) $(Qspectre) csv_random_write.c $(OBJS) $(CLINK_FLAGS)
+	$(CC) $(CFLAGS) $(Wall) $(Qspectre) csv_random_write.c $(CLINK_FLAGS)
 
 clean:
-	$(RM_F) *.h.gch
+	$(RM_F) *.h.gch $(EXES) main main.exe jmain jmain.exe
 	$(RM_F) 1 2 genprimes 1.exe 2.exe genprimes.exe
 	$(RM_F) csv1 csv1.exe test_os test_vec1 dump_varuint dump_varuint.exe a.out
 	$(RM_F) csv csv_random_write csv.exe csv_random_write.exe

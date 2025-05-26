@@ -1,11 +1,15 @@
 /* C preprocessor. */
 
+#include "jmem.h"
 #include "jcc.h"
 #include "jcommon.h"
 #include "jcount.h"
 #include "jhash.h"
 #include "jstring_constant.h"
 #include "jvec.h"
+#if _MSC_VER
+#pragma warning(disable:4100) /* unused parameter */
+#endif
 
 /*TODO: generic*/
 typedef struct jcc_span_t {
@@ -13,11 +17,13 @@ typedef struct jcc_span_t {
   size_t len;
 } jcc_span_t;
 
+#if 0
 /* TODO! */
 typedef struct jcc_token_t {
   char *p;
   size_t len;
 } jcc_token_t;
+#endif
 
 typedef JVEC(jcc_span_t) jcc_vec_span_t;
 
@@ -131,7 +137,7 @@ int jcc_preprocess_directive_found(jcc_t *jcc,
       goto exit;
     if (i < 0 || i == '\n')
       break;
-    ch = i;
+    ch = (char)i;
     if ((err = JVEC_PUSH_BACK(&body, &ch)))
       goto exit;
   }
@@ -150,20 +156,20 @@ int jcc_preprocess_find_directive(jcc_t *jcc, int ch) {
   for (i = 0; i < 7; ++i)
     buf[i] = 0;
   directive = jcc_preprocess_directives;
-  buf[0] = ch;
+  buf[0] = (char)ch;
 
   for (i = 1; i < 7; ++i) {
     err = jcc_getchar(jcc, &ch);
     if (err || !jcc_is_preprocess_directive_char(ch))
       break;
-    buf[i] = ch;
+    buf[i] = (char)ch;
   }
   for (i = 0; i < JCOUNT(jcc_preprocess_directives); ++i) {
     if (i == directive->str.size && memcmp(buf, directive->str.data, i) == 0)
       return jcc_preprocess_directive_found(jcc, directive);
     ++directive;
   }
-  cpre_report_error("ERROR: Unknown directive %s\n", buf);
+  jcc_report_error("ERROR: Unknown directive %s\n", buf);
   return -1;
 }
 
@@ -183,47 +189,48 @@ int jcc_translate_space(int ch)
   return ch;
 }
 
+#if 0
 int cpre_get_char(cpre_t *cpre, int *ch) {
   return cpre_get_char_handling_comments(cpre, ch);
 }
+#endif
 
-int (*jcc_call_t)(jcc_t *jcc, size_t *recognized);
+typedef int (*jcc_call_t)(jcc_t *jcc, size_t *recognized);
 
 int jcc_preprocess_if_group(jcc_t *jcc, size_t *recognized)
 /*  # if constant-expression new-line group_opt
  *  # ifdef identifier new-line group_opt
  *  # ifndef identifier new-line group_opt
  */
-{}
+{ return -1; }
 
 int jcc_preprocess_elif_group(jcc_t *jcc, size_t *recognized)
 /*  # elif constant-expression new-line group_opt
  */
-{}
+{ return -1; }
 
 int jcc_preprocess_elif_groups_opt(jcc_t *jcc, size_t *recognized)
 /*  elif-groups elif-group
  */
-{}
+{ return -1; }
 
 int jcc_preprocess_if_section(jcc_t *jcc, size_t *recognized)
 /*   if-group elif-groups_opt else-group_opt endif-line
  */
-{}
+{ return -1; }
 
 jcc_token_t jcc_token_define;
 jcc_token_t jcc_token_error;
 jcc_token_t jcc_token_line;
 jcc_token_t jcc_token_include;
 jcc_token_t jcc_token_pragma;
+jcc_token_t jcc_token_undef;
 
-void jcc_initialize_tokensline(void)
-{
-}
+void jcc_initialize_tokens(void)
+{ }
 
-int jcc_lex_candidate_token(jcc_t *jcc, size_t *recognized)
-{
-]
+int jcc_lex_candidate_token(jcc_t *jcc, jcc_token_t* candidate, size_t *recognized)
+{ return -1; }
 
 int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
 /*
@@ -251,17 +258,17 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
     case '\n':
       return 1;
     case 'd':
-      return jcc_lex_candidate_token(jcc, &jcc_token_define);
+      return jcc_lex_candidate_token(jcc, &jcc_token_define, recognized);
     case 'u':
-      return jcc_lex_candidate_token(jcc, &jcc_token_undef);
+      return jcc_lex_candidate_token(jcc, &jcc_token_undef, recognized);
     case 'l':
-      return jcc_lex_candidate_token(jcc, &jcc_token_line);
+      return jcc_lex_candidate_token(jcc, &jcc_token_line, recognized);
     case 'e':
-      return jcc_lex_candidate_token(jcc, &jcc_token_error);
+      return jcc_lex_candidate_token(jcc, &jcc_token_error, recognized);
     case 'i':
-      return jcc_lex_candidate_token(jcc, &jcc_token_include);
+      return jcc_lex_candidate_token(jcc, &jcc_token_include, recognized);
     case 'p':
-      return jcc_lex_candidate_token(jcc, &jcc_token_pragma);
+      return jcc_lex_candidate_token(jcc, &jcc_token_pragma, recognized);
   }
   }
   return JCC_UNRECOGNIZED;
@@ -269,11 +276,11 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
 
 int jcc_preprocess_text_line(jcc_t *jcc, size_t *recognized)
 /* pp-tokens_opt new-line */
-{}
+{ return -1; }
 
 int jcc_preprocess_pound_nondirective(jcc_t *jcc, size_t *recognized)
 /* # pp-tokens new-line */
-{}
+{ return -1; }
 
 int jcc_preprocess_try_alternates_once(jcc_t *jcc, jcc_call_t *alternates,
                                        size_t *precognized) {
@@ -281,7 +288,7 @@ int jcc_preprocess_try_alternates_once(jcc_t *jcc, jcc_call_t *alternates,
   int err = 0;
   size_t i = 0;
   while ((call = alternates[i])) {
-    int recognized = 0;
+    size_t recognized = 0;
     ++i;
     jcc_preprocess_backtrack_prepare(jcc);
     if ((err = call(jcc, &recognized)))
@@ -321,14 +328,13 @@ int jcc_preprocess_group_part(jcc_t *jcc, size_t *precognized) {
 int jcc_preprocess_group(jcc_t *jcc) {
   int err = 0;
   size_t recognized = 0;
-  while (!(err = jcc_jcc_preprocess_group_part(jcc, &recognized)) && recognized)
+  while (!(err = jcc_preprocess_group_part(jcc, &recognized)) && recognized)
     recognized = 0;
   return err;
 }
 
 int jcc_preprocess_group_opt(jcc_t *jcc) {
-  size_t recognized = 0;
-  return jcc_preprocess_group(jcc, &recognized);
+  return jcc_preprocess_group(jcc);
 }
 
 int jcc_preprocess_file(jcc_t *jcc) {
@@ -338,30 +344,30 @@ int jcc_preprocess_file(jcc_t *jcc) {
 int jcc_preprocess_get_identifier(jcc_t *jcc, jvec_char_t* identifier)
 {
   identifier->size = 0;
+  return -1;
 }
 
-int jcc_preprocess_get_identifier(jcc_t *jcc, jvec_char_t* identifier)
-{
-  identifier->size = 0;
-}
+int jcc_is_identifier_char(int);
 
 int jcc_preprocess_pound_lex(jcc_t *jcc, int ch)
 {
   char directive[32];
-  int idir=1;
+  int i=1;
+  int err=0;
 
   jmemset0(directive, sizeof(directive));
-  directive[0] = ch;
-  while (idir < JCOUNT(directive) && jcc_is_identifier_char(ch))
+  directive[0] = (char)ch;
+  while (i < JCOUNT(directive) && jcc_is_identifier_char(ch))
   {
     err = jcc_getchar(jcc, &ch);
     if (err) return err;
-    directive[i] = ch;
-
+    directive[i] = (char)ch;
+	++i;
   }
+ return -1;
 }
 
-int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
+int jcc_preprocess_get_token(jcc_t *jcc, jcc_token_t **pptoken)
 /* Read a preprocessing token from the preprocessor.
  *
  * This is meant to become translation phase 3 or 4.
@@ -373,12 +379,12 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
   int err = 0;
   int pound = 0;
   int start_of_line = 0;
-  jcc_preprocess_token_t *ptoken;
+  jcc_token_t *ptoken;
 
   while (1) {
     /* Handle queuing and backtracking. */
     *pptoken = 0;
-    ptoken = JBASE(jcc_preprocess_token_t, list, jlist_remove_first(&jcc->preprocess_tokens));
+    ptoken = JBASE(jcc_token_t, list, jlist_remove_first(&jcc->tokens));
     if (ptoken) {
       *pptoken = ptoken;
       return 0;
@@ -401,13 +407,15 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_preprocess_token_t **pptoken)
       break;
     default:
       if (pound) {
-        jcc_preprocess_pound_lex(jcc, ch);
+        err = jcc_preprocess_pound_lex(jcc, ch);
       }
       break;
     }
   }
+  return 0;
+}
 
-  int jcc_get_token(jcc_t * jcc, jcc_token_t * *pptoken)
+int jcc_get_token(jcc_t * jcc, jcc_token_t * *pptoken)
   /* Read a C token from the preprocessor.
    * C tokens and preprocessor tokens are almost but not quite the same.
    * This handles #include, #define, #undef, #if, #ifdef, etc.

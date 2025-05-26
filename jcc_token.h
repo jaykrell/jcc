@@ -12,7 +12,6 @@ int jcc_is_universal_xid_continue(int ch);
 
 int jcc_is_keyword(jvec_char_t*);
 
-
 typedef enum jcc_token_tag {
   jcc_token_tag_keyword = 1,
   jcc_token_tag_identifier = 2,

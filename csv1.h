@@ -33,9 +33,6 @@ struct csv_indexing_line_t {
   jvec_csv_indexing_field_t fields;
 };
 
-int csv_indexing_line_compare_v(void const *a, void const *b);
-int csv_indexing_line_compare(csv_indexing_line_t *a, csv_indexing_line_t *b);
-
 union csv_persistant_index_t {
   struct {
     int8_t version[8];

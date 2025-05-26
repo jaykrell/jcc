@@ -28,7 +28,7 @@ uint64_t list_enumerate_test2(void *context, void *element) {
 
 /*************************************************************************************************/
 
-int main(void) {
+int test_list(void) {
   jlist_t l1 = {0};
   jlist_int_t li1 = {1};
   jlist_int_t li2 = {2};

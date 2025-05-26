@@ -10,7 +10,7 @@
 
 /*************************************************************************************************/
 
-int main(void) {
+int test_varint(void) {
 
   jvarint_encode_t encode = {0};
   jvarint_decode_t decode = {0};
@@ -24,7 +24,7 @@ int main(void) {
 
   jvarint_encode_signed(-1, &encode);
   printf("-1 encodes at %d byte int64_t\n", (int)encode.encoded_size);
-  jvarint_encode_unsigned(-1, &encode);
+  jvarint_encode_unsigned((uint64_t)-1, &encode);
   printf("-1 encodes at %d byte uint64_t\n", (int)encode.encoded_size);
   fflush(0);
 
@@ -50,7 +50,7 @@ int main(void) {
       jvarint_encode_unsigned((uint64_t)i, &encode);
       decode.buffer_size = encode.encoded_size;
       unsigned_value = jvarint_decode_unsigned(&decode);
-      assert(unsigned_value == i);
+      assert(unsigned_value == (uint64_t)i);
     }
   }
   return 0;
