@@ -1,7 +1,8 @@
-/* jvec is like std::vector
- * jvec1 is earlier version, probably not to use. */
-#if !JVEC_H
-#define JVEC_H 1
+/* jcc, jlib, etc. by Jay Krell */
+/* jdec is like std::vector of std::deque
+   It is a vector with an offset. */
+#if !JDEC_H
+#define JDEC_H 1
 
 #include "jssize.h"
 #include <stdint.h>
@@ -15,7 +16,7 @@ extern "C" {
  * consistent between them. We may come to regret this, i.e. avoid
  * multiplication or division in the library and stick division by constant in
  * user. */
-#define JVEC(T)                                                                \
+#define JDEC(T)                                                                \
   struct {                                                                     \
     T *data;                                                                   \
     ptrdiff_t size;                                                            \
@@ -26,33 +27,33 @@ extern "C" {
   }
 /*TODO: size_t? */
 
-typedef JVEC(char) jvec_generic;
+typedef JDEC(char) jdec_generic;
 
-void jvec_cleanup(jvec_generic *);
-int jvec_push_back(jvec_generic *, void const *element, ptrdiff_t element_size);
-int jvec_resize(jvec_generic *, ptrdiff_t new_size, ptrdiff_t element_size);
-int jvec_reserve(jvec_generic *, ptrdiff_t new_size, ptrdiff_t element_size);
-int jvec_insert(jvec_generic *, void const *before, void const *begin,
+void jdec_cleanup(jdec_generic *);
+int jdec_push_back(jdec_generic *, void const *element, ptrdiff_t element_size);
+int jdec_resize(jdec_generic *, ptrdiff_t new_size, ptrdiff_t element_size);
+int jdec_reserve(jdec_generic *, ptrdiff_t new_size, ptrdiff_t element_size);
+int jdec_insert(jdec_generic *, void const *before, void const *begin,
                 ptrdiff_t count, ptrdiff_t element_size);
 
-#define JVEC_CLEANUP(v) jvec_cleanup((jvec_generic *)(v))
+#define JDEC_CLEANUP(v) jdec_cleanup((jdec_generic *)(v))
 
-#define JVEC_RESIZE(v, size)                                                   \
-  jvec_resize((jvec_generic *)(v), size, sizeof((v)->data[0]))
+#define JDEC_RESIZE(v, size)                                                   \
+  jdec_resize((jdec_generic *)(v), size, sizeof((v)->data[0]))
 
-#define JVEC_END(v) ((v)->data + (v)->size)
-#define JVEC_PUSH_BACK(v, element)                                             \
-  jvec_push_back((jvec_generic *)(v), element, sizeof((v)->data[0]))
+#define JDEC_END(v) ((v)->data + (v)->size)
+#define JDEC_PUSH_BACK(v, element)                                             \
+  jdec_push_back((jdec_generic *)(v), element, sizeof((v)->data[0]))
 
-#define JVEC_INSERT(v, before, begin, count)                                   \
-  jvec_insert((jvec_generic *)(v), (before), (begin), (count),                 \
+#define JDEC_INSERT(v, before, begin, count)                                   \
+  jdec_insert((jdec_generic *)(v), (before), (begin), (count),                 \
               sizeof((v)->data[0]))
-#define JVEC_APPEND(v, begin, count) JVEC_INSERT(v, JVEC_END(v), begin, count)
-#define JVEC_RESERVE(v, n)                                                     \
-  jvec_reserve((jvec_generic *)(v), (n), sizeof((v)->data[0]))
+#define JDEC_APPEND(v, begin, count) JDEC_INSERT(v, JDEC_END(v), begin, count)
+#define JDEC_RESERVE(v, n)                                                     \
+  jdec_reserve((jdec_generic *)(v), (n), sizeof((v)->data[0]))
 
-typedef JVEC(char) jvec_char_t;
-typedef JVEC(uint64_t) jvec_uint64_t;
+typedef JDEC(char) jdec_char_t;
+typedef JDEC(uint64_t) jdec_uint64_t;
 
 #if __cplusplus
 }
