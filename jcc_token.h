@@ -1,8 +1,15 @@
-#if !JCC_PREPROCESS_TOKEN_H
-#define JCC_PREPROCESS_TOKEN_H 1
+#if !JCC_TOKEN_H
+#define JCC_TOKEN_H 1
 
 #include "jlist.h"
 #include "jvec.h"
+
+struct jcc_token_t;
+typedef struct jcc_token_t jcc_token_t;
+
+/* body of macro */
+struct jcc_replacement_list_t;
+typedef struct jcc_replacement_list_t jcc_replacement_list_t;
 
 int jcc_is_xid_start(int ch);
 int jcc_is_universal_xid_start(int ch);
@@ -41,21 +48,25 @@ typedef enum jcc_token_tag {
   jcc_token_tag_pragma = 205,
 } jcc_token_tag;
 
-struct jcc_token_t;
-typedef struct jcc_token_t jcc_token_t;
+extern jcc_token_t jcc_token_pound;
+extern jcc_token_t jcc_token_newline;
+extern jcc_token_t jcc_token_define;
+extern jcc_token_t jcc_token_error;
+extern jcc_token_t jcc_token_line;
+extern jcc_token_t jcc_token_include;
+extern jcc_token_t jcc_token_pragma;
+extern jcc_token_t jcc_token_undef;
 
 struct jcc_token_t {
+  /* for example, replacement list in macros */
   jcc_token_t *next;
   jcc_token_tag tag;
   char short_string[16];
   jvec_char_t string;
   size_t size;
-  /*  jlist_t free;
-    jlist_t list;*/
+  /*  jlist_t free; */
+  jlist_t list; /* queue_tokens within jcc */
 };
-
-struct jcc_replacement_list_t;
-typedef struct jcc_replacement_list_t jcc_replacement_list_t;
 
 /* Body of a macro. */
 struct jcc_replacement_list_t {

@@ -1,3 +1,4 @@
+#include "jcc_token.h"
 
 /*
  [ ] ( ) { } . ->
@@ -8,7 +9,7 @@
  , # ##
 each non-white-space character that cannot be one of the above
 */
-
+#if 0
 extern jvec_char_t *jcc_char1_pptokens[256];
 
 jcc_pptoken_tag tag;
@@ -36,4 +37,40 @@ jvec_char_t string;
   }
   }
 }
+}
+
+#endif
+
+jcc_token_t jcc_token_pound;
+jcc_token_t jcc_token_newline;
+jcc_token_t jcc_token_define;
+jcc_token_t jcc_token_error;
+jcc_token_t jcc_token_line;
+jcc_token_t jcc_token_include;
+jcc_token_t jcc_token_pragma;
+jcc_token_t jcc_token_undef;
+
+void jcc_initialize_tokens(void) {
+  jcc_token_pound.size = 1;
+  jcc_token_pound.short_string[0] = '#';
+  jcc_token_pound.tag = jcc_token_tag_punctuator;
+
+  jcc_token_newline.size = 1;
+  jcc_token_newline.short_string[0] = '\n';
+  jcc_token_newline.tag = jcc_token_tag_punctuator;
+
+  jcc_token_error.size = 5;
+  jcc_token_newline.short_string[0] = 'e';
+  jcc_token_newline.short_string[1] = 'r';
+  jcc_token_newline.short_string[2] = 'r';
+  jcc_token_newline.short_string[3] = 'o';
+  jcc_token_newline.short_string[4] = 'r';
+  jcc_token_newline.tag = jcc_token_tag_error;
+
+  jcc_token_error.size = 4;
+  jcc_token_newline.short_string[0] = 'l';
+  jcc_token_newline.short_string[1] = 'i';
+  jcc_token_newline.short_string[2] = 'n';
+  jcc_token_newline.short_string[3] = 'e';
+  jcc_token_newline.tag = jcc_token_tag_line;
 }

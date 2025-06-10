@@ -233,40 +233,6 @@ int jcc_preprocess_if_section(jcc_t *jcc, size_t *recognized)
   return -1;
 }
 
-jcc_token_t jcc_token_pound;
-jcc_token_t jcc_token_newline;
-jcc_token_t jcc_token_define;
-jcc_token_t jcc_token_error;
-jcc_token_t jcc_token_line;
-jcc_token_t jcc_token_include;
-jcc_token_t jcc_token_pragma;
-jcc_token_t jcc_token_undef;
-
-void jcc_initialize_tokens(void) {
-  jcc_token_pound.size = 1;
-  jcc_token_pound.short_string[0] = '#';
-  jcc_token_pound.jcc_token_tag_punctuator;
-
-  jcc_token_newline.size = 1;
-  jcc_token_newline.short_string[0] = '\n';
-  jcc_token_newline.jcc_token_tag_punctuator;
-
-  jcc_token_error.size = 5;
-  jcc_token_newline.short_string[0] = 'e';
-  jcc_token_newline.short_string[1] = 'r';
-  jcc_token_newline.short_string[2] = 'r';
-  jcc_token_newline.short_string[3] = 'o';
-  jcc_token_newline.short_string[4] = 'r';
-  jcc_token_newline.jcc_token_tag_error;
-
-  jcc_token_error.size = 4;
-  jcc_token_newline.short_string[0] = 'l';
-  jcc_token_newline.short_string[1] = 'i';
-  jcc_token_newline.short_string[2] = 'n';
-  jcc_token_newline.short_string[3] = 'e';
-  jcc_token_newline.jcc_token_tag_line;
-}
-
 int jcc_lex_candidate_token(jcc_t *jcc, jcc_token_t *candidate,
                             jcc_token_t **success, size_t *recognized) {
   return -1;
@@ -300,10 +266,11 @@ int jcc_new_token(jcc_t *jcc, jcc_token_t **token) {
 
 int jcc_lex_char(jcc_t *jcc, int ch, jcc_token_t **token) {
   int ch2 = 0;
+  int err = 0;
   err = jcc_getchar(jcc, &ch2);
   if (err || ch != ch2 || (err = jcc_new_token(jcc, token)))
     return err;
-  (*token)->short_string[0] = ch;
+  (*token)->short_string[0] = (char)ch;
   (*token)->tag = jcc_token_tag_punctuator;
   (*token)->size = 1;
   return 0;
@@ -360,7 +327,7 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
         err = jcc_lex_identifier(jcc, &identifier);
         if (err || !identifier)
           return err;
-        err = jcc_lex_identifier(jcc, '(', &lparen);
+        err = jcc_lex_char(jcc, '(', &lparen);
         if (err)
           return err;
 
@@ -424,15 +391,15 @@ int jcc_preprocess_try_alternates_once(jcc_t *jcc, jcc_call_t *alternates,
   while ((call = alternates[i])) {
     size_t recognized = 0;
     ++i;
-    jcc_preprocess_backtrack_prepare(jcc);
+    /*jcc_preprocess_backtrack_prepare(jcc);*/
     if ((err = call(jcc, &recognized)))
       return err;
     if (recognized) {
-      jcc_preprocess_backtrack_cancel(jcc);
+      /*jcc_preprocess_backtrack_cancel(jcc);*/
       *precognized += 1;
       return 0;
     }
-    jcc_preprocess_backtrack(jcc);
+    /*jcc_preprocess_backtrack(jcc);*/
   }
   return JCC_UNRECOGNIZED;
 }
