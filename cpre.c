@@ -173,6 +173,12 @@ int jcc_preprocess_find_directive(jcc_t *jcc, int ch) {
   return -1;
 }
 
+int jcc_char_tab = 9;              /* horizontal tab \t */
+int jcc_char_newline = 10;         /* also known as linefeed or \n */
+int jcc_char_vertical_tab = 11;    /* \v */
+int jcc_char_formfeed = 12;        /* \f */
+int jcc_char_carriage_return = 13; /* \r */
+
 int jcc_translate_space(int ch)
 /* Translate whitespace except carriage return and newline to canonical space.
  * No other layer should see these characters.
@@ -236,12 +242,78 @@ jcc_token_t jcc_token_include;
 jcc_token_t jcc_token_pragma;
 jcc_token_t jcc_token_undef;
 
-void jcc_initialize_tokens(void) {}
+void jcc_initialize_tokens(void) {
+  jcc_token_pound.size = 1;
+  jcc_token_pound.short_string[0] = '#';
+  jcc_token_pound.jcc_token_tag_punctuator;
+
+  jcc_token_newline.size = 1;
+  jcc_token_newline.short_string[0] = '\n';
+  jcc_token_newline.jcc_token_tag_punctuator;
+
+  jcc_token_error.size = 5;
+  jcc_token_newline.short_string[0] = 'e';
+  jcc_token_newline.short_string[1] = 'r';
+  jcc_token_newline.short_string[2] = 'r';
+  jcc_token_newline.short_string[3] = 'o';
+  jcc_token_newline.short_string[4] = 'r';
+  jcc_token_newline.jcc_token_tag_error;
+
+  jcc_token_error.size = 4;
+  jcc_token_newline.short_string[0] = 'l';
+  jcc_token_newline.short_string[1] = 'i';
+  jcc_token_newline.short_string[2] = 'n';
+  jcc_token_newline.short_string[3] = 'e';
+  jcc_token_newline.jcc_token_tag_line;
+}
 
 int jcc_lex_candidate_token(jcc_t *jcc, jcc_token_t *candidate,
-                            size_t *recognized) {
+                            jcc_token_t **success, size_t *recognized) {
   return -1;
 }
+
+int jcc_lex_identifier(jcc_t *jcc, jcc_token_t **identifier) { return -1; }
+
+int jcc_lex_define_parameters(jcc_t *jcc, jcc_token_t **replacement_list)
+/* Read a list of comma separated identifiers for a define
+ * TODO: Variadic and possibly empty.
+ */
+{
+  return -1;
+}
+
+int jcc_lex_replacement_list(jcc_t *jcc, jcc_token_t **replacement_list)
+/* Body of a macro.
+ */
+{
+  return -1;
+}
+
+int jcc_new_token(jcc_t *jcc, jcc_token_t **token) {
+  if (!(*token = (jcc_token_t *)calloc(1, sizeof(**token))))
+    return JCC_NO_MEMORY;
+
+  (*token)->next = jcc->token;
+  jcc->token = *token;
+  return 0;
+}
+
+int jcc_lex_char(jcc_t *jcc, int ch, jcc_token_t **token) {
+  int ch2 = 0;
+  err = jcc_getchar(jcc, &ch2);
+  if (err || ch != ch2 || (err = jcc_new_token(jcc, token)))
+    return err;
+  (*token)->short_string[0] = ch;
+  (*token)->tag = jcc_token_tag_punctuator;
+  (*token)->size = 1;
+  return 0;
+}
+
+int jcc_lex_newline(jcc_t *jcc, jcc_token_t **token_newline) {
+  return jcc_lex_char(jcc, '\n', token_newline);
+}
+
+void jcc_lex_commit(jcc_t *jcc) {}
 
 int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
 /*  # include pp-tokens new-line
@@ -256,16 +328,27 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
  *  # new-line
  */
 {
-  jcc_token_t *token = 0;
   int err = 0;
-  int ch = 0;
+  jcc_token_t *token = 0;
+
   if (jcc->ch != '#')
     return JCC_UNRECOGNIZED;
+
+  token = jcc->token;
+
   while (1) {
+    jcc_token_t *identifier = 0;
+    jcc_token_t *lparen = 0;
+    jcc_token_t *newline = 0;
+    jcc_token_t *replacement_list = 0;
+    int ch = 0;
+
     err = jcc_getchar(jcc, &ch);
     if (err)
       return err;
     switch (ch) {
+    case ' ':
+      break;
     case '\n':
       *recognized += 1;
       return 0;
@@ -277,12 +360,22 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
         err = jcc_lex_identifier(jcc, &identifier);
         if (err || !identifier)
           return err;
-        err = jcc_lex_replacement_list(jcc, &replacement_list);
-        if (err || !replacement_list)
+        err = jcc_lex_identifier(jcc, '(', &lparen);
+        if (err)
           return err;
-        err = jcc_lex_newline(jcc, &newline);
-        if (err || !newline)
+
+        err = jcc_getchar(jcc, &ch);
+        if (err)
           return err;
+        if (ch == '(') {
+        } else {
+          err = jcc_lex_replacement_list(jcc, &replacement_list);
+          if (err || !replacement_list)
+            return err;
+          err = jcc_lex_newline(jcc, &newline);
+          if (err || !newline)
+            return err;
+        }
         jcc_lex_commit(jcc);
       }
     case 'u':

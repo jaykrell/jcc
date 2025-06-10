@@ -16,6 +16,7 @@
 #define JCC_CHAR_ERROR (-1)
 #define JCC_CHAR_END_OF_FILE (-2)
 #define JCC_UNRECOGNIZED (-3)
+#define JCC_NO_MEMORY (-4)
 
 extern int jcc_ch;
 

@@ -41,12 +41,26 @@ typedef enum jcc_token_tag {
   jcc_token_tag_pragma = 205,
 } jcc_token_tag;
 
-typedef struct jcc_token_t {
+struct jcc_token_t;
+typedef struct jcc_token_t jcc_token_t;
+
+struct jcc_token_t {
+  jcc_token_t *next;
   jcc_token_tag tag;
   char short_string[16];
   jvec_char_t string;
-  jlist_t free;
-  jlist_t list;
-} jcc_token_t;
+  size_t size;
+  /*  jlist_t free;
+    jlist_t list;*/
+};
 
-#endif
+struct jcc_replacement_list_t;
+typedef struct jcc_replacement_list_t jcc_replacement_list_t;
+
+/* Body of a macro. */
+struct jcc_replacement_list_t {
+  jcc_token_t *first;
+  size_t size;
+};
+
+#endif /* once */
