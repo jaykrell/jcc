@@ -58,6 +58,7 @@ exe:
 OBJS=\
  jbase.$O \
 \
+ jcc.$O \
  jcc_ctype.$O \
  jcc_preprocess_backtrack.$O \
  jcc_preprocess_commments.$O \
@@ -89,7 +90,6 @@ OBJS=\
  copt.$O \
  cparse.$O \
  cpe.$O \
- cpre.$O \
  cx86.$O \
 \
  read_entire_file.$O \
