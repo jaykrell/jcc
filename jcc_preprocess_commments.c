@@ -1,3 +1,4 @@
+#include "jcc.h"
 #include <assert.h>
 
 typedef struct jcc_t jcc_t;
@@ -5,6 +6,11 @@ int jcc_phase2_getchar(jcc_t *jcc, int *ch);
 int jcc_getchar(jcc_t *jcc, int *ch);
 void jcc_phase2_unget(jcc_t *jcc, int ch);
 int jcc_getchar(jcc_t *jcc, int *pch);
+
+int jcc_ungetchar(jcc_t *jcc, int ch) {
+  char ch0 = (char)ch;
+  return JVEC_PUSH_BACK(&jcc->queued_chars, &ch0);
+}
 
 int jcc_getchar(jcc_t *jcc, int *pch)
 /* C preprocessor scanning.
@@ -20,6 +26,14 @@ int jcc_getchar(jcc_t *jcc, int *pch)
 {
   int err = 0;
   int ch = 0;
+  size_t size = 0;
+
+  size = jcc->queued_chars.size;
+  if (size) {
+    jcc->queued_chars.size = --size;
+    *pch = jcc->queued_chars.data[size];
+    return 0;
+  }
 
   /* If next character is definitely not opening a comment, return it. */
   err = jcc_phase2_getchar(jcc, pch);

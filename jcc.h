@@ -399,7 +399,7 @@ cToken cgetNextToken(cSourceFile *file);
 struct jcc_t {
   jcc_unget_t phase1_unget;
   jcc_unget_t phase2_unget;
-  jcc_unget_t phase3_unget;
+  jvec_char_t queued_chars; /* phase3_unget */
   jlist_t /*jcc_token_t*/ commited_tokens;
   jlist_t /*jcc_token_t*/ queued_tokens;
   cfile_t *cfile;
