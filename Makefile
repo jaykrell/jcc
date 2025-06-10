@@ -64,7 +64,6 @@ OBJS=\
  jcc_preprocess_commments.$O \
  jcc_preprocess_line_continations.$O \
  jcc_preprocess_newlines.$O \
- jcc_token.$O \
  jcc_unget.$O \
 \
  jerr.$O \

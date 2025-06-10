@@ -7,6 +7,7 @@
 #include "jmem.h"
 #include "jstring_constant.h"
 #include "jvec.h"
+#include <string.h>
 #if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
 #endif
@@ -330,7 +331,6 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
         err = jcc_lex_char(jcc, '(', &lparen);
         if (err)
           return err;
-
         err = jcc_getchar(jcc, &ch);
         if (err)
           return err;
@@ -521,4 +521,59 @@ int jcc_get_token(jcc_t *jcc, jcc_token_t **pptoken)
  */
 {
   return 0;
+}
+
+jcc_token_t jcc_token_pound;
+jcc_token_t jcc_token_newline;
+jcc_token_t jcc_token_define;
+jcc_token_t jcc_token_error;
+jcc_token_t jcc_token_line;
+jcc_token_t jcc_token_include;
+jcc_token_t jcc_token_pragma;
+jcc_token_t jcc_token_undef;
+
+void jcc_initialize_token_string(jcc_token_t *token, const char *short_string) {
+  int size;
+  size = (int)strlen(short_string);
+  token->size = size;
+  memcpy(token->short_string, short_string, size);
+}
+
+int jcc_dup_token(jcc_t *jcc, jcc_token_t *token1, jcc_token_t **token2) {
+  int err;
+  jcc_token_t *next;
+
+  if ((err = jcc_new_token(jcc, token2)))
+    return err;
+  next = (*token2)->next;
+  **token2 = *token1;
+  (*token2)->next = next;
+  JMEMSET0_VALUE(&(*token2)->list);
+  return err;
+}
+
+void jcc_initialize_tokens(void) {
+  jcc_initialize_token_string(&jcc_token_pound, "#");
+  jcc_token_pound.tag = jcc_token_tag_punctuator;
+
+  jcc_initialize_token_string(&jcc_token_newline, "\n");
+  jcc_token_newline.tag = jcc_token_tag_punctuator;
+
+  jcc_initialize_token_string(&jcc_token_define, "define");
+  jcc_token_define.tag = jcc_token_tag_define;
+
+  jcc_initialize_token_string(&jcc_token_error, "error");
+  jcc_token_error.tag = jcc_token_tag_error;
+
+  jcc_initialize_token_string(&jcc_token_include, "include");
+  jcc_token_include.tag = jcc_token_tag_include;
+
+  jcc_initialize_token_string(&jcc_token_line, "line");
+  jcc_token_line.tag = jcc_token_tag_line;
+
+  jcc_initialize_token_string(&jcc_token_undef, "undef");
+  jcc_token_undef.tag = jcc_token_tag_undef;
+
+  jcc_initialize_token_string(&jcc_token_pragma, "pragma");
+  jcc_token_pragma.tag = jcc_token_tag_pragma;
 }
