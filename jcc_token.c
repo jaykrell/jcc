@@ -1,4 +1,5 @@
 #include "jcc_token.h"
+#include <string.h>
 
 /*
  [ ] ( ) { } . ->
@@ -50,27 +51,35 @@ jcc_token_t jcc_token_include;
 jcc_token_t jcc_token_pragma;
 jcc_token_t jcc_token_undef;
 
+void jcc_initialize_token_string(jcc_token_t *token, const char *short_string) {
+  int size;
+  size = (int)strlen(short_string);
+  token->size = size;
+  memcpy(token->short_string, short_string, size);
+}
+
 void jcc_initialize_tokens(void) {
-  jcc_token_pound.size = 1;
-  jcc_token_pound.short_string[0] = '#';
+  jcc_initialize_token_string(&jcc_token_pound, "#");
   jcc_token_pound.tag = jcc_token_tag_punctuator;
 
-  jcc_token_newline.size = 1;
-  jcc_token_newline.short_string[0] = '\n';
+  jcc_initialize_token_string(&jcc_token_newline, "\n");
   jcc_token_newline.tag = jcc_token_tag_punctuator;
 
-  jcc_token_error.size = 5;
-  jcc_token_newline.short_string[0] = 'e';
-  jcc_token_newline.short_string[1] = 'r';
-  jcc_token_newline.short_string[2] = 'r';
-  jcc_token_newline.short_string[3] = 'o';
-  jcc_token_newline.short_string[4] = 'r';
-  jcc_token_newline.tag = jcc_token_tag_error;
+  jcc_initialize_token_string(&jcc_token_define, "define");
+  jcc_token_define.tag = jcc_token_tag_define;
 
-  jcc_token_error.size = 4;
-  jcc_token_newline.short_string[0] = 'l';
-  jcc_token_newline.short_string[1] = 'i';
-  jcc_token_newline.short_string[2] = 'n';
-  jcc_token_newline.short_string[3] = 'e';
-  jcc_token_newline.tag = jcc_token_tag_line;
+  jcc_initialize_token_string(&jcc_token_error, "error");
+  jcc_token_error.tag = jcc_token_tag_error;
+
+  jcc_initialize_token_string(&jcc_token_include, "include");
+  jcc_token_include.tag = jcc_token_tag_include;
+
+  jcc_initialize_token_string(&jcc_token_line, "line");
+  jcc_token_line.tag = jcc_token_tag_line;
+
+  jcc_initialize_token_string(&jcc_token_undef, "undef");
+  jcc_token_undef.tag = jcc_token_tag_undef;
+
+  jcc_initialize_token_string(&jcc_token_pragma, "pragma");
+  jcc_token_pragma.tag = jcc_token_tag_pragma;
 }

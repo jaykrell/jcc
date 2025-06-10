@@ -46,6 +46,7 @@ typedef enum jcc_token_tag {
   jcc_token_tag_include = 203,
   jcc_token_tag_line = 204,
   jcc_token_tag_pragma = 205,
+  jcc_token_tag_undef = 206,
 } jcc_token_tag;
 
 extern jcc_token_t jcc_token_pound;
