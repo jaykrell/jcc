@@ -300,7 +300,7 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
   jcc_token_t *token = 0;
 
   if (jcc->ch != '#')
-    return JCC_UNRECOGNIZED;
+    goto error_label;
 
   token = jcc->token;
 
@@ -313,7 +313,7 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
 
     err = jcc_getchar(jcc, &ch);
     if (err)
-      return err;
+      goto error_label;
     switch (ch) {
     case ' ':
       break;
@@ -323,51 +323,53 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
     case 'd':
       err = jcc_lex_candidate_token(jcc, &jcc_token_define, &token, recognized);
       if (err)
-        return err;
+        goto error_label;
       if (token) {
         err = jcc_lex_identifier(jcc, &identifier);
         if (err || !identifier)
-          return err;
+          goto error_label;
         err = jcc_lex_char(jcc, '(', &lparen);
         if (err)
-          return err;
+          goto error_label;
         err = jcc_getchar(jcc, &ch);
         if (err)
-          return err;
+          goto error_label;
         if (ch == '(') {
         } else {
           err = jcc_lex_replacement_list(jcc, &replacement_list);
           if (err || !replacement_list)
-            return err;
+            goto error_label;
           err = jcc_lex_newline(jcc, &newline);
           if (err || !newline)
-            return err;
+            goto error_label;
         }
         jcc_lex_commit(jcc);
       }
     case 'u':
       err = jcc_lex_candidate_token(jcc, &jcc_token_undef, &token, recognized);
       if (err)
-        return err;
+        goto error_label;
     case 'l':
       err = jcc_lex_candidate_token(jcc, &jcc_token_line, &token, recognized);
       if (err)
-        return err;
+        goto error_label;
     case 'e':
       err = jcc_lex_candidate_token(jcc, &jcc_token_error, &token, recognized);
       if (err)
-        return err;
+        goto error_label;
     case 'i':
       err =
           jcc_lex_candidate_token(jcc, &jcc_token_include, &token, recognized);
       if (err)
-        return err;
+        goto error_label;
     case 'p':
       err = jcc_lex_candidate_token(jcc, &jcc_token_pragma, &token, recognized);
       if (err)
-        return err;
+        goto error_label;
     }
   }
+error_label:
+  jcc->token = token;
   return JCC_UNRECOGNIZED;
 }
 

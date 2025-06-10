@@ -7,11 +7,6 @@ int jcc_getchar(jcc_t *jcc, int *ch);
 void jcc_phase2_unget(jcc_t *jcc, int ch);
 int jcc_getchar(jcc_t *jcc, int *pch);
 
-int jcc_ungetchar(jcc_t *jcc, int ch) {
-  char ch0 = (char)ch;
-  return JVEC_PUSH_BACK(&jcc->queued_chars, &ch0);
-}
-
 int jcc_getchar(jcc_t *jcc, int *pch)
 /* C preprocessor scanning.
  * Read, at the phase that handles comments, turning them into spaces.
@@ -26,7 +21,7 @@ int jcc_getchar(jcc_t *jcc, int *pch)
 {
   int err = 0;
   int ch = 0;
-  size_t size = 0;
+  size_t size;
 
   size = jcc->queued_chars.size;
   if (size) {
@@ -65,7 +60,11 @@ int jcc_getchar(jcc_t *jcc, int *pch)
     /* If star slash, return space. */
     ch = *pch;
     if (ch == '/') {
-      *pch = ' ';
+      ch = ' ';
+      err = JVEC_PUSH_FRONT(&jcc->queued_chars, &ch);
+      if (err)
+        return err;
+      *pch = ch;
       return 0;
     }
     /* Otherwise it was star not-slash, continue. */

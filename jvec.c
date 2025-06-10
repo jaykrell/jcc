@@ -17,11 +17,17 @@ int jvec_reserve(jvec_generic *v, ptrdiff_t new_capacity,
                  ptrdiff_t element_size) {
   ptrdiff_t capacity = v->capacity;
   if (new_capacity > capacity) {
-    char *new_data = (char *)realloc(v->data, new_capacity * element_size);
-    if (!new_data)
+    ptrdiff_t offset = (new_capacity - capacity) / 2;
+    ptrdiff_t size = v->size;
+    char *new_base = (char *)calloc(1, new_capacity * element_size);
+    if (!new_base)
       return -1;
-    memset(new_data + v->size * element_size, 0, element_size);
-    v->data = new_data;
+    if (size) {
+      memcpy(new_base + offset, v->data, size * element_size);
+      free(v->data);
+    }
+    v->base = new_base;
+    v->data = new_base + offset;
     v->capacity = new_capacity;
   }
   return 0;
@@ -33,7 +39,7 @@ int jvec_resize(jvec_generic *v, ptrdiff_t new_size, ptrdiff_t element_size) {
 
   if (new_size > capacity) {
     ptrdiff_t new_capacity = JMAX(new_size, capacity * 2);
-    if ((err = jvec_reserve(v, new_capacity, element_size)))
+    if ((err = jvec_reserve(v, new_capacity + 2, element_size)))
       return err;
   }
   v->size = new_size;
@@ -54,12 +60,25 @@ int jvec_insert(jvec_generic *v, void const *before, void const *begin,
   return 0;
 }
 
+int jvec_push_front(jvec_generic *v, void const *element,
+                    ptrdiff_t element_size) {
+  ptrdiff_t size = v->size;
+  int err = jvec_resize(v, size + 2, element_size);
+  if (err)
+    return err;
+  jvec_resize(v, size + 1, element_size);
+
+  memcpy(v->data -= element_size, element, element_size);
+  return 0;
+}
+
 int jvec_push_back(jvec_generic *v, void const *element,
                    ptrdiff_t element_size) {
   ptrdiff_t size = v->size;
-  int err = jvec_resize(v, size + 1, element_size);
+  int err = jvec_resize(v, size + 2, element_size);
   if (err)
     return err;
+  jvec_resize(v, size + 1, element_size);
 
   memcpy(v->data + size * element_size, element, element_size);
   return 0;

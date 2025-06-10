@@ -23,6 +23,7 @@ extern "C" {
     int static_;                                                               \
     T *prealloc;                 /*TODO*/                                      \
     ptrdiff_t prealloc_capacity; /*TODO*/                                      \
+    T *base;                                                                   \
   }
 /*TODO: size_t? */
 
@@ -30,6 +31,10 @@ typedef JVEC(char) jvec_generic;
 
 void jvec_cleanup(jvec_generic *);
 int jvec_push_back(jvec_generic *, void const *element, ptrdiff_t element_size);
+int jvec_push_front(jvec_generic *, void const *element,
+                    ptrdiff_t element_size);
+int jvec_pop_back(jvec_generic *, void const *element, ptrdiff_t element_size);
+int jvec_pop_front(jvec_generic *, void const *element, ptrdiff_t element_size);
 int jvec_resize(jvec_generic *, ptrdiff_t new_size, ptrdiff_t element_size);
 int jvec_reserve(jvec_generic *, ptrdiff_t new_size, ptrdiff_t element_size);
 int jvec_insert(jvec_generic *, void const *before, void const *begin,
@@ -43,6 +48,9 @@ int jvec_insert(jvec_generic *, void const *before, void const *begin,
 #define JVEC_END(v) ((v)->data + (v)->size)
 #define JVEC_PUSH_BACK(v, element)                                             \
   jvec_push_back((jvec_generic *)(v), element, sizeof((v)->data[0]))
+
+#define JVEC_PUSH_FRONT(v, element)                                            \
+  jvec_push_front((jvec_generic *)(v), element, sizeof((v)->data[0]))
 
 #define JVEC_INSERT(v, before, begin, count)                                   \
   jvec_insert((jvec_generic *)(v), (before), (begin), (count),                 \
