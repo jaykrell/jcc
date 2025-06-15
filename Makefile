@@ -98,6 +98,7 @@ OBJS=\
  csv.$O \
  csv1.$O \
 \
+ test_dec.$O \
  test_hash.$O \
  test_list.$O \
  test_os.$O \
