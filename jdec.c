@@ -54,13 +54,32 @@ int jdec_insert(jdec_generic *v, void const *before, void const *begin,
   return 0;
 }
 
+int jdec_push_front(jdec_generic *v, void const *element,
+                    ptrdiff_t element_size) {
+  int err;
+  if ((v->data - element_size) < v->internal.begin) {
+    err = jdec_internal_grow();
+    if (err)
+      return err;
+  }
+
+  memcpy(v->data, element, element_size);
+  v->data -= element_size;
+  v->size += element_size;
+  return 0;
+}
+
 int jdec_push_back(jdec_generic *v, void const *element,
                    ptrdiff_t element_size) {
   ptrdiff_t size = v->size;
-  int err = jdec_resize(v, size + 1, element_size);
-  if (err)
-    return err;
+  int err;
+  if ((v->data + v->size) >= v->internal.end) {
+    err = jdec_internal_grow();
+    if (err)
+      return err;
+  }
 
   memcpy(v->data + size * element_size, element, element_size);
+  v->size = (size + element_size);
   return 0;
 }

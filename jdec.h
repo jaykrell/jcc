@@ -24,6 +24,10 @@ extern "C" {
     int static_;                                                               \
     T *prealloc;                 /*TODO*/                                      \
     ptrdiff_t prealloc_capacity; /*TODO*/                                      \
+    struct {                                                                   \
+      T *base;                                                                 \
+      T *end;                                                                  \
+    } internal;                                                                \
   }
 /*TODO: size_t? */
 
