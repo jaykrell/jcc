@@ -66,6 +66,7 @@ OBJS=\
  jcc_preprocess_newlines.$O \
  jcc_unget.$O \
 \
+ jdec.$O \
  jerr.$O \
  jfile.$O \
  jhash.$O \

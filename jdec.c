@@ -3,9 +3,26 @@
    It is a vector with an offset. */
 #include "jdec.h"
 #include "jmax.h"
+#include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+
+ptrdiff_t jdec_capacity(jdec_generic *v) {
+  assert(v->internal.end >= v->internal.base);
+  return v->internal.end - v->internal.base;
+}
+
+void jdec_assert(jdec_generic *v) {
+  ptrdiff_t capacity=0;
+
+  capacity = jdec_capacity(v);
+
+  assert(v->internal.base <= v->data);
+  assert((v->data + v->size) <= v->internal.end);
+  assert(v->size >= 0);
+  assert(capacity >= v->size);
+}
 
 void jdec_cleanup(jdec_generic *v) {
   free(v->data);
@@ -13,73 +30,69 @@ void jdec_cleanup(jdec_generic *v) {
   v->data = 0;
 }
 
-int jdec_reserve(jdec_generic *v, ptrdiff_t new_capacity,
-                 ptrdiff_t element_size) {
-  ptrdiff_t capacity = v->capacity;
-  if (new_capacity > capacity) {
-    char *new_data = (char *)realloc(v->data, new_capacity * element_size);
-    if (!new_data)
-      return -1;
-    memset(new_data + v->size * element_size, 0, element_size);
-    v->data = new_data;
-    v->capacity = new_capacity;
-  }
-  return 0;
-}
+int jdec_internal_grow(jdec_generic *v, ptrdiff_t element_size) {
+  /* Policy:
+   - double (zero goes 2)
+   - divide extra space evenly, even though
+   usage patterns might favor otherwise
+   */
+  char *new_base = 0;
+  ptrdiff_t before = 0;
+  ptrdiff_t capacity = 0;
+  ptrdiff_t size=0;
 
-int jdec_resize(jdec_generic *v, ptrdiff_t new_size, ptrdiff_t element_size) {
-  int err;
-  ptrdiff_t capacity = v->capacity;
+  capacity = jdec_capacity(v);
+  capacity = (capacity ? capacity : element_size);
+  capacity *= 2;
+  assert((capacity % element_size) == 0);
 
-  if (new_size > capacity) {
-    ptrdiff_t new_capacity = JMAX(new_size, capacity * 2);
-    if ((err = jdec_reserve(v, new_capacity, element_size)))
-      return err;
-  }
-  v->size = new_size;
-  return 0;
-}
+  new_base = (char *)malloc(capacity);
+  if (!new_base)
+    return -1;
 
-int jdec_insert(jdec_generic *v, void const *before, void const *begin,
-                ptrdiff_t count, ptrdiff_t element_size) {
-  ptrdiff_t before_offset = ((char const *)before - v->data);
-  ptrdiff_t new_size = v->size + count;
+  size = v->size;
+  before = ((capacity - size) / 2);
 
-  int err = jdec_resize(v, new_size, element_size);
-  if (err)
-    return err;
-  memmove(v->data + before_offset + (count * element_size),
-          v->data + before_offset, count * element_size);
-  memmove(v->data + before_offset, begin, count * element_size);
+  memcpy(new_base + before, v->data, size);
+  free(v->internal.base);
+  v->data = new_base + before;
+  v->internal.base = new_base;
+  v->internal.end = (new_base + capacity);
+  /* size is unchanged here, caller typically changes it */
   return 0;
 }
 
 int jdec_push_front(jdec_generic *v, void const *element,
                     ptrdiff_t element_size) {
   int err;
-  if ((v->data - element_size) < v->internal.begin) {
-    err = jdec_internal_grow();
+  if (!v->data || (v->data - element_size) < v->internal.base) {
+    err = jdec_internal_grow(v, element_size);
     if (err)
       return err;
   }
 
-  memcpy(v->data, element, element_size);
-  v->data -= element_size;
+  memcpy(v->data -= element_size, element, element_size);
   v->size += element_size;
+  jdec_assert(v);
   return 0;
 }
 
 int jdec_push_back(jdec_generic *v, void const *element,
                    ptrdiff_t element_size) {
-  ptrdiff_t size = v->size;
-  int err;
-  if ((v->data + v->size) >= v->internal.end) {
-    err = jdec_internal_grow();
+  ptrdiff_t size=0;
+  int err=0;
+
+  jdec_assert(v);
+  size = v->size;
+
+  if (!v->data || (v->data + v->size) >= v->internal.end) {
+    err = jdec_internal_grow(v, element_size);
     if (err)
       return err;
   }
 
   memcpy(v->data + size * element_size, element, element_size);
   v->size = (size + element_size);
+  jdec_assert(v);
   return 0;
 }

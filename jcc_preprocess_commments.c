@@ -61,7 +61,7 @@ int jcc_getchar(jcc_t *jcc, int *pch)
     ch = *pch;
     if (ch == '/') {
       ch = ' ';
-      err = JVEC_PUSH_FRONT(&jcc->queued_chars, &ch);
+      err = JDEC_PUSH_FRONT(&jcc->queued_chars, &ch);
       if (err)
         return err;
       *pch = ch;
