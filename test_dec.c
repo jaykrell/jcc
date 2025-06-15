@@ -3,9 +3,9 @@
 #if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
 #endif
+#include "jdec.h"
 #include "jint64.h"
 #include "jsize.h"
-#include "jdec.h"
 #include <assert.h>
 #include <stdio.h>
 
@@ -60,10 +60,19 @@ int test_dec(void) {
   for (vii = vi.data; vii != (vi.data + vi.size); ++vii)
     printf("%d ", *vii);
 
+  printf("\n-- float --\n");
   JDEC_PUSH_BACK(&vd, &b);
   size = vd.size;
   for (i = 0; i < size; ++i)
     printf("%f ", vd.data[i]);
+
+  printf("\n-- push_front --\n");
+  ++a;
+  JDEC_PUSH_FRONT(&vi, &a);
+  JDEC_PUSH_FRONT(&vi, &a);
+  printf("size: %" JSIZE_PRI "d\n", size = vi.size);
+  for (vii = vi.data; vii != (vi.data + vi.size); ++vii)
+    printf("%d ", *vii);
 
   printf("\n");
   return 0;

@@ -36,6 +36,8 @@ int main(int argc, char **argv) {
     return test_thread();
   if (!strcmp(arg0, "test_varint"))
     return test_varint();
+  if (!strcmp(arg0, "test_dec"))
+    return test_dec();
   if (!strcmp(arg0, "test_vec"))
     return test_vec();
   if (!strcmp(arg0, "test_vec1"))

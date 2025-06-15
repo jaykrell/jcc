@@ -1,0 +1,1 @@
+set LIB=%LIB%;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.42.34433\lib\spectre\x64

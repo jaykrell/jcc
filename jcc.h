@@ -5,11 +5,11 @@
 /* #include "jpaste.h" */
 /*#include "jcc_preprocess_token.h"*/
 #include "jcc_unget.h"
+#include "jdec.h"
 #include "jfile.h"
 #include "jmap.h"
 #include "jstr.h"
 #include "jtype.h"
-#include "jdec.h"
 #include "jvec.h"
 #include <stdint.h>
 

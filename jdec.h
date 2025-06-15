@@ -35,7 +35,8 @@ typedef JDEC(char) jdec_generic;
 
 void jdec_cleanup(jdec_generic *);
 int jdec_push_back(jdec_generic *, void const *element, ptrdiff_t element_size);
-int jdec_push_front(jdec_generic *, void const *element, ptrdiff_t element_size);
+int jdec_push_front(jdec_generic *, void const *element,
+                    ptrdiff_t element_size);
 int jdec_pop_back(jdec_generic *, void const *element, ptrdiff_t element_size);
 int jdec_pop_front(jdec_generic *, void const *element, ptrdiff_t element_size);
 
@@ -43,7 +44,7 @@ int jdec_pop_front(jdec_generic *, void const *element, ptrdiff_t element_size);
 
 #define JDEC_END(v) ((v)->data + (v)->size)
 
-#define JDEC_PUSH_FRONT(v, element)                                             \
+#define JDEC_PUSH_FRONT(v, element)                                            \
   jdec_push_front((jdec_generic *)(v), element, sizeof((v)->data[0]))
 
 #define JDEC_PUSH_BACK(v, element)                                             \

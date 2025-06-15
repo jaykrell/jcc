@@ -2,6 +2,7 @@
 extern "C" {
 #endif
 
+int test_dec(void);
 int test_hash(void);
 int test_list(void);
 int test_os(void);
