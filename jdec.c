@@ -3,6 +3,7 @@
    It is a vector with an offset. */
 #include "jdec.h"
 #include "jmax.h"
+#include "jmem.h"
 #include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -25,9 +26,8 @@ void jdec_assert(jdec_generic *v) {
 }
 
 void jdec_cleanup(jdec_generic *v) {
-  free(v->data);
-  /*JMEMSET0_POINTER(v);*/
-  v->data = 0;
+  free(v->internal.base);
+  JMEMSET0_POINTER(v);
 }
 
 int jdec_internal_grow(jdec_generic *v, ptrdiff_t element_size) {
