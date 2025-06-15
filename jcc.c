@@ -450,7 +450,7 @@ int jcc_preprocess_pound_lex(jcc_t *jcc, int ch) {
   int i = 1;
   int err = 0;
 
-  jmemset0(directive, sizeof(directive));
+  JMEMSET0_VALUE(directive);
   directive[0] = (char)ch;
   while (i < JCOUNT(directive) && jcc_is_identifier_char(ch)) {
     err = jcc_getchar(jcc, &ch);
@@ -550,7 +550,7 @@ int jcc_dup_token(jcc_t *jcc, jcc_token_t *token1, jcc_token_t **token2) {
   next = (*token2)->next;
   **token2 = *token1;
   (*token2)->next = next;
-  JMEMSET0_VALUE(&(*token2)->list);
+  JMEMSET0_VALUE((*token2)->list);
   return err;
 }
 
