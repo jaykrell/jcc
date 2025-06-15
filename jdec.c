@@ -65,7 +65,7 @@ int jdec_push_front(jdec_generic *v, void const *element,
                     ptrdiff_t element_size) {
   int err = 0;
   jdec_assert(v);
-  if (!v->data || (v->data - element_size) < v->internal.base) {
+  if ((v->data - element_size) < v->internal.base) {
     err = jdec_internal_grow(v, element_size);
     if (err)
       return err;
@@ -81,7 +81,7 @@ int jdec_push_back(jdec_generic *v, void const *element,
                    ptrdiff_t element_size) {
   int err = 0;
   jdec_assert(v);
-  if (!v->data || (v->data + (v->size * element_size)) >= v->internal.end) {
+  if ((v->data + (v->size * element_size)) >= v->internal.end) {
     err = jdec_internal_grow(v, element_size);
     if (err)
       return err;
