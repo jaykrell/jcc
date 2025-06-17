@@ -554,28 +554,20 @@ int jcc_dup_token(jcc_t *jcc, jcc_token_t *token1, jcc_token_t **token2) {
   return err;
 }
 
+void jcc_initialize_token(jcc_token_t *token, const char *str,
+                          jcc_token_tag tag) {
+  if (str)
+    jcc_initialize_token_string(token, str);
+  token->tag = tag;
+}
+
 void jcc_initialize_tokens(void) {
-  jcc_initialize_token_string(&jcc_token_pound, "#");
-  jcc_token_pound.tag = jcc_token_tag_punctuator;
-
-  jcc_initialize_token_string(&jcc_token_newline, "\n");
-  jcc_token_newline.tag = jcc_token_tag_punctuator;
-
-  jcc_initialize_token_string(&jcc_token_define, "define");
-  jcc_token_define.tag = jcc_token_tag_define;
-
-  jcc_initialize_token_string(&jcc_token_error, "error");
-  jcc_token_error.tag = jcc_token_tag_error;
-
-  jcc_initialize_token_string(&jcc_token_include, "include");
-  jcc_token_include.tag = jcc_token_tag_include;
-
-  jcc_initialize_token_string(&jcc_token_line, "line");
-  jcc_token_line.tag = jcc_token_tag_line;
-
-  jcc_initialize_token_string(&jcc_token_undef, "undef");
-  jcc_token_undef.tag = jcc_token_tag_undef;
-
-  jcc_initialize_token_string(&jcc_token_pragma, "pragma");
-  jcc_token_pragma.tag = jcc_token_tag_pragma;
+  jcc_initialize_token(&jcc_token_pound, "#", jcc_token_tag_punctuator);
+  jcc_initialize_token(&jcc_token_newline, "\n", jcc_token_tag_punctuator);
+  jcc_initialize_token(&jcc_token_define, "define", jcc_token_tag_define);
+  jcc_initialize_token(&jcc_token_error, "error", jcc_token_tag_error);
+  jcc_initialize_token(&jcc_token_include, "include", jcc_token_tag_include);
+  jcc_initialize_token(&jcc_token_line, "line", jcc_token_tag_line);
+  jcc_initialize_token(&jcc_token_undef, "undef", jcc_token_tag_undef);
+  jcc_initialize_token(&jcc_token_pragma, "pragma", jcc_token_tag_pragma);
 }
