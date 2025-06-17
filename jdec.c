@@ -15,14 +15,10 @@ ptrdiff_t jdec_capacity(jdec_generic *v) {
 }
 
 void jdec_assert(jdec_generic *v) {
-  ptrdiff_t capacity = 0;
-
-  capacity = jdec_capacity(v);
-
   assert(v->internal.base <= v->data);
   assert((v->data + v->size) <= v->internal.end);
   assert(v->size >= 0);
-  assert(capacity >= v->size);
+  assert(jdec_capacity(v) >= v->size);
 }
 
 void jdec_cleanup(jdec_generic *v) {
@@ -53,10 +49,9 @@ int jdec_internal_grow(jdec_generic *v, ptrdiff_t element_size) {
 
   memcpy(new_base + before, v->data, v->size * element_size);
   free(v->internal.base);
-  v->data = new_base + before;
+  v->data = (new_base + before);
   v->internal.base = new_base;
   v->internal.end = (new_base + capacity * element_size);
-  /* size is unchanged here, caller typically changes it */
   jdec_assert(v);
   return 0;
 }
