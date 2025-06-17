@@ -638,14 +638,15 @@ void jcc_init_token_string(jcc_token_t *token, const char *short_string) {
 
 int jcc_dup_token(jcc_t *jcc, jcc_token_t *token1, jcc_token_t **token2) {
   int err;
-  jcc_token_t *next;
+  jcc_token_t save;
 
   if ((err = jcc_new_token(jcc, token2)))
     return err;
-  next = (*token2)->next;
+  save = **token2;
   **token2 = *token1;
-  (*token2)->next = next;
-  (*token2)->original = token1;
+  (*token2)->list = save.list;
+  (*token2)->next = save.next;
+  (*token2)->original = save.original;
   JMEMSET0_VALUE((*token2)->list);
   return err;
 }
