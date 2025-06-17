@@ -174,11 +174,15 @@ int jcc_preprocess_find_directive(jcc_t *jcc, int ch) {
   return -1;
 }
 
+int jcc_char_space_first = 9;
+int jcc_char_space_last = 13;
 int jcc_char_tab = 9;              /* horizontal tab \t */
 int jcc_char_newline = 10;         /* also known as linefeed or \n */
 int jcc_char_vertical_tab = 11;    /* \v */
 int jcc_char_formfeed = 12;        /* \f */
 int jcc_char_carriage_return = 13; /* \r */
+
+int jcc_is_space(int ch) { return ch >= 9 && ch <= 13; }
 
 int jcc_translate_space(int ch)
 /* Translate whitespace except carriage return and newline to canonical space.
@@ -234,8 +238,104 @@ int jcc_preprocess_if_section(jcc_t *jcc, size_t *recognized)
   return -1;
 }
 
-int jcc_lex_candidate_token(jcc_t *jcc, jcc_token_t *candidate,
-                            jcc_token_t **success, size_t *recognized) {
+typedef struct jcc_lex_trie_t jcc_lex_trie_t;
+
+struct jcc_lex_trie_t {
+  jcc_lex_trie_t *map[256];
+  jcc_token_t *token;
+};
+
+jcc_lex_trie_t jcc_lex_trie;
+
+void jcc_init_trie(const char *str, jcc_token_t *token) {
+  unsigned char ch;
+  jcc_lex_trie_t *trie;
+
+  trie = &jcc_lex_trie;
+  while ((ch = (unsigned char)*str++)) {
+    if (!trie->map[ch])
+      trie->map[ch] = (jcc_lex_trie_t *)calloc(1, sizeof(jcc_lex_trie_t));
+    trie = trie->map[ch];
+  }
+  trie->token = token;
+}
+
+jcc_token_t jcc_token_and;
+jcc_token_t jcc_token_ands;
+jcc_token_t jcc_token_assign;
+jcc_token_t jcc_token_bar;
+jcc_token_t jcc_token_bars;
+jcc_token_t jcc_token_colon;
+jcc_token_t jcc_token_comma;
+jcc_token_t jcc_token_define;
+jcc_token_t jcc_token_dot;
+jcc_token_t jcc_token_eq;
+jcc_token_t jcc_token_error;
+jcc_token_t jcc_token_exclaim;
+jcc_token_t jcc_token_ge;
+jcc_token_t jcc_token_greater;
+jcc_token_t jcc_token_include;
+jcc_token_t jcc_token_lbrace;
+jcc_token_t jcc_token_lbracket;
+jcc_token_t jcc_token_le;
+jcc_token_t jcc_token_left_shift;
+jcc_token_t jcc_token_less;
+jcc_token_t jcc_token_line;
+jcc_token_t jcc_token_lparen;
+jcc_token_t jcc_token_minuss;
+jcc_token_t jcc_token_newline;
+jcc_token_t jcc_token_percent;
+jcc_token_t jcc_token_plus;
+jcc_token_t jcc_token_pluss;
+jcc_token_t jcc_token_pound;
+jcc_token_t jcc_token_pounds;
+jcc_token_t jcc_token_pragma;
+jcc_token_t jcc_token_question;
+jcc_token_t jcc_token_rbrace;
+jcc_token_t jcc_token_rbracket;
+jcc_token_t jcc_token_right_shift;
+jcc_token_t jcc_token_rparen;
+jcc_token_t jcc_token_semi;
+jcc_token_t jcc_token_slash;
+jcc_token_t jcc_token_star;
+jcc_token_t jcc_token_tilde;
+jcc_token_t jcc_token_undef;
+
+int jcc_lex_candidate_token(jcc_t *jcc, jbool prefer_header_name,
+                            jcc_token_t *candidate, jcc_token_t **success,
+                            size_t *recognized) {
+  return -1;
+}
+
+int jcc_token(jcc_t *jcc, jbool prefer_header_name, jcc_token_t *candidate,
+              jcc_token_t **success, size_t *recognized) {
+  /* longest whitespace-separated sequence that can be a single token
+  with special handling regarding "prefer_header_name" vs. string. */
+
+  size_t size = 0;
+  int id_start = 0;
+  int num_start = 0;
+  int start = 0;
+  int ch = 0;
+  unsigned char uch = 0;
+  int err = 0;
+
+  while (1) {
+    err = jcc_getchar(jcc, &ch);
+    uch = (unsigned char)ch;
+    if (err && err != JCC_CHAR_END_OF_FILE)
+      return err;
+    ++size;
+    /* TODO: prefer_header_name */
+    if (jcc_is_space(ch))
+      break;
+    if (!start) {
+      id_start = (ch >= 'A' && ch <= 'Z');
+      id_start |= (ch >= 'a' && ch <= 'z');
+      id_start |= (ch == '_');
+      num_start = (ch >= '0' && ch <= '9');
+    }
+  }
   return -1;
 }
 
@@ -288,12 +388,9 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
  *  # define identifier replacement-list new-line
  *  # define identifier lparen identifier-list_opt ) replacement-list new-line
  *  # define identifier lparen ... ) replacement-list new-line
- *  # define identifier lparen identifier-list , ... ) replacement-list new-line
- *  # undef identifier new-line
- *  # line pp-tokens new-line
- *  # error pp-tokens_opt new-line
- *  # pragma pp-tokens_opt new-line
- *  # new-line
+ *  # define identifier lparen identifier-list , ... ) replacement-list
+ * new-line # undef identifier new-line # line pp-tokens new-line # error
+ * pp-tokens_opt new-line # pragma pp-tokens_opt new-line # new-line
  */
 {
   int err = 0;
@@ -321,7 +418,8 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
       *recognized += 1;
       return 0;
     case 'd':
-      err = jcc_lex_candidate_token(jcc, &jcc_token_define, &token, recognized);
+      err = jcc_lex_candidate_token(jcc, false, &jcc_token_define, &token,
+                                    recognized);
       if (err)
         goto error_label;
       if (token) {
@@ -346,24 +444,28 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
         jcc_lex_commit(jcc);
       }
     case 'u':
-      err = jcc_lex_candidate_token(jcc, &jcc_token_undef, &token, recognized);
+      err = jcc_lex_candidate_token(jcc, false, &jcc_token_undef, &token,
+                                    recognized);
       if (err)
         goto error_label;
     case 'l':
-      err = jcc_lex_candidate_token(jcc, &jcc_token_line, &token, recognized);
+      err = jcc_lex_candidate_token(jcc, false, &jcc_token_line, &token,
+                                    recognized);
       if (err)
         goto error_label;
     case 'e':
-      err = jcc_lex_candidate_token(jcc, &jcc_token_error, &token, recognized);
+      err = jcc_lex_candidate_token(jcc, false, &jcc_token_error, &token,
+                                    recognized);
       if (err)
         goto error_label;
     case 'i':
-      err =
-          jcc_lex_candidate_token(jcc, &jcc_token_include, &token, recognized);
+      err = jcc_lex_candidate_token(jcc, false, &jcc_token_include, &token,
+                                    recognized);
       if (err)
         goto error_label;
     case 'p':
-      err = jcc_lex_candidate_token(jcc, &jcc_token_pragma, &token, recognized);
+      err = jcc_lex_candidate_token(jcc, false, &jcc_token_pragma, &token,
+                                    recognized);
       if (err)
         goto error_label;
     }
@@ -525,16 +627,7 @@ int jcc_get_token(jcc_t *jcc, jcc_token_t **pptoken)
   return 0;
 }
 
-jcc_token_t jcc_token_pound;
-jcc_token_t jcc_token_newline;
-jcc_token_t jcc_token_define;
-jcc_token_t jcc_token_error;
-jcc_token_t jcc_token_line;
-jcc_token_t jcc_token_include;
-jcc_token_t jcc_token_pragma;
-jcc_token_t jcc_token_undef;
-
-void jcc_initialize_token_string(jcc_token_t *token, const char *short_string) {
+void jcc_init_token_string(jcc_token_t *token, const char *short_string) {
   int size;
   size = (int)strlen(short_string);
   token->size = size;
@@ -554,20 +647,78 @@ int jcc_dup_token(jcc_t *jcc, jcc_token_t *token1, jcc_token_t **token2) {
   return err;
 }
 
-void jcc_initialize_token(jcc_token_t *token, const char *str,
-                          jcc_token_tag tag) {
-  if (str)
-    jcc_initialize_token_string(token, str);
+void jcc_init_token(jcc_token_t *token, const char *str, jcc_token_tag tag) {
+  if (str) {
+    if (tag == jcc_token_tag_punctuator)
+      jcc_char_class[*str] = tag;
+    jcc_init_token_string(token, str);
+  }
   token->tag = tag;
+  jcc_init_trie(str, token);
 }
 
-void jcc_initialize_tokens(void) {
-  jcc_initialize_token(&jcc_token_pound, "#", jcc_token_tag_punctuator);
-  jcc_initialize_token(&jcc_token_newline, "\n", jcc_token_tag_punctuator);
-  jcc_initialize_token(&jcc_token_define, "define", jcc_token_tag_define);
-  jcc_initialize_token(&jcc_token_error, "error", jcc_token_tag_error);
-  jcc_initialize_token(&jcc_token_include, "include", jcc_token_tag_include);
-  jcc_initialize_token(&jcc_token_line, "line", jcc_token_tag_line);
-  jcc_initialize_token(&jcc_token_undef, "undef", jcc_token_tag_undef);
-  jcc_initialize_token(&jcc_token_pragma, "pragma", jcc_token_tag_pragma);
+void jcc_init(void) {
+  int i;
+  for (i = jcc_char_space_first; i <= jcc_char_space_last; ++i)
+    jcc_char_class[i] = jcc_char_space;
+
+  for (i = 0; i < 256; ++i)
+    jcc_char_class[i] = i;
+
+  for (i = 'A'; i <= 'Z'; ++i) {
+    jcc_char_class[i] = jcc_char_alpha;
+    jcc_char_class[i - 'A' + 'a'] = jcc_char_alpha;
+  }
+
+  for (i = '0'; i <= '9'; ++i)
+    jcc_char_class[i] = jcc_char_num;
+
+  jcc_init_token(&jcc_token_newline, "\n", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_define, "define", jcc_token_tag_define);
+  jcc_init_token(&jcc_token_error, "error", jcc_token_tag_error);
+  jcc_init_token(&jcc_token_include, "include", jcc_token_tag_include);
+  jcc_init_token(&jcc_token_line, "line", jcc_token_tag_line);
+  jcc_init_token(&jcc_token_undef, "undef", jcc_token_tag_undef);
+  jcc_init_token(&jcc_token_pragma, "pragma", jcc_token_tag_pragma);
+
+  jcc_init_token(&jcc_token_left_shift, "<<", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_right_shift, ">>", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_eq, "==", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_assign, "=", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_assign, "=", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_less, "<", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_greater, ">", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_ge, ">", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_le, "<=", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_lparen, "(", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_rparen, ")", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_lbracket, "[", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_rbracket, "]", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_lbrace, "{", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_rbrace, "}", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_dot, ".", jcc_token_tag_punctuator);
+
+  jcc_init_token(&jcc_token_plus, "+", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_slash, "/", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_percent, "%", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_star, "*", jcc_token_tag_punctuator);
+
+  jcc_init_token(&jcc_token_and, "&", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_tilde, "~", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_exclaim, "!", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_bar, "|", jcc_token_tag_punctuator);
+
+  jcc_init_token(&jcc_token_pluss, "++", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_minuss, "--", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_ands, "&&", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_bars, "||", jcc_token_tag_punctuator);
+
+  jcc_init_token(&jcc_token_colon, ":", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_semi, ";", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_pound, "#", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_pounds, "##", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_question, "?", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_comma, ",", jcc_token_tag_punctuator);
 }
+
+jcc_char_class_t jcc_char_class[256];

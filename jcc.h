@@ -39,7 +39,17 @@ int jcc_is_universal_xid_continue(int ch);
 
 int jcc_is_keyword(jvec_char_t *);
 
+typedef enum jcc_char_class_t {
+  jcc_char_alpha = 0x101,
+  jcc_char_num = 0x102,
+  jcc_char_space = 0x103,
+  jcc_char_punc = 0x104,
+} jcc_char_class_t;
+
+extern jcc_char_class_t jcc_char_class[256];
+
 typedef enum jcc_token_tag {
+  jcc_token_tag_invalid = 0,
   jcc_token_tag_keyword = 1,
   jcc_token_tag_identifier = 2,
   jcc_token_tag_string_literal = 3,
@@ -407,5 +417,52 @@ struct jcc_t {
   jcc_token_t *token;
   int ch;
 };
+
+void jcc_initialize_token_string(jcc_token_t *token, const char *short_string);
+int jcc_dup_token(jcc_t *jcc, jcc_token_t *token1, jcc_token_t **token2);
+void jcc_initialize_token(jcc_token_t *token, const char *str,
+                          jcc_token_tag tag);
+void jcc_initialize_tokens(void);
+
+extern jcc_token_t jcc_token_and;
+extern jcc_token_t jcc_token_ands;
+extern jcc_token_t jcc_token_assign;
+extern jcc_token_t jcc_token_bar;
+extern jcc_token_t jcc_token_bars;
+extern jcc_token_t jcc_token_colon;
+extern jcc_token_t jcc_token_comma;
+extern jcc_token_t jcc_token_define;
+extern jcc_token_t jcc_token_dot;
+extern jcc_token_t jcc_token_eq;
+extern jcc_token_t jcc_token_error;
+extern jcc_token_t jcc_token_exclaim;
+extern jcc_token_t jcc_token_ge;
+extern jcc_token_t jcc_token_greater;
+extern jcc_token_t jcc_token_include;
+extern jcc_token_t jcc_token_lbrace;
+extern jcc_token_t jcc_token_lbracket;
+extern jcc_token_t jcc_token_le;
+extern jcc_token_t jcc_token_left_shift;
+extern jcc_token_t jcc_token_less;
+extern jcc_token_t jcc_token_line;
+extern jcc_token_t jcc_token_lparen;
+extern jcc_token_t jcc_token_minuss;
+extern jcc_token_t jcc_token_newline;
+extern jcc_token_t jcc_token_percent;
+extern jcc_token_t jcc_token_plus;
+extern jcc_token_t jcc_token_pluss;
+extern jcc_token_t jcc_token_pound;
+extern jcc_token_t jcc_token_pounds;
+extern jcc_token_t jcc_token_pragma;
+extern jcc_token_t jcc_token_question;
+extern jcc_token_t jcc_token_rbrace;
+extern jcc_token_t jcc_token_rbracket;
+extern jcc_token_t jcc_token_right_shift;
+extern jcc_token_t jcc_token_rparen;
+extern jcc_token_t jcc_token_semi;
+extern jcc_token_t jcc_token_slash;
+extern jcc_token_t jcc_token_star;
+extern jcc_token_t jcc_token_tilde;
+extern jcc_token_t jcc_token_undef;
 
 #endif

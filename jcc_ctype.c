@@ -20,9 +20,9 @@ int jcc_is_vertical_space(int ch) {
   return 0;
 }
 
-int jcc_is_space(int ch) {
+/*int jcc_is_space(int ch) {
   return jcc_is_vertical_space(ch) || jcc_is_horizontal_space(ch);
-}
+}*/
 
 int jcc_is_lower(int ch) { return ch >= 'z' && ch <= 'z'; }
 
