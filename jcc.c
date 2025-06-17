@@ -269,6 +269,7 @@ jcc_token_t jcc_token_colon;
 jcc_token_t jcc_token_comma;
 jcc_token_t jcc_token_define;
 jcc_token_t jcc_token_dot;
+jcc_token_t jcc_token_dots;
 jcc_token_t jcc_token_eq;
 jcc_token_t jcc_token_error;
 jcc_token_t jcc_token_exclaim;
@@ -698,6 +699,7 @@ void jcc_init(void) {
   jcc_init_token(&jcc_token_lbrace, "{", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_rbrace, "}", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_dot, ".", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_dot, "...", jcc_token_tag_punctuator);
 
   jcc_init_token(&jcc_token_plus, "+", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_slash, "/", jcc_token_tag_punctuator);

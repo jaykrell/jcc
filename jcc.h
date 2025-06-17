@@ -79,15 +79,6 @@ typedef enum jcc_token_tag {
   jcc_token_tag_undef = 206,
 } jcc_token_tag;
 
-extern jcc_token_t jcc_token_pound;
-extern jcc_token_t jcc_token_newline;
-extern jcc_token_t jcc_token_define;
-extern jcc_token_t jcc_token_error;
-extern jcc_token_t jcc_token_line;
-extern jcc_token_t jcc_token_include;
-extern jcc_token_t jcc_token_pragma;
-extern jcc_token_t jcc_token_undef;
-
 struct jcc_token_t {
   /* for example, replacement list in macros */
   jcc_token_t *next;
@@ -97,6 +88,7 @@ struct jcc_token_t {
   size_t size;
   /*  jlist_t free; */
   jlist_t list; /* queue_tokens within jcc */
+  jcc_token_t *original;
 };
 
 /* Body of a macro. */
