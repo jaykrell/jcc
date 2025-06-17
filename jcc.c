@@ -645,6 +645,7 @@ int jcc_dup_token(jcc_t *jcc, jcc_token_t *token1, jcc_token_t **token2) {
   next = (*token2)->next;
   **token2 = *token1;
   (*token2)->next = next;
+  (*token2)->original = token1;
   JMEMSET0_VALUE((*token2)->list);
   return err;
 }
