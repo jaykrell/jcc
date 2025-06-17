@@ -687,7 +687,6 @@ void jcc_init(void) {
   jcc_init_token(&jcc_token_eq, "==", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_neq, "!=", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_assign, "=", jcc_token_tag_punctuator);
-  jcc_init_token(&jcc_token_assign, "=", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_less, "<", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_greater, ">", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_ge, ">", jcc_token_tag_punctuator);
