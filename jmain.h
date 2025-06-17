@@ -13,6 +13,7 @@ int test_thread(void);
 
 int csv(int argc, char **argv);
 int csv1(int argc, char **argv);
+int jcc(int argc, char **argv);
 
 #if __cplusplus
 } /* extern C */

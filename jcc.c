@@ -722,3 +722,10 @@ void jcc_init(void) {
 }
 
 jcc_char_class_t jcc_char_class[256];
+
+int jcc(int argc, char **argv) {
+  argc &&argv;
+
+  jcc_init();
+  return 0;
+}

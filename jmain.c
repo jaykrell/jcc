@@ -44,6 +44,8 @@ int main(int argc, char **argv) {
     return test_vec1();
   if (!strcmp(arg0, "csv1"))
     return csv1(argc, argv);
+  if (!strcmp(arg0, "jcc"))
+    return jcc(argc, argv);
 
   fprintf(stderr, "ERROR: unknown argv[0]:%s\n", arg0);
   return 1;

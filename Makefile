@@ -190,7 +190,7 @@ test:
 endif
 !endif :
 
-EXES=csv$(EXE) csv1$(EXE) dump_varuint$(EXE) \
+EXES=jcc$(EXE) csv$(EXE) csv1$(EXE) dump_varuint$(EXE) \
  test_dec$(EXE) test_thread$(EXE) test_varint$(EXE) test_os$(EXE) \
  test_hash$(EXE) test_list$(EXE) test_vec$(EXE) test_vec1$(EXE)
 
