@@ -283,6 +283,7 @@ jcc_token_t jcc_token_less;
 jcc_token_t jcc_token_line;
 jcc_token_t jcc_token_lparen;
 jcc_token_t jcc_token_minuss;
+jcc_token_t jcc_token_neq;
 jcc_token_t jcc_token_newline;
 jcc_token_t jcc_token_percent;
 jcc_token_t jcc_token_plus;
@@ -684,6 +685,7 @@ void jcc_init(void) {
   jcc_init_token(&jcc_token_left_shift, "<<", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_right_shift, ">>", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_eq, "==", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_neq, "!=", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_assign, "=", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_assign, "=", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_less, "<", jcc_token_tag_punctuator);
