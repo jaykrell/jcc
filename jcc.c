@@ -12,6 +12,29 @@
 #pragma warning(disable : 4100) /* unused parameter */
 #endif
 
+jcc_char_class_t jcc_char_class[256];
+jbool jcc_space[256];
+jcc_lex_trie_t jcc_lex_trie0[256];
+jcc_token_t jcc_token_identifier;
+jcc_token_t jcc_token_string_constant;
+jcc_token_t jcc_token_character_constant[256];
+
+/* keywords */
+jcc_token_t jcc_token_auto;
+jcc_token_t jcc_token_char;
+jcc_token_t jcc_token_do;
+jcc_token_t jcc_token_for;
+jcc_token_t jcc_token_double;
+jcc_token_t jcc_token_float;
+jcc_token_t jcc_token_goto;
+jcc_token_t jcc_token_int;
+jcc_token_t jcc_token_long;
+jcc_token_t jcc_token_struct;
+jcc_token_t jcc_token_static;
+jcc_token_t jcc_token_typedef;
+jcc_token_t jcc_token_union;
+jcc_token_t jcc_token_while;
+
 /*TODO: generic*/
 typedef struct jcc_span_t {
   char *p;
@@ -98,6 +121,13 @@ jcc_preprocess_directive_t jcc_preprocess_directives[] = {
     {{JSTRING_CONSTANT("pragma")}, jcc_preprocess_pragma},
     {{JSTRING_CONSTANT("undef")}, jcc_preprocess_undef},
 };
+
+int jcc_char_to_lower(int ch)
+{
+  for (i = 'A'; i <= 'Z'; ++i) {
+    jcc_char_class[i] = jcc_char_alpha;
+    jcc_char_class[i - 'A' + 'a'] = jcc_char_alpha;
+}
 
 int jcc_is_preprocess_directive_char(int ch) {
   switch (ch) {
@@ -238,13 +268,6 @@ int jcc_preprocess_if_section(jcc_t *jcc, size_t *recognized)
   return -1;
 }
 
-typedef struct jcc_lex_trie_t jcc_lex_trie_t;
-
-struct jcc_lex_trie_t {
-  jcc_lex_trie_t *map[256];
-  jcc_token_t *token;
-};
-
 jcc_lex_trie_t jcc_lex_trie;
 
 void jcc_init_trie(const char *str, jcc_token_t *token) {
@@ -309,35 +332,45 @@ int jcc_lex_candidate_token(jcc_t *jcc, jbool prefer_header_name,
   return -1;
 }
 
-int jcc_token(jcc_t *jcc, jbool prefer_header_name, jcc_token_t *candidate,
-              jcc_token_t **success, size_t *recognized) {
+int jcc_pp_token(jcc_t *jcc, jbool prefer_header_name, jcc_token_t **token) {
   /* longest whitespace-separated sequence that can be a single token
   with special handling regarding "prefer_header_name" vs. string. */
 
   size_t size = 0;
-  int id_start = 0;
-  int num_start = 0;
-  int start = 0;
   int ch = 0;
   unsigned char uch = 0;
   int err = 0;
+  jcc_lex_trie_t *trie = 0;
+  int indefinite = 0;
+  jcc_char_traits traits={0};
+
+  *token = JBASE(jcc_token_t, pp_queued, jlist_remove_first(&jcc->pp_queued_tokens));
+  if (*token)
+	  return 0;
+
+  trie = &jcc_lex_trie;
 
   while (1) {
     err = jcc_getchar(jcc, &ch);
     uch = (unsigned char)ch;
     if (err && err != JCC_CHAR_END_OF_FILE)
       return err;
-    ++size;
+	traits = jcc_char_traits[uch];
+	if (size == 0)
+		indefinite = traits.indefinite;
     /* TODO: prefer_header_name */
-    if (jcc_is_space(ch))
+    if (traits.is_space)
       break;
-    if (!start) {
-      id_start = (ch >= 'A' && ch <= 'Z');
-      id_start |= (ch >= 'a' && ch <= 'z');
-      id_start |= (ch == '_');
-      num_start = (ch >= '0' && ch <= '9');
-    }
+    ++size;
+	if (trie->map[uch])
+		trie = trie->map[uch];
+	else if (!indefinite)
+		break;
   }
+  if (!indefinite)
+	  return trie->token;
+  /* indefinite is identifier and number and string constant
+  and todo: character constant */
   return -1;
 }
 
@@ -583,7 +616,7 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_token_t **pptoken)
   while (1) {
     /* Handle queuing and backtracking. */
     *pptoken = 0;
-    ptoken = JBASE(jcc_token_t, list, jlist_remove_first(&jcc->queued_tokens));
+    ptoken = JBASE(jcc_token_t, pp_queued, jlist_remove_first(&jcc->pp_queued_tokens));
     if (ptoken) {
       *pptoken = ptoken;
       return 0;
@@ -638,16 +671,12 @@ void jcc_init_token_string(jcc_token_t *token, const char *short_string) {
 
 int jcc_dup_token(jcc_t *jcc, jcc_token_t *token1, jcc_token_t **token2) {
   int err;
-  jcc_token_t save;
 
   if ((err = jcc_new_token(jcc, token2)))
     return err;
-  save = **token2;
   **token2 = *token1;
-  (*token2)->list = save.list;
-  (*token2)->next = save.next;
-  (*token2)->original = save.original;
-  JMEMSET0_VALUE((*token2)->list);
+  JMEMSET0_VALUE((*token2)->queued);
+  JMEMSET0_VALUE((*token2)->pp_queued);
   return err;
 }
 
@@ -663,19 +692,27 @@ void jcc_init_token(jcc_token_t *token, const char *str, jcc_token_tag tag) {
 
 void jcc_init(void) {
   int i;
-  for (i = jcc_char_space_first; i <= jcc_char_space_last; ++i)
+  for (i = jcc_char_space_first; i <= jcc_char_space_last; ++i) {
     jcc_char_class[i] = jcc_char_space;
-
+    jcc_space[i] = 1;
+  }
   for (i = 0; i < 256; ++i)
     jcc_char_class[i] = i;
 
   for (i = 'A'; i <= 'Z'; ++i) {
-    jcc_char_class[i] = jcc_char_alpha;
-    jcc_char_class[i - 'A' + 'a'] = jcc_char_alpha;
+    jcc_char_class[jcc_char_to_upper(i)] = jcc_char_alpha;
+    jcc_char_class[jcc_char_to_lower(i)] = jcc_char_alpha;
+    jcc_char_starts_indefinite_token_fast[jcc_char_to_lower(i)] = 1;
+    jcc_char_starts_indefinite_token_fast[jcc_char_to_upper(i)] = 1;
   }
 
-  for (i = '0'; i <= '9'; ++i)
+  jcc_char_starts_indefinite_token_fast['.'] = jcc_indefinite_num;
+  jcc_char_starts_indefinite_token_fast['_'] = jcc_indefinite_id ;
+  jcc_char_starts_indefinite_token_fast['"'] = jcc_indefinite_str;
+
+  for (i = '0'; i <= '9'; ++i) {
     jcc_char_class[i] = jcc_char_num;
+  }
 
   jcc_init_token(&jcc_token_newline, "\n", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_define, "define", jcc_token_tag_define);
@@ -724,9 +761,28 @@ void jcc_init(void) {
   jcc_init_token(&jcc_token_pounds, "##", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_question, "?", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_comma, ",", jcc_token_tag_punctuator);
-}
 
-jcc_char_class_t jcc_char_class[256];
+  jcc_init_token(&jcc_token_auto, "auto", 0);
+  jcc_init_token(&jcc_token_char, "char", 0);
+  jcc_init_token(&jcc_token_do, "do", 0);
+  jcc_init_token(&jcc_token_for, "for", 0);
+  jcc_init_token(&jcc_token_double, "double", 0);
+  jcc_init_token(&jcc_token_else, "else", 0);
+  jcc_init_token(&jcc_token_float, "float", 0);
+  jcc_init_token(&jcc_token_goto, "goto", 0);
+  jcc_init_token(&jcc_token_if, "if", 0);
+  jcc_init_token(&jcc_token_int, "int", 0);
+  jcc_init_token(&jcc_token_long, "long", 0);
+  jcc_init_token(&jcc_token_return, "return", 0);
+  jcc_init_token(&jcc_token_short, "short", 0);
+  jcc_init_token(&jcc_token_signed, "signed", 0);
+  jcc_init_token(&jcc_token_struct, "struct", 0);
+  jcc_init_token(&jcc_token_static, "static", 0);
+  jcc_init_token(&jcc_token_typedef, "typedef", 0);
+  jcc_init_token(&jcc_token_union, "union", 0);
+  jcc_init_token(&jcc_token_unsigned, "unsigned", 0);
+  jcc_init_token(&jcc_token_while, "while", 0);
+}
 
 int jcc(int argc, char **argv) {
   argc &&argv;

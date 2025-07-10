@@ -47,6 +47,7 @@ typedef enum jcc_char_class_t {
 } jcc_char_class_t;
 
 extern jcc_char_class_t jcc_char_class[256];
+extern jbool jcc_space[256];
 
 typedef enum jcc_token_tag {
   jcc_token_tag_invalid = 0,
@@ -87,7 +88,8 @@ struct jcc_token_t {
   jvec_char_t string;
   size_t size;
   /*  jlist_t free; */
-  jlist_t list; /* queue_tokens within jcc */
+  jlist_t queued;    /* queue_tokens within jcc */
+  jlist_t pp_queued; /* pp_queue_tokens within jcc */
   jcc_token_t *original;
 };
 
@@ -405,6 +407,7 @@ struct jcc_t {
   jdec_char_t queued_chars; /* phase3_unget */
   jlist_t /*jcc_token_t*/ commited_tokens;
   jlist_t /*jcc_token_t*/ queued_tokens;
+  jlist_t /*jcc_token_t*/ pp_queued_tokens;
   cfile_t *cfile;
   jcc_token_t *token;
   int ch;
@@ -456,5 +459,37 @@ extern jcc_token_t jcc_token_slash;
 extern jcc_token_t jcc_token_star;
 extern jcc_token_t jcc_token_tilde;
 extern jcc_token_t jcc_token_undef;
+
+extern jcc_token_t jcc_token_identifier;
+extern jcc_token_t jcc_token_string_constant;
+extern jcc_token_t jcc_token_character_constant[256];
+
+typedef struct jcc_lex_trie_t jcc_lex_trie_t;
+struct jcc_lex_trie_t {
+  jcc_lex_trie_t *map[256];
+  jcc_token_t *token;
+};
+extern jcc_lex_trie_t jcc_lex_trie;
+extern jcc_lex_trie_t jcc_lex_trie0[256];
+extern jcc_char_starts_indefinite_token_fast[256];
+
+/* char starts indefinite token */
+typedef enum jcc_indefinite_t {
+	jcc_indefinite_str = 1,
+	jcc_indefinite_id  = 2,
+	jcc_indefinite_num = 3,
+} jcc_indefinite_t;
+
+typedef struct jcc_char_traits_t {
+	unsigned indefinite : 2;
+	unsigned is_lower   : 1;
+	unsigned is_upper   : 1;
+	unsigned is_num     : 1;
+	unsigned is_space   : 1;
+	char     to_lower;
+	char     to_upper;
+} jcc_char_traits_t;
+
+extern jcc_char_traits_t jcc_char_traits[256];
 
 #endif
