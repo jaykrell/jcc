@@ -473,21 +473,33 @@ extern jcc_lex_trie_t jcc_lex_trie;
 extern jcc_lex_trie_t jcc_lex_trie0[256];
 extern jcc_char_starts_indefinite_token_fast[256];
 
-/* char starts indefinite token */
+/* char starts indefinite token
+ * This is: string, identifier, number.
+ * This is not the many single or double or triple character
+ * tokens, like plus minus assign, shift, etc.
+ * The 1-3 character tokens are interesting in that
+ * substrings of longer tokens can be valid tokens themselves.
+ * For example: <, <<, <<=.
+ * For eample:  =, ==
+ * For eample:  +, +=
+ * For eample:  -, --, ->
+ * Dot can start an indefinite floating point constant, or be an entire token.
+ * a-z can start keywords or identifiers.
+ */
 typedef enum jcc_indefinite_t {
-	jcc_indefinite_str = 1,
-	jcc_indefinite_id  = 2,
-	jcc_indefinite_num = 3,
+    jcc_indefinite_str = 1,
+    jcc_indefinite_id  = 2,
+    jcc_indefinite_num = 3,
 } jcc_indefinite_t;
 
 typedef struct jcc_char_traits_t {
-	unsigned indefinite : 2;
-	unsigned is_lower   : 1;
-	unsigned is_upper   : 1;
-	unsigned is_num     : 1;
-	unsigned is_space   : 1;
-	char     to_lower;
-	char     to_upper;
+    unsigned indefinite : 2;
+    unsigned is_lower   : 1;
+    unsigned is_upper   : 1;
+    unsigned is_num     : 1;
+    unsigned is_space   : 1;
+    char     to_lower;
+    char     to_upper;
 } jcc_char_traits_t;
 
 extern jcc_char_traits_t jcc_char_traits[256];
