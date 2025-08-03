@@ -6,6 +6,7 @@
 #include "jcount.h"
 #include "jhash.h"
 #include "jmem.h"
+#include "jpaste.h"
 #include "jstring_constant.h"
 #include "jvec.h"
 #include <string.h>
@@ -14,10 +15,6 @@
 #endif
 
 jcc_char_traits_t jcc_char_traits[256];
-/*jcc_lex_trie_t jcc_lex_trie0[256];*/
-/*jcc_token_t jcc_token_identifier;*/
-/*jcc_token_t jcc_token_string_constant;*/
-/*jcc_token_t jcc_token_character_constant[256];*/
 
 /* keywords */
 jcc_token_t jcc_token_auto;
@@ -680,27 +677,46 @@ void jcc_init_token(jcc_token_t *token, const char *str, jcc_token_tag tag) {
   jcc_init_trie(str, token);
 }
 
+typedef struct jcc_char_trait_initializer_t {
+  int offset;
+  int (*func)(int);
+} jcc_char_trait_initializer_t;
+
+#define JCC_CHAR_TRAIT_INITIALIZER(name)                                       \
+  {offsetof(jcc_char_traits_t, name), JPASTE(jcc_char_, name)}
+
+jcc_char_trait_initializer_t jcc_char_trait_initializers[] = {
+    JCC_CHAR_TRAIT_INITIALIZER(can_be_in_identifier),
+    JCC_CHAR_TRAIT_INITIALIZER(can_start_identifier),
+    JCC_CHAR_TRAIT_INITIALIZER(can_be_in_preprocessor_directive),
+    JCC_CHAR_TRAIT_INITIALIZER(can_start_preprocessor_directive),
+    {0, 0}};
+
 void jcc_init_char_traits(void) {
   int i;
+  int offset;
+  jcc_char_traits_t *traits;
+  jcc_char_trait_initializer_t *initializer;
+
+  traits = jcc_char_traits;
+
   for (i = 0; i < 256; ++i) {
-    jcc_char_traits[i].to_upper = jcc_char_to_upper(i);
-    jcc_char_traits[i].to_lower = jcc_char_to_lower(i);
-    jcc_char_traits[i].is_lower = jcc_char_is_lower(i);
-    jcc_char_traits[i].is_upper = jcc_char_is_upper(i);
-    jcc_char_traits[i].is_num = jcc_char_is_num(i);
-    jcc_char_traits[i].is_space = jcc_char_is_space(i);
+    for (initializer = jcc_char_trait_initializers;
+         (offset = initializer->offset); ++initializer)
+      *(int *)(offset + (char *)traits) = initializer->func(i);
 
     if (jcc_char_is_alpha(i) || i == '_')
-      jcc_char_traits[i].starts_indefinitely_long_token =
+      traits->starts_indefinitely_long_token =
           jcc_char_starts_indefinitely_long_token_id;
 
     else if (i == '.' || jcc_char_is_num(i))
-      jcc_char_traits[i].starts_indefinitely_long_token =
+      traits->starts_indefinitely_long_token =
           jcc_char_starts_indefinitely_long_token_num;
 
     else if (i == '"')
-      jcc_char_traits[i].starts_indefinitely_long_token =
+      traits->starts_indefinitely_long_token =
           jcc_char_starts_indefinitely_long_token_str;
+	++traits;
   }
 }
 

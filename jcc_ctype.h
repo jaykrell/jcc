@@ -9,4 +9,3 @@ int jcc_char_is_alpha(int ch);
 int jcc_char_is_lower(int ch);
 int jcc_char_is_upper(int ch);
 int jcc_char_is_num(int ch);
-int jcc_char_starts_indefinitely_long_token(int ch);

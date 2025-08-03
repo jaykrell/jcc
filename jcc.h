@@ -510,8 +510,13 @@ extern jcc_char_starts_indefinitely_long_token_t
     jcc_char_starts_indefinitely_long_token_lookup[256];
 
 typedef struct jcc_char_traits_t {
+  int pad_so_offsets_are_not_zero;
   jcc_token_tag token_tag;
   int starts_indefinitely_long_token;
+  int can_be_in_preprocessor_directive;
+  int can_start_preprocessor_directive;
+  int can_be_in_identifier;
+  int can_start_identifier;
   int is_lower;
   int is_upper;
   int is_num;
