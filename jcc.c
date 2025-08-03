@@ -686,10 +686,17 @@ typedef struct jcc_char_trait_initializer_t {
   {offsetof(jcc_char_traits_t, name), JPASTE(jcc_char_, name)}
 
 jcc_char_trait_initializer_t jcc_char_trait_initializers[] = {
-    JCC_CHAR_TRAIT_INITIALIZER(can_be_in_identifier),
-    JCC_CHAR_TRAIT_INITIALIZER(can_start_identifier),
+    /*JCC_CHAR_TRAIT_INITIALIZER(starts_indefinitely_long_token),*/
     JCC_CHAR_TRAIT_INITIALIZER(can_be_in_preprocessor_directive),
     JCC_CHAR_TRAIT_INITIALIZER(can_start_preprocessor_directive),
+    JCC_CHAR_TRAIT_INITIALIZER(can_be_in_identifier),
+    JCC_CHAR_TRAIT_INITIALIZER(can_start_identifier),
+    JCC_CHAR_TRAIT_INITIALIZER(is_lower),
+    JCC_CHAR_TRAIT_INITIALIZER(is_upper),
+    JCC_CHAR_TRAIT_INITIALIZER(is_num),
+    JCC_CHAR_TRAIT_INITIALIZER(is_space),
+    JCC_CHAR_TRAIT_INITIALIZER(to_lower),
+    JCC_CHAR_TRAIT_INITIALIZER(to_upper),
     {0, 0}};
 
 void jcc_init_char_traits(void) {
@@ -716,7 +723,7 @@ void jcc_init_char_traits(void) {
     else if (i == '"')
       traits->starts_indefinitely_long_token =
           jcc_char_starts_indefinitely_long_token_str;
-	++traits;
+    ++traits;
   }
 }
 
