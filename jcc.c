@@ -403,7 +403,7 @@ int jcc_new_token(jcc_t *jcc, jcc_token_t **token) {
   return 0;
 }
 
-int jcc_try_lex_single_char_token(jcc_t *jcc, int ch, jcc_token_t **token) {
+int jcc_lex_single_char_token(jcc_t *jcc, int ch, jcc_token_t **token) {
   int ch2 = 0;
   int err = 0;
   err = jcc_getchar(jcc, &ch2);
@@ -418,7 +418,7 @@ int jcc_try_lex_single_char_token(jcc_t *jcc, int ch, jcc_token_t **token) {
 }
 
 int jcc_lex_newline(jcc_t *jcc, jcc_token_t **token_newline) {
-  return jcc_try_lex_single_char_token(jcc, '\n', token_newline);
+  return jcc_lex_single_char_token(jcc, '\n', token_newline);
 }
 
 void jcc_lex_commit(jcc_t *jcc) {}
@@ -466,7 +466,7 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
         err = jcc_lex_identifier(jcc, &identifier);
         if (err || !identifier)
           goto error_label;
-        err = jcc_try_lex_single_char_token(jcc, '(', &lparen);
+        err = jcc_lex_single_char_token(jcc, '(', &lparen);
         if (err)
           goto error_label;
         err = jcc_getchar(jcc, &ch);
