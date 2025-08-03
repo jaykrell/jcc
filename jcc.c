@@ -567,7 +567,7 @@ int jcc_preprocess_get_identifier(jcc_t *jcc, jvec_char_t *identifier) {
 }
 
 int jcc_preprocess_pound_lex(jcc_t *jcc, int ch) {
-  char directive[16];
+  char directive[16]={0};
   int i = 1;
   int err = 0;
 
