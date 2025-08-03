@@ -483,8 +483,9 @@ extern jcc_char_starts_indefinite_token_fast[256];
  * For eample:  =, ==
  * For eample:  +, +=
  * For eample:  -, --, ->
- * Dot can start an indefinite floating point constant, or be an entire token.
+ * Dot can start an effectively indefinite floating point constant, or be an entire token.
  * a-z can start keywords or identifiers.
+ * Numbers are effectively indefinite (any number of leading 0s are OK, right?)
  */
 typedef enum jcc_indefinite_t {
     jcc_indefinite_str = 1,
