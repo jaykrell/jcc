@@ -53,33 +53,34 @@ int jcc_char_lower_to_upper(int ch)
 }
 
 int jcc_char_to_lower(int ch) {
-	return jcc_is_upper(ch) ? jcc_char_upper_to_lower(ch) : ch;
+    return jcc_is_upper(ch) ? jcc_char_upper_to_lower(ch) : ch;
 }
 
 int jcc_char_to_upper(int ch) {
-	return jcc_is_lower(ch) ? jcc_char_lower_to_upper(ch) : ch;
+    return jcc_is_lower(ch) ? jcc_char_lower_to_upper(ch) : ch;
 }
 
 int jcc_char_starts_indefinite_token(int ch)
 {
-	/* TODO Multi char constants? */
-	return (ch == '.' || ch == '"' || jcc_is_identifier_first_char(ch));
+    /* TODO: Multi char constants? */
+    return (jcc_char_starts_indefinite_token_fast[ch] != jcc_indefinite_false);
 }
 
 void jcc_init_ctype(void)
 {
-	int i;
+    int i;
     for (i = 0; i < 256; ++i) {
-	 jcc_char_traits[i].to_upper = jcc_to_upper(ch);
-	 jcc_char_traits[i].to_lower = jcc_to_lower(ch);
-	 jcc_char_traits[i].is_lower = jcc_is_lower(ch);
-	 jcc_char_traits[i].is_upper = jcc_is_upper(ch);
-	 jcc_char_traits[i].is_num = jcc_is_num(ch);
-	 jcc_char_traits[i].is_space = jcc_is_space(ch);
-	 if (jcc_is_alpha(i) || i == '_')
-	   jcc_char_traits[i].indefinite = jcc_indefinite_id;
-	 else if (i == '.' || jcc_is_num(i))
-	   jcc_char_traits[i].indefinite = jcc_indefinite_num;
-	 else if (i == '"')
-	   jcc_char_traits[i].indefinite = jcc_indefinite_str;
+        jcc_char_traits[i].to_upper = jcc_to_upper(ch);
+        jcc_char_traits[i].to_lower = jcc_to_lower(ch);
+        jcc_char_traits[i].is_lower = jcc_is_lower(ch);
+        jcc_char_traits[i].is_upper = jcc_is_upper(ch);
+        jcc_char_traits[i].is_num = jcc_is_num(ch);
+        jcc_char_traits[i].is_space = jcc_is_space(ch);
+        if (jcc_is_alpha(i) || i == '_')
+            jcc_char_traits[i].indefinite = jcc_indefinite_id;
+        else if (i == '.' || jcc_is_num(i))
+            jcc_char_traits[i].indefinite = jcc_indefinite_num;
+        else if (i == '"')
+            jcc_char_traits[i].indefinite = jcc_indefinite_str;
+    }
 }

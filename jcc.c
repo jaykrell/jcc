@@ -7,6 +7,7 @@
 #include "jmem.h"
 #include "jstring_constant.h"
 #include "jvec.h"
+#include "jcc_ctype.h"
 #include <string.h>
 #if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
@@ -121,13 +122,6 @@ jcc_preprocess_directive_t jcc_preprocess_directives[] = {
     {{JSTRING_CONSTANT("pragma")}, jcc_preprocess_pragma},
     {{JSTRING_CONSTANT("undef")}, jcc_preprocess_undef},
 };
-
-int jcc_char_to_lower(int ch)
-{
-  for (i = 'A'; i <= 'Z'; ++i) {
-    jcc_char_class[i] = jcc_char_alpha;
-    jcc_char_class[i - 'A' + 'a'] = jcc_char_alpha;
-}
 
 int jcc_is_preprocess_directive_char(int ch) {
   switch (ch) {
@@ -342,7 +336,7 @@ int jcc_pp_token(jcc_t *jcc, jbool prefer_header_name, jcc_token_t **token) {
   int err = 0;
   jcc_lex_trie_t *trie = 0;
   int indefinite = 0;
-  jcc_char_traits traits={0};
+  jcc_char_traits_t traits={0};
 
   *token = JBASE(jcc_token_t, pp_queued, jlist_remove_first(&jcc->pp_queued_tokens));
   if (*token)
@@ -367,8 +361,10 @@ int jcc_pp_token(jcc_t *jcc, jbool prefer_header_name, jcc_token_t **token) {
 	else if (!indefinite)
 		break;
   }
-  if (!indefinite)
-	  return trie->token;
+  if (!indefinite) {
+	  *token = trie->token;
+	  return 0;
+  }
   /* indefinite is identifier and number and string constant
   and todo: character constant */
   return -1;
@@ -690,28 +686,37 @@ void jcc_init_token(jcc_token_t *token, const char *str, jcc_token_tag tag) {
   jcc_init_trie(str, token);
 }
 
+void jcc_init_char_alpha(int i) {
+    jcc_char_class[jcc_char_to_upper(i)] = jcc_char_alpha;
+    jcc_char_class[jcc_char_to_lower(i)] = jcc_char_alpha;
+    jcc_char_starts_indefinite_token_fast[jcc_char_to_lower(i)] = jcc_indefinite_id;
+    jcc_char_starts_indefinite_token_fast[jcc_char_to_upper(i)] = jcc_indefinite_id;
+}
+
 void jcc_init(void) {
   int i;
+
+  jcc_init_ctype();
   for (i = jcc_char_space_first; i <= jcc_char_space_last; ++i) {
     jcc_char_class[i] = jcc_char_space;
     jcc_space[i] = 1;
   }
+
+  /* Many characters map to themselves. */
   for (i = 0; i < 256; ++i)
     jcc_char_class[i] = i;
 
-  for (i = 'A'; i <= 'Z'; ++i) {
-    jcc_char_class[jcc_char_to_upper(i)] = jcc_char_alpha;
-    jcc_char_class[jcc_char_to_lower(i)] = jcc_char_alpha;
-    jcc_char_starts_indefinite_token_fast[jcc_char_to_lower(i)] = 1;
-    jcc_char_starts_indefinite_token_fast[jcc_char_to_upper(i)] = 1;
-  }
+  for (i = 'A'; i <= 'Z'; ++i)
+    jcc_init_char_alpha(i);
 
   jcc_char_starts_indefinite_token_fast['.'] = jcc_indefinite_num;
   jcc_char_starts_indefinite_token_fast['_'] = jcc_indefinite_id ;
   jcc_char_starts_indefinite_token_fast['"'] = jcc_indefinite_str;
+  /* TODO: Multi-character constants? */
 
   for (i = '0'; i <= '9'; ++i) {
     jcc_char_class[i] = jcc_char_num;
+    jcc_char_class[i] = jcc_indefinite_num;
   }
 
   jcc_init_token(&jcc_token_newline, "\n", jcc_token_tag_punctuator);
