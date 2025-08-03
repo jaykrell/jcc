@@ -566,8 +566,6 @@ int jcc_preprocess_get_identifier(jcc_t *jcc, jvec_char_t *identifier) {
   return -1;
 }
 
-int jcc_char_can_be_in_identifier(int);
-
 int jcc_preprocess_pound_lex(jcc_t *jcc, int ch) {
   char directive[16];
   int i = 1;
@@ -575,7 +573,7 @@ int jcc_preprocess_pound_lex(jcc_t *jcc, int ch) {
 
   JMEMSET0_VALUE(directive);
   directive[0] = (char)ch;
-  while (i < JCOUNT(directive) && jcc_char_can_be_in_identifier(ch)) {
+  while (i < JCOUNT(directive) && jcc_char_traits[ch].can_be_in_identifier) {
     err = jcc_getchar(jcc, &ch);
     if (err)
       return err;
