@@ -560,8 +560,11 @@ int jcc_preprocess_try_alternates_repeatedly(jcc_t *jcc, jcc_call_t *alternates,
 }
 
 jcc_call_t jcc_preprocess_group_parts[] = {
-    jcc_preprocess_if_section, jcc_preprocess_control_line,
-    jcc_preprocess_pound_nondirective, jcc_preprocess_text_line, 0};
+    jcc_preprocess_if_section,         /* */
+    jcc_preprocess_control_line,       /* */
+    jcc_preprocess_pound_nondirective, /* */
+    jcc_preprocess_text_line,          /* */
+    0};
 
 int jcc_preprocess_group_part(jcc_t *jcc, size_t *precognized) {
   return jcc_preprocess_try_alternates_once(jcc, jcc_preprocess_group_parts,
