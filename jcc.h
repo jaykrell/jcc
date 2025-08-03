@@ -441,25 +441,25 @@ void jcc_initialize_token(jcc_token_t *token, const char *str,
                           jcc_token_tag tag);
 void jcc_initialize_tokens(void);
 
-extern jcc_token_t jcc_token_and;
-extern jcc_token_t jcc_token_ands;
-extern jcc_token_t jcc_token_assign;
-extern jcc_token_t jcc_token_bar;
-extern jcc_token_t jcc_token_bars;
-extern jcc_token_t jcc_token_colon;
-extern jcc_token_t jcc_token_comma;
-extern jcc_token_t jcc_token_define;
-extern jcc_token_t jcc_token_dot;
-extern jcc_token_t jcc_token_else;
-extern jcc_token_t jcc_token_eq;
-extern jcc_token_t jcc_token_error;
-extern jcc_token_t jcc_token_exclaim;
-extern jcc_token_t jcc_token_ge;
-extern jcc_token_t jcc_token_greater;
-extern jcc_token_t jcc_token_include;
-extern jcc_token_t jcc_token_lbrace;
-extern jcc_token_t jcc_token_lbracket;
-extern jcc_token_t jcc_token_le;
+extern jcc_token_t jcc_token_and;        /* & */
+extern jcc_token_t jcc_token_ands;       /* && */
+extern jcc_token_t jcc_token_assign;     /* = */
+extern jcc_token_t jcc_token_bar;        /* | */
+extern jcc_token_t jcc_token_bars;       /* || */
+extern jcc_token_t jcc_token_colon;      /* : */
+extern jcc_token_t jcc_token_comma;      /* , */
+extern jcc_token_t jcc_token_define;     /* #define */
+extern jcc_token_t jcc_token_dot;        /* . */
+extern jcc_token_t jcc_token_else;       /* else */
+extern jcc_token_t jcc_token_eq;         /* == */
+extern jcc_token_t jcc_token_error;      /* #error */
+extern jcc_token_t jcc_token_exclaim;    /* ! */
+extern jcc_token_t jcc_token_ge;         /* >= */
+extern jcc_token_t jcc_token_greater;    /* > */
+extern jcc_token_t jcc_token_include;    /* #include */
+extern jcc_token_t jcc_token_lbrace;     /* { */
+extern jcc_token_t jcc_token_lbracket;   /* [ */
+extern jcc_token_t jcc_token_le;         /* <= */
 extern jcc_token_t jcc_token_left_shift; /* << */
 extern jcc_token_t jcc_token_less;       /* single character */
 extern jcc_token_t jcc_token_line;       /* as in #line directive */
