@@ -449,6 +449,7 @@ extern jcc_token_t
     jcc_token_comma,    /* , */
     jcc_token_define,   /* #define */
     jcc_token_dot,      /* . */
+    jcc_token_dots,     /* ... */
     jcc_token_else,     /* else */
     jcc_token_eq,       /* == */
     jcc_token_error,    /* #error */

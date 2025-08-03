@@ -403,20 +403,21 @@ int jcc_new_token(jcc_t *jcc, jcc_token_t **token) {
   return 0;
 }
 
-int jcc_lex_char(jcc_t *jcc, int ch, jcc_token_t **token) {
+int jcc_try_lex_single_char_token(jcc_t *jcc, int ch, jcc_token_t **token) {
   int ch2 = 0;
   int err = 0;
   err = jcc_getchar(jcc, &ch2);
   if (err || ch != ch2 || (err = jcc_new_token(jcc, token)))
     return err;
   (*token)->short_string[0] = (char)ch;
+  /* By default, single character tokens are punctuators, though they can also be identifiers. */
   (*token)->tag = jcc_token_tag_punctuator;
   (*token)->size = 1;
   return 0;
 }
 
 int jcc_lex_newline(jcc_t *jcc, jcc_token_t **token_newline) {
-  return jcc_lex_char(jcc, '\n', token_newline);
+  return jcc_try_lex_single_char_token(jcc, '\n', token_newline);
 }
 
 void jcc_lex_commit(jcc_t *jcc) {}
@@ -464,7 +465,7 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
         err = jcc_lex_identifier(jcc, &identifier);
         if (err || !identifier)
           goto error_label;
-        err = jcc_lex_char(jcc, '(', &lparen);
+        err = jcc_try_lex_single_char_token(jcc, '(', &lparen);
         if (err)
           goto error_label;
         err = jcc_getchar(jcc, &ch);
@@ -729,7 +730,7 @@ void jcc_init(void) {
 
   jcc_init_char_traits();
 
-  /* Many characters map to themselves. */
+  /* Many characters map to themselves. Default to that. */
   for (i = 0; i < 256; ++i)
     jcc_char_class[i] = i;
 
@@ -751,7 +752,6 @@ void jcc_init(void) {
 
   for (i = '0'; i <= '9'; ++i) {
     jcc_char_class[i] = jcc_char_num;
-    jcc_char_class[i] = jcc_char_starts_indefinitely_long_token_num;
   }
 
   jcc_init_token(&jcc_token_newline, "\n", jcc_token_tag_punctuator);
@@ -778,7 +778,7 @@ void jcc_init(void) {
   jcc_init_token(&jcc_token_lbrace, "{", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_rbrace, "}", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_dot, ".", jcc_token_tag_punctuator);
-  jcc_init_token(&jcc_token_dot, "...", jcc_token_tag_punctuator);
+  jcc_init_token(&jcc_token_dots, "...", jcc_token_tag_punctuator);
 
   jcc_init_token(&jcc_token_plus, "+", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_slash, "/", jcc_token_tag_punctuator);
