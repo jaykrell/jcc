@@ -14,7 +14,7 @@
 #pragma warning(disable : 4100) /* unused parameter */
 #endif
 
-jcc_char_traits_t jcc_char_traits[256];
+jcc_char_traits_t jcc_char_[256];
 
 /* keywords */
 jcc_token_t jcc_token_auto;
@@ -334,7 +334,7 @@ int jcc_pp_token(jcc_t *jcc, jbool prefer_header_name, jcc_token_t **token) {
     uch = (unsigned char)ch;
     if (err && err != JCC_CHAR_END_OF_FILE)
       return err;
-    traits = jcc_char_traits[uch];
+    traits = jcc_char_[uch];
     if (size == 0)
       starts_indefinitely_long_token = traits.starts_indefinitely_long_token;
     /* TODO: prefer_header_name */
@@ -573,7 +573,7 @@ int jcc_preprocess_pound_lex(jcc_t *jcc, int ch) {
 
   JMEMSET0_VALUE(directive);
   directive[0] = (char)ch;
-  while (i < JCOUNT(directive) && jcc_char_traits[ch].can_be_in_identifier) {
+  while (i < JCOUNT(directive) && jcc_char_[ch].can_be_in_identifier) {
     err = jcc_getchar(jcc, &ch);
     if (err)
       return err;
@@ -668,7 +668,7 @@ int jcc_dup_token(jcc_t *jcc, jcc_token_t *token1, jcc_token_t **token2) {
 void jcc_init_token(jcc_token_t *token, const char *str, jcc_token_tag tag) {
   if (str) {
     if (tag == jcc_token_tag_punctuator)
-      jcc_char_traits[*str].token_tag = tag;
+      jcc_char_[*str].token_tag = tag;
     jcc_init_token_string(token, str);
   }
   token->tag = tag;
@@ -703,7 +703,7 @@ void jcc_init_char_traits(void) {
   jcc_char_traits_t *traits;
   jcc_char_trait_initializer_t *initializer;
 
-  traits = jcc_char_traits;
+  traits = jcc_char_;
 
   for (i = 0; i < 256; ++i) {
     for (initializer = jcc_char_trait_initializers;

@@ -525,6 +525,6 @@ typedef struct jcc_char_traits_t {
   int to_upper;
 } jcc_char_traits_t;
 
-extern jcc_char_traits_t jcc_char_traits[256];
+extern jcc_char_traits_t jcc_char_[256];
 
 #endif
