@@ -410,7 +410,8 @@ int jcc_try_lex_single_char_token(jcc_t *jcc, int ch, jcc_token_t **token) {
   if (err || ch != ch2 || (err = jcc_new_token(jcc, token)))
     return err;
   (*token)->short_string[0] = (char)ch;
-  /* By default, single character tokens are punctuators, though they can also be identifiers. */
+  /* By default, single character tokens are punctuators, though they can also
+   * be identifiers. */
   (*token)->tag = jcc_token_tag_punctuator;
   (*token)->size = 1;
   return 0;
