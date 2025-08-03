@@ -802,7 +802,8 @@ void jcc_init(void) {
   jcc_init_token(&jcc_token_while, "while", 0);
 }
 
-jcc_char_starts_indefinitely_long_token_t jcc_char_starts_indefinitely_long_token_lookup[256];
+jcc_char_starts_indefinitely_long_token_t
+    jcc_char_starts_indefinitely_long_token_lookup[256];
 jcc_char_traits_t jcc_char_traits[256];
 
 int jcc(int argc, char **argv) {

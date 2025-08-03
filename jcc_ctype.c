@@ -82,38 +82,34 @@ void jcc_init_ctype(void) {
   }
 }
 
-int jcc_char_can_start_preprocessor_directive(int ch)
-{
-	switch (ch)
-	{
-	case 'e': /* else error */
-	case 'i': /* if include */
-	case 'l': /* line */
-	case 'p': /* pragma */
-		return 1;
-	}
-	return 0;
+int jcc_char_can_start_preprocessor_directive(int ch) {
+  switch (ch) {
+  case 'e': /* else error */
+  case 'i': /* if include */
+  case 'l': /* line */
+  case 'p': /* pragma */
+    return 1;
+  }
+  return 0;
 }
 
-int jcc_char_can_be_in_preprocessor_directive(int ch)
-{
-	switch (ch)
-	{
-	case 'a': /* pragma */
-	case 'c': /* include */
-	case 'd': /* include */
-	case 'e': /* else error include line */
-	case 'i': /* if line */
-	case 'l': /* include line else */
-	case 'f': /* if */
-	case 'g': /* pragma */
-	case 'm': /* pragma */
-	case 'n': /* include line */
-	case 'o': /* error */
-	case 'p': /* pragma */
-	case 'r': /* pragma error */
-	case 's': /* else */
-		return 1;
-	}
-	return 0;
+int jcc_char_can_be_in_preprocessor_directive(int ch) {
+  switch (ch) {
+  case 'a': /* pragma */
+  case 'c': /* include */
+  case 'd': /* include */
+  case 'e': /* else error include line */
+  case 'i': /* if line */
+  case 'l': /* include line else */
+  case 'f': /* if */
+  case 'g': /* pragma */
+  case 'm': /* pragma */
+  case 'n': /* include line */
+  case 'o': /* error */
+  case 'p': /* pragma */
+  case 'r': /* pragma error */
+  case 's': /* else */
+    return 1;
+  }
+  return 0;
 }
