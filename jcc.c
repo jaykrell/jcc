@@ -567,13 +567,14 @@ int jcc_preprocess_get_identifier(jcc_t *jcc, jvec_char_t *identifier) {
 }
 
 int jcc_preprocess_pound_lex(jcc_t *jcc, int ch) {
-  char directive[16]={0};
+  char directive[16] = {0};
   int i = 1;
   int err = 0;
 
   JMEMSET0_VALUE(directive);
   directive[0] = (char)ch;
-  while (i < JCOUNT(directive) && jcc_char_[ch].can_be_in_identifier) {
+  while (i < JCOUNT(directive) &&
+         jcc_char_[ch].can_be_in_preprocessor_directive) {
     err = jcc_getchar(jcc, &ch);
     if (err)
       return err;
@@ -626,9 +627,11 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_token_t **pptoken)
       break;
     default:
       if (pound) {
-        err = jcc_preprocess_pound_lex(jcc, ch);
-        if (err)
-          return err;
+        if (jcc_char_[ch].can_start_preprocessor_directive) {
+          err = jcc_preprocess_pound_lex(jcc, ch);
+          if (err)
+            return err;
+        }
       }
       break;
     }
