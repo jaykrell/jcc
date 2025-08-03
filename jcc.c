@@ -678,7 +678,7 @@ void jcc_init_token(jcc_token_t *token, const char *str, jcc_token_tag tag) {
 }
 
 typedef struct jcc_char_trait_initializer_t {
-  int offset;
+  long offset;
   int (*func)(int);
 } jcc_char_trait_initializer_t;
 
@@ -694,7 +694,7 @@ jcc_char_trait_initializer_t jcc_char_trait_initializers[] = {
 
 void jcc_init_char_traits(void) {
   int i;
-  int offset;
+  long offset;
   jcc_char_traits_t *traits;
   jcc_char_trait_initializer_t *initializer;
 
