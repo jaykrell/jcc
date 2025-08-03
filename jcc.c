@@ -729,14 +729,14 @@ void jcc_init(void) {
 
   jcc_init_char_traits();
 
+  /* Many characters map to themselves. */
+  for (i = 0; i < 256; ++i)
+    jcc_char_class[i] = i;
+
   for (i = jcc_char_space_first; i <= jcc_char_space_last; ++i) {
     jcc_char_class[i] = jcc_char_space;
     /*jcc_space[i] = 1;*/
   }
-
-  /* Many characters map to themselves. */
-  for (i = 0; i < 256; ++i)
-    jcc_char_class[i] = i;
 
   for (i = 'A'; i <= 'Z'; ++i)
     jcc_init_char_alpha(i);
