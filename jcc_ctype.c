@@ -32,7 +32,9 @@ int jcc_char_is_upper(int ch) { return (ch >= 'A' && ch <= 'Z'); }
 
 int jcc_char_is_num(int ch) { return (ch >= '0' && ch <= '9'); }
 
-int jcc_char_is_alpha(int ch) { return (jcc_char_is_lower(ch) || jcc_char_is_upper(ch)); }
+int jcc_char_is_alpha(int ch) {
+  return (jcc_char_is_lower(ch) || jcc_char_is_upper(ch));
+}
 
 int jcc_char_is_identifier_first_char(int ch) {
   return (jcc_is_alpha(ch) || ch == '_');
@@ -56,7 +58,8 @@ int jcc_char_to_upper(int ch) {
 
 int jcc_char_starts_indefinitely_long_token(int ch) {
   /* TODO: Multi char constants? */
-  return (jcc_char_starts_indefinitely_long_token_lookup[ch] != jcc_char_starts_indefinitely_long_token_false);
+  return (jcc_char_starts_indefinitely_long_token_lookup[ch] !=
+          jcc_char_starts_indefinitely_long_token_false);
 }
 
 void jcc_init_ctype(void) {
@@ -69,10 +72,13 @@ void jcc_init_ctype(void) {
     jcc_char_traits[i].is_num = jcc_char_is_num(i);
     jcc_char_traits[i].is_space = jcc_char_is_space(i);
     if (jcc_char_is_alpha(i) || i == '_')
-      jcc_char_traits[i].starts_indefinitely_long_token = jcc_char_starts_indefinitely_long_token_id;
+      jcc_char_traits[i].starts_indefinitely_long_token =
+          jcc_char_starts_indefinitely_long_token_id;
     else if (i == '.' || jcc_is_num(i))
-      jcc_char_traits[i].starts_indefinitely_long_token = jcc_char_starts_indefinitely_long_token_num;
+      jcc_char_traits[i].starts_indefinitely_long_token =
+          jcc_char_starts_indefinitely_long_token_num;
     else if (i == '"')
-      jcc_char_traits[i].starts_indefinitely_long_token = jcc_char_starts_indefinitely_long_token_str;
+      jcc_char_traits[i].starts_indefinitely_long_token =
+          jcc_char_starts_indefinitely_long_token_str;
   }
 }

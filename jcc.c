@@ -714,9 +714,12 @@ void jcc_init(void) {
   for (i = 'A'; i <= 'Z'; ++i)
     jcc_init_char_alpha(i);
 
-  jcc_char_starts_indefinitely_long_token_lookup['.'] = jcc_char_starts_indefinitely_long_token_num;
-  jcc_char_starts_indefinitely_long_token_lookup['_'] = jcc_char_starts_indefinitely_long_token_id;
-  jcc_char_starts_indefinitely_long_token_lookup['"'] = jcc_char_starts_indefinitely_long_token_str;
+  jcc_char_starts_indefinitely_long_token_lookup['.'] =
+      jcc_char_starts_indefinitely_long_token_num;
+  jcc_char_starts_indefinitely_long_token_lookup['_'] =
+      jcc_char_starts_indefinitely_long_token_id;
+  jcc_char_starts_indefinitely_long_token_lookup['"'] =
+      jcc_char_starts_indefinitely_long_token_str;
   /* TODO: Multi-character constants? */
 
   for (i = '0'; i <= '9'; ++i) {

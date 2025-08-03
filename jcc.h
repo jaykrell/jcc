@@ -524,7 +524,8 @@ typedef enum jcc_char_starts_indefinitely_long_token_t {
   jcc_char_starts_indefinitely_long_token_num = 3,
 } jcc_char_starts_indefinitely_long_token_t;
 
-extern jcc_char_starts_indefinitely_long_token_t jcc_char_starts_indefinitely_long_token_lookup[256];
+extern jcc_char_starts_indefinitely_long_token_t
+    jcc_char_starts_indefinitely_long_token_lookup[256];
 
 typedef struct jcc_char_traits_t {
 #if 0
