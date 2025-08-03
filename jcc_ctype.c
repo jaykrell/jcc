@@ -21,10 +21,9 @@ int jcc_char_is_vertical_space(int ch) {
   return 0;
 }
 
-/*int jcc_char_is_space(int ch) {
-  return jcc_char_is_vertical_space(ch) ||
- * jcc_char_is_horizontal_space(ch);
-}*/
+int jcc_char_is_space(int ch) {
+  return jcc_char_is_vertical_space(ch) || jcc_char_is_horizontal_space(ch);
+}
 
 int jcc_char_is_lower(int ch) { return (ch >= 'z' && ch <= 'z'); }
 
@@ -36,12 +35,12 @@ int jcc_char_is_alpha(int ch) {
   return (jcc_char_is_lower(ch) || jcc_char_is_upper(ch));
 }
 
-int jcc_char_is_identifier_first_char(int ch) {
-  return (jcc_is_alpha(ch) || ch == '_');
+int jcc_char_can_start_identifier(int ch) {
+  return (jcc_char_is_alpha(ch) || ch == '_');
 }
 
-int jcc_char_is_identifier_char(int ch) {
-  return (jcc_char_is_identifier_first_char(ch) || jcc_char_is_num(ch));
+int jcc_char_can_be_in_identifier(int ch) {
+  return (jcc_char_can_start_identifier(ch) || jcc_char_is_num(ch));
 }
 
 int jcc_char_upper_to_lower(int ch) { return (ch - 'A' + 'a'); }
@@ -74,11 +73,47 @@ void jcc_init_ctype(void) {
     if (jcc_char_is_alpha(i) || i == '_')
       jcc_char_traits[i].starts_indefinitely_long_token =
           jcc_char_starts_indefinitely_long_token_id;
-    else if (i == '.' || jcc_is_num(i))
+    else if (i == '.' || jcc_char_is_num(i))
       jcc_char_traits[i].starts_indefinitely_long_token =
           jcc_char_starts_indefinitely_long_token_num;
     else if (i == '"')
       jcc_char_traits[i].starts_indefinitely_long_token =
           jcc_char_starts_indefinitely_long_token_str;
   }
+}
+
+int jcc_char_can_start_preprocessor_directive(int ch)
+{
+	switch (ch)
+	{
+	case 'e': /* else error */
+	case 'i': /* if include */
+	case 'l': /* line */
+	case 'p': /* pragma */
+		return 1;
+	}
+	return 0;
+}
+
+int jcc_char_can_be_in_preprocessor_directive(int ch)
+{
+	switch (ch)
+	{
+	case 'a': /* pragma */
+	case 'c': /* include */
+	case 'd': /* include */
+	case 'e': /* else error include line */
+	case 'i': /* if line */
+	case 'l': /* include line else */
+	case 'f': /* if */
+	case 'g': /* pragma */
+	case 'm': /* pragma */
+	case 'n': /* include line */
+	case 'o': /* error */
+	case 'p': /* pragma */
+	case 'r': /* pragma error */
+	case 's': /* else */
+		return 1;
+	}
+	return 0;
 }

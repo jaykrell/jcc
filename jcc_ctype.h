@@ -1,8 +1,8 @@
 int jcc_char_is_space(int ch);
 int jcc_char_is_horizontal_space(int ch);
 int jcc_char_is_vertical_space(int ch);
-int jcc_char_is_identifier_char(int ch);
-int jcc_char_is_identifier_first_char(int ch);
+int jcc_char_can_be_in_identifier(int ch);
+int jcc_char_can_start_identifier(int ch);
 int jcc_char_to_lower(int ch);
 int jcc_char_to_upper(int ch);
 int jcc_char_is_alpha(int ch);

@@ -288,6 +288,7 @@ jcc_token_t jcc_token_comma;
 jcc_token_t jcc_token_define;
 jcc_token_t jcc_token_dot;
 jcc_token_t jcc_token_dots;
+jcc_token_t jcc_token_else;
 jcc_token_t jcc_token_eq;
 jcc_token_t jcc_token_error;
 jcc_token_t jcc_token_exclaim;
@@ -313,13 +314,17 @@ jcc_token_t jcc_token_pragma;
 jcc_token_t jcc_token_question;
 jcc_token_t jcc_token_rbrace;
 jcc_token_t jcc_token_rbracket;
+jcc_token_t jcc_token_return;
 jcc_token_t jcc_token_right_shift;
 jcc_token_t jcc_token_rparen;
 jcc_token_t jcc_token_semi;
+jcc_token_t jcc_token_short;
+jcc_token_t jcc_token_signed;
 jcc_token_t jcc_token_slash;
 jcc_token_t jcc_token_star;
 jcc_token_t jcc_token_tilde;
 jcc_token_t jcc_token_undef;
+jcc_token_t jcc_token_unsigned;
 
 int jcc_lex_candidate_token(jcc_t *jcc, jbool prefer_header_name,
                             jcc_token_t *candidate, jcc_token_t **success,
@@ -578,7 +583,7 @@ int jcc_preprocess_get_identifier(jcc_t *jcc, jvec_char_t *identifier) {
   return -1;
 }
 
-int jcc_is_identifier_char(int);
+int jcc_char_can_be_in_identifier(int);
 
 int jcc_preprocess_pound_lex(jcc_t *jcc, int ch) {
   char directive[16];
@@ -587,7 +592,7 @@ int jcc_preprocess_pound_lex(jcc_t *jcc, int ch) {
 
   JMEMSET0_VALUE(directive);
   directive[0] = (char)ch;
-  while (i < JCOUNT(directive) && jcc_is_identifier_char(ch)) {
+  while (i < JCOUNT(directive) && jcc_char_can_be_in_identifier(ch)) {
     err = jcc_getchar(jcc, &ch);
     if (err)
       return err;
@@ -796,6 +801,9 @@ void jcc_init(void) {
   jcc_init_token(&jcc_token_unsigned, "unsigned", 0);
   jcc_init_token(&jcc_token_while, "while", 0);
 }
+
+jcc_char_starts_indefinitely_long_token_t jcc_char_starts_indefinitely_long_token_lookup[256];
+jcc_char_traits_t jcc_char_traits[256];
 
 int jcc(int argc, char **argv) {
   argc &&argv;

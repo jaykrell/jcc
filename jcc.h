@@ -28,18 +28,20 @@ struct jcc_replacement_list_t;
 typedef struct jcc_replacement_list_t jcc_replacement_list_t;
 
 /* Like ctype.h */
-int jcc_is_space(int ch);
-int jcc_is_horizontal_space(int ch);
-int jcc_is_vertical_space(int ch);
-int jcc_is_identifier_char(int ch);
-int jcc_is_identifier_first_char(int ch);
-int jcc_to_lower(int ch);
-int jcc_to_upper(int ch);
-int jcc_is_alpha(int ch);
-int jcc_is_lower(int ch);
-int jcc_is_upper(int ch);
-int jcc_is_num(int ch);
-int jcc_starts_indefinite_token(int ch);
+int jcc_char_is_space(int ch);
+int jcc_char_is_horizontal_space(int ch);
+int jcc_char_is_vertical_space(int ch);
+int jcc_char_can_be_in_identifier(int ch);
+int jcc_char_can_start_identifier(int ch);
+int jcc_char_can_start_preprocessor_directive(int ch);
+int jcc_char_can_be_in_preprocessor_directive(int ch);
+int jcc_char_to_lower(int ch);
+int jcc_char_to_upper(int ch);
+int jcc_char_is_alpha(int ch);
+int jcc_char_is_lower(int ch);
+int jcc_char_is_upper(int ch);
+int jcc_char_is_num(int ch);
+int jcc_char_starts_indefinitely_long_token(int ch);
 void jcc_init_ctype(void);
 
 int jcc_is_xid_start(int ch);
