@@ -1,12 +1,11 @@
 #if !JCC_H
 #define JCC_H 1
 
-/* #include "jbool.h" */
-/* #include "jpaste.h" */
-/*#include "jcc_preprocess_token.h"*/
+#include "jbool.h"
 #include "jcc_unget.h"
 #include "jdec.h"
 #include "jfile.h"
+#include "jlist.h"
 #include "jmap.h"
 #include "jstr.h"
 #include "jtype.h"
@@ -17,9 +16,6 @@
 #define JCC_CHAR_END_OF_FILE (-2)
 #define JCC_UNRECOGNIZED (-3)
 #define JCC_NO_MEMORY (-4)
-
-#include "jlist.h"
-#include "jvec.h"
 
 struct jcc_t;
 typedef struct jcc_t jcc_t;
@@ -37,13 +33,13 @@ int jcc_is_horizontal_space(int ch);
 int jcc_is_vertical_space(int ch);
 int jcc_is_identifier_char(int ch);
 int jcc_is_identifier_first_char(int ch);
-int jcc_char_to_lower(int ch);
-int jcc_char_to_upper(int ch);
+int jcc_to_lower(int ch);
+int jcc_to_upper(int ch);
 int jcc_is_alpha(int ch);
 int jcc_is_lower(int ch);
 int jcc_is_upper(int ch);
 int jcc_is_num(int ch);
-int jcc_char_starts_indefinite_token(int ch);
+int jcc_starts_indefinite_token(int ch);
 void jcc_init_ctype(void);
 
 int jcc_is_xid_start(int ch);
@@ -483,6 +479,7 @@ extern jcc_token_t
     jcc_token_question,    /* single character question mark */
     jcc_token_rbrace,      /* single character question { */
     jcc_token_rbracket,    /* single character question [ */
+    jcc_token_return,      /* function return */
     jcc_token_right_shift, /* >> */
     jcc_token_rparen,      /* single character question ) */
     jcc_token_semi,        /* single character question ; */
@@ -506,7 +503,7 @@ struct jcc_lex_trie_t {
 extern jcc_lex_trie_t jcc_lex_trie;
 /*extern jcc_lex_trie_t jcc_lex_trie0[256];*/
 
-/* char starts indefinite token
+/* char starts indefinitely long token
  * This is: string, identifier, number.
  * This is not the many single or double or triple character
  * tokens, like plus minus assign, shift, etc.
@@ -520,23 +517,33 @@ extern jcc_lex_trie_t jcc_lex_trie;
  * entire token. a-z can start keywords or identifiers. Numbers are effectively
  * indefinite (any number of leading 0s are OK, right?)
  */
-typedef enum jcc_indefinite_t {
-  jcc_indefinite_false = 0,
-  jcc_indefinite_str = 1,
-  jcc_indefinite_id = 2,
-  jcc_indefinite_num = 3,
-} jcc_indefinite_t;
+typedef enum jcc_char_starts_indefinitely_long_token_t {
+  jcc_char_starts_indefinitely_long_token_false = 0,
+  jcc_char_starts_indefinitely_long_token_str = 1,
+  jcc_char_starts_indefinitely_long_token_id = 2,
+  jcc_char_starts_indefinitely_long_token_num = 3,
+} jcc_char_starts_indefinitely_long_token_t;
 
-extern jcc_indefinite_t jcc_char_starts_indefinite_token_fast[256];
+extern jcc_char_starts_indefinitely_long_token_t jcc_char_starts_indefinitely_long_token_lookup[256];
 
 typedef struct jcc_char_traits_t {
-  unsigned indefinite : 2;
+#if 0
+  unsigned starts_indefinitely_long_token : 2;
   unsigned is_lower : 1;
   unsigned is_upper : 1;
   unsigned is_num : 1;
   unsigned is_space : 1;
   char to_lower;
   char to_upper;
+#else
+  int starts_indefinitely_long_token;
+  int is_lower;
+  int is_upper;
+  int is_num;
+  int is_space;
+  int to_lower;
+  int to_upper;
+#endif
 } jcc_char_traits_t;
 
 extern jcc_char_traits_t jcc_char_traits[256];

@@ -336,7 +336,7 @@ int jcc_pp_token(jcc_t *jcc, jbool prefer_header_name, jcc_token_t **token) {
   unsigned char uch = 0;
   int err = 0;
   jcc_lex_trie_t *trie = 0;
-  int indefinite = 0;
+  int starts_indefinitely_long_token = 0;
   jcc_char_traits_t traits = {0};
 
   *token =
@@ -353,21 +353,21 @@ int jcc_pp_token(jcc_t *jcc, jbool prefer_header_name, jcc_token_t **token) {
       return err;
     traits = jcc_char_traits[uch];
     if (size == 0)
-      indefinite = traits.indefinite;
+      starts_indefinitely_long_token = traits.starts_indefinitely_long_token;
     /* TODO: prefer_header_name */
     if (traits.is_space)
       break;
     ++size;
     if (trie->map[uch])
       trie = trie->map[uch];
-    else if (!indefinite)
+    else if (!starts_indefinitely_long_token)
       break;
   }
-  if (!indefinite) {
+  if (!starts_indefinitely_long_token) {
     *token = trie->token;
     return 0;
   }
-  /* indefinite is identifier and number and string constant
+  /* starts_indefinitely_long_token is identifier and number and string constant
   and todo: character constant */
   return -1;
 }
@@ -692,10 +692,10 @@ void jcc_init_token(jcc_token_t *token, const char *str, jcc_token_tag tag) {
 void jcc_init_char_alpha(int i) {
   jcc_char_class[jcc_char_to_upper(i)] = jcc_char_alpha;
   jcc_char_class[jcc_char_to_lower(i)] = jcc_char_alpha;
-  jcc_char_starts_indefinite_token_fast[jcc_char_to_lower(i)] =
-      jcc_indefinite_id;
-  jcc_char_starts_indefinite_token_fast[jcc_char_to_upper(i)] =
-      jcc_indefinite_id;
+  jcc_char_starts_indefinitely_long_token_lookup[jcc_char_to_lower(i)] =
+      jcc_char_starts_indefinitely_long_token_id;
+  jcc_char_starts_indefinitely_long_token_lookup[jcc_char_to_upper(i)] =
+      jcc_char_starts_indefinitely_long_token_id;
 }
 
 void jcc_init(void) {
@@ -714,14 +714,14 @@ void jcc_init(void) {
   for (i = 'A'; i <= 'Z'; ++i)
     jcc_init_char_alpha(i);
 
-  jcc_char_starts_indefinite_token_fast['.'] = jcc_indefinite_num;
-  jcc_char_starts_indefinite_token_fast['_'] = jcc_indefinite_id;
-  jcc_char_starts_indefinite_token_fast['"'] = jcc_indefinite_str;
+  jcc_char_starts_indefinitely_long_token_lookup['.'] = jcc_char_starts_indefinitely_long_token_num;
+  jcc_char_starts_indefinitely_long_token_lookup['_'] = jcc_char_starts_indefinitely_long_token_id;
+  jcc_char_starts_indefinitely_long_token_lookup['"'] = jcc_char_starts_indefinitely_long_token_str;
   /* TODO: Multi-character constants? */
 
   for (i = '0'; i <= '9'; ++i) {
     jcc_char_class[i] = jcc_char_num;
-    jcc_char_class[i] = jcc_indefinite_num;
+    jcc_char_class[i] = jcc_char_starts_indefinitely_long_token_num;
   }
 
   jcc_init_token(&jcc_token_newline, "\n", jcc_token_tag_punctuator);
