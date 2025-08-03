@@ -52,7 +52,8 @@ int jcc_is_universal_xid_start(int ch);
 int jcc_is_xid_continue(int ch);
 int jcc_is_universal_xid_continue(int ch);
 
-/* Given a vector of characters, is it a keyword such as "for", "if", "else", etc.? */
+/* Given a vector of characters, is it a keyword such as "for", "if", "else",
+ * etc.? */
 int jcc_is_keyword(jvec_char_t *);
 
 /* Many characters are their own class, map to themselves.
@@ -459,32 +460,36 @@ extern jcc_token_t jcc_token_include;
 extern jcc_token_t jcc_token_lbrace;
 extern jcc_token_t jcc_token_lbracket;
 extern jcc_token_t jcc_token_le;
-extern jcc_token_t jcc_token_left_shift;   /* << */
-extern jcc_token_t jcc_token_less;         /* single character */
-extern jcc_token_t jcc_token_line;         /* as in #line directive */
-extern jcc_token_t jcc_token_lparen;       /* single character */
-extern jcc_token_t jcc_token_minus;        /* single character subtraction */
-extern jcc_token_t jcc_token_minuss;       /* -- */
-extern jcc_token_t jcc_token_newline;      /* \r, \n, \r\n single character after phase 1 */
-extern jcc_token_t jcc_token_percent;      /* single character modulo */
-extern jcc_token_t jcc_token_plus;         /* single character addition */
-extern jcc_token_t jcc_token_pluss;        /* ++ */
-extern jcc_token_t jcc_token_pound;        /* # introduces e.g. #include #define and token pasting */
-extern jcc_token_t jcc_token_pounds;       /* ## preprocessor token pasting */
-extern jcc_token_t jcc_token_pragma;       /* implementation defined preprocessor directive, e.g. #pragma once */
-extern jcc_token_t jcc_token_question;     /* single character question mark */
-extern jcc_token_t jcc_token_rbrace;       /* single character question { */
-extern jcc_token_t jcc_token_rbracket;     /* single character question [ */
-extern jcc_token_t jcc_token_right_shift;  /* >> */
-extern jcc_token_t jcc_token_rparen;       /* single character question ) */
-extern jcc_token_t jcc_token_semi;         /* single character question ; */
-extern jcc_token_t jcc_token_short;        /* i.e. int16_t */
-extern jcc_token_t jcc_token_signed;       /* integer that can be negative */
-extern jcc_token_t jcc_token_slash;        /* single character, division */
-extern jcc_token_t jcc_token_star;         /* single character, multiplication or pointer dereference */
-extern jcc_token_t jcc_token_tilde;        /* single character, bit inversion */
-extern jcc_token_t jcc_token_undef;        /* preprocessor undefine */
-extern jcc_token_t jcc_token_unsigned;     /* integer that cannot be negative */
+extern jcc_token_t jcc_token_left_shift; /* << */
+extern jcc_token_t jcc_token_less;       /* single character */
+extern jcc_token_t jcc_token_line;       /* as in #line directive */
+extern jcc_token_t jcc_token_lparen;     /* single character */
+extern jcc_token_t jcc_token_minus;      /* single character subtraction */
+extern jcc_token_t jcc_token_minuss;     /* -- */
+extern jcc_token_t
+    jcc_token_newline; /* \r, \n, \r\n single character after phase 1 */
+extern jcc_token_t jcc_token_percent; /* single character modulo */
+extern jcc_token_t jcc_token_plus;    /* single character addition */
+extern jcc_token_t jcc_token_pluss;   /* ++ */
+extern jcc_token_t
+    jcc_token_pound; /* # introduces e.g. #include #define and token pasting */
+extern jcc_token_t jcc_token_pounds;      /* ## preprocessor token pasting */
+extern jcc_token_t jcc_token_pragma;      /* implementation defined preprocessor
+                                             directive, e.g. #pragma once */
+extern jcc_token_t jcc_token_question;    /* single character question mark */
+extern jcc_token_t jcc_token_rbrace;      /* single character question { */
+extern jcc_token_t jcc_token_rbracket;    /* single character question [ */
+extern jcc_token_t jcc_token_right_shift; /* >> */
+extern jcc_token_t jcc_token_rparen;      /* single character question ) */
+extern jcc_token_t jcc_token_semi;        /* single character question ; */
+extern jcc_token_t jcc_token_short;       /* i.e. int16_t */
+extern jcc_token_t jcc_token_signed;      /* integer that can be negative */
+extern jcc_token_t jcc_token_slash;       /* single character, division */
+extern jcc_token_t jcc_token_star;        /* single character, multiplication or
+                                             pointer dereference */
+extern jcc_token_t jcc_token_tilde;       /* single character, bit inversion */
+extern jcc_token_t jcc_token_undef;       /* preprocessor undefine */
+extern jcc_token_t jcc_token_unsigned;    /* integer that cannot be negative */
 
 extern jcc_token_t jcc_token_identifier;
 extern jcc_token_t jcc_token_string_constant;
@@ -498,7 +503,6 @@ struct jcc_lex_trie_t {
 extern jcc_lex_trie_t jcc_lex_trie;
 extern jcc_lex_trie_t jcc_lex_trie0[256];
 
-
 /* char starts indefinite token
  * This is: string, identifier, number.
  * This is not the many single or double or triple character
@@ -509,27 +513,27 @@ extern jcc_lex_trie_t jcc_lex_trie0[256];
  * For eample:  =, ==
  * For eample:  +, +=
  * For eample:  -, --, ->
- * Dot can start an effectively indefinite floating point constant, or be an entire token.
- * a-z can start keywords or identifiers.
- * Numbers are effectively indefinite (any number of leading 0s are OK, right?)
+ * Dot can start an effectively indefinite floating point constant, or be an
+ * entire token. a-z can start keywords or identifiers. Numbers are effectively
+ * indefinite (any number of leading 0s are OK, right?)
  */
 typedef enum jcc_indefinite_t {
-    jcc_indefinite_false = 0,
-    jcc_indefinite_str   = 1,
-    jcc_indefinite_id    = 2,
-    jcc_indefinite_num   = 3,
+  jcc_indefinite_false = 0,
+  jcc_indefinite_str = 1,
+  jcc_indefinite_id = 2,
+  jcc_indefinite_num = 3,
 } jcc_indefinite_t;
 
 extern jcc_indefinite_t jcc_char_starts_indefinite_token_fast[256];
 
 typedef struct jcc_char_traits_t {
-    unsigned indefinite : 2;
-    unsigned is_lower   : 1;
-    unsigned is_upper   : 1;
-    unsigned is_num     : 1;
-    unsigned is_space   : 1;
-    char     to_lower;
-    char     to_upper;
+  unsigned indefinite : 2;
+  unsigned is_lower : 1;
+  unsigned is_upper : 1;
+  unsigned is_num : 1;
+  unsigned is_space : 1;
+  char to_lower;
+  char to_upper;
 } jcc_char_traits_t;
 
 extern jcc_char_traits_t jcc_char_traits[256];

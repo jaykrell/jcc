@@ -1,13 +1,13 @@
 /* C preprocessor. */
 
 #include "jcc.h"
+#include "jcc_ctype.h"
 #include "jcommon.h"
 #include "jcount.h"
 #include "jhash.h"
 #include "jmem.h"
 #include "jstring_constant.h"
 #include "jvec.h"
-#include "jcc_ctype.h"
 #include <string.h>
 #if _MSC_VER
 #pragma warning(disable : 4100) /* unused parameter */
@@ -336,11 +336,12 @@ int jcc_pp_token(jcc_t *jcc, jbool prefer_header_name, jcc_token_t **token) {
   int err = 0;
   jcc_lex_trie_t *trie = 0;
   int indefinite = 0;
-  jcc_char_traits_t traits={0};
+  jcc_char_traits_t traits = {0};
 
-  *token = JBASE(jcc_token_t, pp_queued, jlist_remove_first(&jcc->pp_queued_tokens));
+  *token =
+      JBASE(jcc_token_t, pp_queued, jlist_remove_first(&jcc->pp_queued_tokens));
   if (*token)
-	  return 0;
+    return 0;
 
   trie = &jcc_lex_trie;
 
@@ -349,21 +350,21 @@ int jcc_pp_token(jcc_t *jcc, jbool prefer_header_name, jcc_token_t **token) {
     uch = (unsigned char)ch;
     if (err && err != JCC_CHAR_END_OF_FILE)
       return err;
-	traits = jcc_char_traits[uch];
-	if (size == 0)
-		indefinite = traits.indefinite;
+    traits = jcc_char_traits[uch];
+    if (size == 0)
+      indefinite = traits.indefinite;
     /* TODO: prefer_header_name */
     if (traits.is_space)
       break;
     ++size;
-	if (trie->map[uch])
-		trie = trie->map[uch];
-	else if (!indefinite)
-		break;
+    if (trie->map[uch])
+      trie = trie->map[uch];
+    else if (!indefinite)
+      break;
   }
   if (!indefinite) {
-	  *token = trie->token;
-	  return 0;
+    *token = trie->token;
+    return 0;
   }
   /* indefinite is identifier and number and string constant
   and todo: character constant */
@@ -612,7 +613,8 @@ int jcc_preprocess_get_token(jcc_t *jcc, jcc_token_t **pptoken)
   while (1) {
     /* Handle queuing and backtracking. */
     *pptoken = 0;
-    ptoken = JBASE(jcc_token_t, pp_queued, jlist_remove_first(&jcc->pp_queued_tokens));
+    ptoken = JBASE(jcc_token_t, pp_queued,
+                   jlist_remove_first(&jcc->pp_queued_tokens));
     if (ptoken) {
       *pptoken = ptoken;
       return 0;
@@ -687,10 +689,12 @@ void jcc_init_token(jcc_token_t *token, const char *str, jcc_token_tag tag) {
 }
 
 void jcc_init_char_alpha(int i) {
-    jcc_char_class[jcc_char_to_upper(i)] = jcc_char_alpha;
-    jcc_char_class[jcc_char_to_lower(i)] = jcc_char_alpha;
-    jcc_char_starts_indefinite_token_fast[jcc_char_to_lower(i)] = jcc_indefinite_id;
-    jcc_char_starts_indefinite_token_fast[jcc_char_to_upper(i)] = jcc_indefinite_id;
+  jcc_char_class[jcc_char_to_upper(i)] = jcc_char_alpha;
+  jcc_char_class[jcc_char_to_lower(i)] = jcc_char_alpha;
+  jcc_char_starts_indefinite_token_fast[jcc_char_to_lower(i)] =
+      jcc_indefinite_id;
+  jcc_char_starts_indefinite_token_fast[jcc_char_to_upper(i)] =
+      jcc_indefinite_id;
 }
 
 void jcc_init(void) {
@@ -710,7 +714,7 @@ void jcc_init(void) {
     jcc_init_char_alpha(i);
 
   jcc_char_starts_indefinite_token_fast['.'] = jcc_indefinite_num;
-  jcc_char_starts_indefinite_token_fast['_'] = jcc_indefinite_id ;
+  jcc_char_starts_indefinite_token_fast['_'] = jcc_indefinite_id;
   jcc_char_starts_indefinite_token_fast['"'] = jcc_indefinite_str;
   /* TODO: Multi-character constants? */
 
