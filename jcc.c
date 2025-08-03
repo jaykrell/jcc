@@ -14,11 +14,11 @@
 #endif
 
 jcc_char_class_t jcc_char_class[256];
-jbool jcc_space[256];
-jcc_lex_trie_t jcc_lex_trie0[256];
-jcc_token_t jcc_token_identifier;
-jcc_token_t jcc_token_string_constant;
-jcc_token_t jcc_token_character_constant[256];
+/*jbool jcc_space[256];*/
+/*jcc_lex_trie_t jcc_lex_trie0[256];*/
+/*jcc_token_t jcc_token_identifier;*/
+/*jcc_token_t jcc_token_string_constant;*/
+/*jcc_token_t jcc_token_character_constant[256];*/
 
 /* keywords */
 jcc_token_t jcc_token_auto;
@@ -28,6 +28,7 @@ jcc_token_t jcc_token_for;
 jcc_token_t jcc_token_double;
 jcc_token_t jcc_token_float;
 jcc_token_t jcc_token_goto;
+jcc_token_t jcc_token_if;
 jcc_token_t jcc_token_int;
 jcc_token_t jcc_token_long;
 jcc_token_t jcc_token_struct;
@@ -703,7 +704,7 @@ void jcc_init(void) {
   jcc_init_ctype();
   for (i = jcc_char_space_first; i <= jcc_char_space_last; ++i) {
     jcc_char_class[i] = jcc_char_space;
-    jcc_space[i] = 1;
+    /*jcc_space[i] = 1;*/
   }
 
   /* Many characters map to themselves. */
