@@ -703,10 +703,32 @@ void jcc_init_char_alpha(int i) {
       jcc_char_starts_indefinitely_long_token_id;
 }
 
+void jcc_init_char_traits(void) {
+  int i;
+  for (i = 0; i < 256; ++i) {
+    jcc_char_traits[i].to_upper = jcc_char_to_upper(i);
+    jcc_char_traits[i].to_lower = jcc_char_to_lower(i);
+    jcc_char_traits[i].is_lower = jcc_char_is_lower(i);
+    jcc_char_traits[i].is_upper = jcc_char_is_upper(i);
+    jcc_char_traits[i].is_num = jcc_char_is_num(i);
+    jcc_char_traits[i].is_space = jcc_char_is_space(i);
+    if (jcc_char_is_alpha(i) || i == '_')
+      jcc_char_traits[i].starts_indefinitely_long_token =
+          jcc_char_starts_indefinitely_long_token_id;
+    else if (i == '.' || jcc_char_is_num(i))
+      jcc_char_traits[i].starts_indefinitely_long_token =
+          jcc_char_starts_indefinitely_long_token_num;
+    else if (i == '"')
+      jcc_char_traits[i].starts_indefinitely_long_token =
+          jcc_char_starts_indefinitely_long_token_str;
+  }
+}
+
 void jcc_init(void) {
   int i;
 
-  jcc_init_ctype();
+  jcc_init_char_traits();
+
   for (i = jcc_char_space_first; i <= jcc_char_space_last; ++i) {
     jcc_char_class[i] = jcc_char_space;
     /*jcc_space[i] = 1;*/
@@ -804,6 +826,7 @@ void jcc_init(void) {
 
 jcc_char_starts_indefinitely_long_token_t
     jcc_char_starts_indefinitely_long_token_lookup[256];
+
 jcc_char_traits_t jcc_char_traits[256];
 
 int jcc(int argc, char **argv) {

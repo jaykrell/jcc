@@ -42,7 +42,6 @@ int jcc_char_is_lower(int ch);
 int jcc_char_is_upper(int ch);
 int jcc_char_is_num(int ch);
 int jcc_char_starts_indefinitely_long_token(int ch);
-void jcc_init_ctype(void);
 
 int jcc_is_xid_start(int ch);
 int jcc_is_universal_xid_start(int ch);

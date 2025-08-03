@@ -61,27 +61,6 @@ int jcc_char_starts_indefinitely_long_token(int ch) {
           jcc_char_starts_indefinitely_long_token_false);
 }
 
-void jcc_init_ctype(void) {
-  int i;
-  for (i = 0; i < 256; ++i) {
-    jcc_char_traits[i].to_upper = jcc_char_to_upper(i);
-    jcc_char_traits[i].to_lower = jcc_char_to_lower(i);
-    jcc_char_traits[i].is_lower = jcc_char_is_lower(i);
-    jcc_char_traits[i].is_upper = jcc_char_is_upper(i);
-    jcc_char_traits[i].is_num = jcc_char_is_num(i);
-    jcc_char_traits[i].is_space = jcc_char_is_space(i);
-    if (jcc_char_is_alpha(i) || i == '_')
-      jcc_char_traits[i].starts_indefinitely_long_token =
-          jcc_char_starts_indefinitely_long_token_id;
-    else if (i == '.' || jcc_char_is_num(i))
-      jcc_char_traits[i].starts_indefinitely_long_token =
-          jcc_char_starts_indefinitely_long_token_num;
-    else if (i == '"')
-      jcc_char_traits[i].starts_indefinitely_long_token =
-          jcc_char_starts_indefinitely_long_token_str;
-  }
-}
-
 int jcc_char_can_start_preprocessor_directive(int ch) {
   switch (ch) {
   case 'e': /* else error */
