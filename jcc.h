@@ -41,32 +41,12 @@ int jcc_char_is_alpha(int ch);
 int jcc_char_is_lower(int ch);
 int jcc_char_is_upper(int ch);
 int jcc_char_is_num(int ch);
-int jcc_char_starts_indefinitely_long_token(int ch);
 
 int jcc_is_xid_start(int ch);
 int jcc_is_universal_xid_start(int ch);
 
 int jcc_is_xid_continue(int ch);
 int jcc_is_universal_xid_continue(int ch);
-
-/* Given a vector of characters, is it a keyword such as "for", "if", "else",
- * etc.? */
-int jcc_is_keyword(jvec_char_t *);
-
-/* Many characters are their own class, map to themselves.
-   Therefore character classes 0-0x7F roughly are already taoken.
-   Therefore non-self characters classes are >0x7F.
-   Or >0xFF for 'good measure".
-*/
-typedef enum jcc_char_class_t {
-  jcc_char_alpha = 0x101,
-  jcc_char_num = 0x102,
-  jcc_char_space = 0x103,
-  jcc_char_punc = 0x104,
-} jcc_char_class_t;
-
-extern jcc_char_class_t jcc_char_class[256];
-/*extern jbool jcc_space[256];*/
 
 typedef enum jcc_token_tag {
   jcc_token_tag_invalid = 0,
@@ -530,15 +510,7 @@ extern jcc_char_starts_indefinitely_long_token_t
     jcc_char_starts_indefinitely_long_token_lookup[256];
 
 typedef struct jcc_char_traits_t {
-#if 0
-  unsigned starts_indefinitely_long_token : 2;
-  unsigned is_lower : 1;
-  unsigned is_upper : 1;
-  unsigned is_num : 1;
-  unsigned is_space : 1;
-  char to_lower;
-  char to_upper;
-#else
+  jcc_token_tag token_tag;
   int starts_indefinitely_long_token;
   int is_lower;
   int is_upper;
@@ -546,7 +518,6 @@ typedef struct jcc_char_traits_t {
   int is_space;
   int to_lower;
   int to_upper;
-#endif
 } jcc_char_traits_t;
 
 extern jcc_char_traits_t jcc_char_traits[256];

@@ -13,8 +13,7 @@
 #pragma warning(disable : 4100) /* unused parameter */
 #endif
 
-jcc_char_class_t jcc_char_class[256];
-/*jbool jcc_space[256];*/
+jcc_char_traits_t jcc_char_traits[256];
 /*jcc_lex_trie_t jcc_lex_trie0[256];*/
 /*jcc_token_t jcc_token_identifier;*/
 /*jcc_token_t jcc_token_string_constant;*/
@@ -674,20 +673,11 @@ int jcc_dup_token(jcc_t *jcc, jcc_token_t *token1, jcc_token_t **token2) {
 void jcc_init_token(jcc_token_t *token, const char *str, jcc_token_tag tag) {
   if (str) {
     if (tag == jcc_token_tag_punctuator)
-      jcc_char_class[*str] = tag;
+      jcc_char_traits[*str].token_tag = tag;
     jcc_init_token_string(token, str);
   }
   token->tag = tag;
   jcc_init_trie(str, token);
-}
-
-void jcc_init_char_alpha(int i) {
-  jcc_char_class[jcc_char_to_upper(i)] = jcc_char_alpha;
-  jcc_char_class[jcc_char_to_lower(i)] = jcc_char_alpha;
-  jcc_char_starts_indefinitely_long_token_lookup[jcc_char_to_lower(i)] =
-      jcc_char_starts_indefinitely_long_token_id;
-  jcc_char_starts_indefinitely_long_token_lookup[jcc_char_to_upper(i)] =
-      jcc_char_starts_indefinitely_long_token_id;
 }
 
 void jcc_init_char_traits(void) {
@@ -699,47 +689,22 @@ void jcc_init_char_traits(void) {
     jcc_char_traits[i].is_upper = jcc_char_is_upper(i);
     jcc_char_traits[i].is_num = jcc_char_is_num(i);
     jcc_char_traits[i].is_space = jcc_char_is_space(i);
+
     if (jcc_char_is_alpha(i) || i == '_')
       jcc_char_traits[i].starts_indefinitely_long_token =
           jcc_char_starts_indefinitely_long_token_id;
+
     else if (i == '.' || jcc_char_is_num(i))
       jcc_char_traits[i].starts_indefinitely_long_token =
           jcc_char_starts_indefinitely_long_token_num;
+
     else if (i == '"')
       jcc_char_traits[i].starts_indefinitely_long_token =
           jcc_char_starts_indefinitely_long_token_str;
   }
 }
 
-void jcc_init(void) {
-  int i;
-
-  jcc_init_char_traits();
-
-  /* Many characters map to themselves. Default to that. */
-  for (i = 0; i < 256; ++i)
-    jcc_char_class[i] = i;
-
-  for (i = jcc_char_space_first; i <= jcc_char_space_last; ++i) {
-    jcc_char_class[i] = jcc_char_space;
-    /*jcc_space[i] = 1;*/
-  }
-
-  for (i = 'A'; i <= 'Z'; ++i)
-    jcc_init_char_alpha(i);
-
-  jcc_char_starts_indefinitely_long_token_lookup['.'] =
-      jcc_char_starts_indefinitely_long_token_num;
-  jcc_char_starts_indefinitely_long_token_lookup['_'] =
-      jcc_char_starts_indefinitely_long_token_id;
-  jcc_char_starts_indefinitely_long_token_lookup['"'] =
-      jcc_char_starts_indefinitely_long_token_str;
-  /* TODO: Multi-character constants? */
-
-  for (i = '0'; i <= '9'; ++i) {
-    jcc_char_class[i] = jcc_char_num;
-  }
-
+void jcc_init_tokens(void) {
   jcc_init_token(&jcc_token_newline, "\n", jcc_token_tag_punctuator);
   jcc_init_token(&jcc_token_define, "define", jcc_token_tag_define);
   jcc_init_token(&jcc_token_error, "error", jcc_token_tag_error);
@@ -810,10 +775,10 @@ void jcc_init(void) {
   jcc_init_token(&jcc_token_while, "while", 0);
 }
 
-jcc_char_starts_indefinitely_long_token_t
-    jcc_char_starts_indefinitely_long_token_lookup[256];
-
-jcc_char_traits_t jcc_char_traits[256];
+void jcc_init(void) {
+  jcc_init_char_traits();
+  jcc_init_tokens();
+}
 
 int jcc(int argc, char **argv) {
   argc &&argv;

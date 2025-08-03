@@ -55,12 +55,6 @@ int jcc_char_to_upper(int ch) {
   return jcc_char_is_lower(ch) ? jcc_char_lower_to_upper(ch) : ch;
 }
 
-int jcc_char_starts_indefinitely_long_token(int ch) {
-  /* TODO: Multi char constants? */
-  return (jcc_char_starts_indefinitely_long_token_lookup[ch] !=
-          jcc_char_starts_indefinitely_long_token_false);
-}
-
 int jcc_char_can_start_preprocessor_directive(int ch) {
   switch (ch) {
   case 'e': /* else error */
