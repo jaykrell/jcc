@@ -233,29 +233,6 @@ int cpre_get_char(cpre_t *cpre, int *ch) {
 
 typedef int (*jcc_call_t)(jcc_t *jcc, size_t *recognized);
 
-int jcc_preprocess_if_group(jcc_t *jcc, size_t *recognized)
-/*  # if constant-expression new-line group_opt
- *  # ifdef identifier new-line group_opt
- *  # ifndef identifier new-line group_opt
- */
-{
-  return -1;
-}
-
-int jcc_preprocess_elif_group(jcc_t *jcc, size_t *recognized)
-/*  # elif constant-expression new-line group_opt
- */
-{
-  return -1;
-}
-
-int jcc_preprocess_elif_groups_opt(jcc_t *jcc, size_t *recognized)
-/*  elif-groups elif-group
- */
-{
-  return -1;
-}
-
 int jcc_preprocess_if_section(jcc_t *jcc, size_t *recognized)
 /*   if-group elif-groups_opt else-group_opt endif-line
  */
@@ -326,7 +303,12 @@ jcc_token_t jcc_token_tilde;
 jcc_token_t jcc_token_undef;
 jcc_token_t jcc_token_unsigned;
 
-int jcc_lex_candidate_token(jcc_t *jcc, jbool prefer_header_name,
+typedef enum prefer_header_name_t {
+  prefer_header_name_false,
+  prefer_header_name_true,
+} prefer_header_name_t;
+
+int jcc_lex_candidate_token(jcc_t *jcc, prefer_header_name_t prefer_header_name,
                             jcc_token_t *candidate, jcc_token_t **success,
                             size_t *recognized) {
   return -1;
@@ -458,8 +440,8 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
       *recognized += 1;
       return 0;
     case 'd':
-      err = jcc_lex_candidate_token(jcc, false, &jcc_token_define, &token,
-                                    recognized);
+      err = jcc_lex_candidate_token(jcc, prefer_header_name_false,
+                                    &jcc_token_define, &token, recognized);
       if (err)
         goto error_label;
       if (token) {
@@ -484,28 +466,28 @@ int jcc_preprocess_control_line(jcc_t *jcc, size_t *recognized)
         jcc_lex_commit(jcc);
       }
     case 'u':
-      err = jcc_lex_candidate_token(jcc, false, &jcc_token_undef, &token,
-                                    recognized);
+      err = jcc_lex_candidate_token(jcc, prefer_header_name_false,
+                                    &jcc_token_undef, &token, recognized);
       if (err)
         goto error_label;
     case 'l':
-      err = jcc_lex_candidate_token(jcc, false, &jcc_token_line, &token,
-                                    recognized);
+      err = jcc_lex_candidate_token(jcc, prefer_header_name_false,
+                                    &jcc_token_line, &token, recognized);
       if (err)
         goto error_label;
     case 'e':
-      err = jcc_lex_candidate_token(jcc, false, &jcc_token_error, &token,
-                                    recognized);
+      err = jcc_lex_candidate_token(jcc, prefer_header_name_false,
+                                    &jcc_token_error, &token, recognized);
       if (err)
         goto error_label;
     case 'i':
-      err = jcc_lex_candidate_token(jcc, false, &jcc_token_include, &token,
-                                    recognized);
+      err = jcc_lex_candidate_token(jcc, prefer_header_name_false,
+                                    &jcc_token_include, &token, recognized);
       if (err)
         goto error_label;
     case 'p':
-      err = jcc_lex_candidate_token(jcc, false, &jcc_token_pragma, &token,
-                                    recognized);
+      err = jcc_lex_candidate_token(jcc, prefer_header_name_false,
+                                    &jcc_token_pragma, &token, recognized);
       if (err)
         goto error_label;
     }
